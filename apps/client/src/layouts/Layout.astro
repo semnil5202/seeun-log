@@ -1,19 +1,49 @@
 ---
+import BaseHead from "@/components/layout/BaseHead.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import type { Locale } from "@/types/common";
+import { DEFAULT_LOCALE } from "@/types/common";
+
 interface Props {
   title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  locale?: Locale;
+  path: string;
+  type?: "website" | "article";
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  locale = DEFAULT_LOCALE,
+  path,
+  type = "website",
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang={locale}>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
+    <BaseHead
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      locale={locale}
+      path={path}
+      type={type}
+    />
+    {/* SEO: Named slot so pages can inject JSON-LD <script> tags into <head> */}
+    <slot name="head" />
   </head>
-  <body>
+  <body class="min-h-screen bg-white text-gray-900 antialiased">
+    <Header locale={locale} />
     <slot />
+    <Footer locale={locale} />
   </body>
 </html>

@@ -1,0 +1,86 @@
+---
+/**
+ * src/pages/[category]/[sub_category]/[slug].astro — Korean post detail pages
+ *
+ * Rendering: SSG. One page per post at build time.
+ * Locale: ko (DEFAULT_LOCALE) — no URL prefix.
+ *
+ * Generated routes: /{category}/{sub_category}/{slug}/
+ *   e.g. /delicious/korean/gangnam-pasta/
+ *
+ * SEO:
+ *   - canonical: "/{category}/{sub_category}/{slug}/"
+ *   - path: "/{category}/{sub_category}/{slug}/" for hreflang generation
+ *   - BreadcrumbJsonLd: Home > Category > SubCategory > Post Title (in head)
+ *   - BlogPostingJsonLd + ReviewSchema (in head)
+ *
+ * PERF: getAllPosts() is called once and all posts are mapped to paths.
+ *       Individual post lookup (getPostBySlug) hits the unique slug index.
+ *       getStaticPaths runs once per build — all posts resolved in one pass.
+ */
+
+import PostLayout from "@/layouts/PostLayout.astro";
+import { DEFAULT_LOCALE } from "@/types/common";
+import type { LocalizedPost } from "@/types/post";
+import type { CategorySlug } from "@/types/category";
+import { getAllPosts, getPostBySlug } from "@/lib/api/posts";
+import { getCategoryLabel, getSubCategoryLabel } from "@/lib/i18n/categories";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+
+  return posts.map((post) => ({
+    params: {
+      category: post.category,
+      sub_category: post.sub_category,
+      slug: post.slug,
+    },
+    props: {
+      slug: post.slug,
+      category: post.category,
+      sub_category: post.sub_category,
+    },
+  }));
+}
+
+interface Props {
+  slug: string;
+  category: CategorySlug;
+  sub_category: string;
+}
+
+const { slug, category, sub_category } = Astro.props;
+const locale = DEFAULT_LOCALE;
+
+// PERF: getPostBySlug hits the unique slug index — O(1) lookup on Supabase.
+const post = await getPostBySlug(slug);
+
+// Guard: if the post disappears between getStaticPaths and props resolution,
+// redirect to the category page. In SSG this shouldn't happen at build time.
+if (!post) {
+  return Astro.redirect(`/${category}/`, 302);
+}
+
+// Korean is source language — no translation needed, cast directly.
+const localizedPost: LocalizedPost = { ...post, locale };
+
+const categoryLabel = getCategoryLabel(category, locale);
+const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
+const canonical = `/${category}/${sub_category}/${slug}/`;
+const path = `/${category}/${sub_category}/${slug}/`;
+
+const breadcrumbs = [
+  { name: "홈", url: "/" },
+  { name: categoryLabel, url: `/${category}/` },
+  { name: subCategoryLabel, url: `/${category}/${sub_category}/` },
+  { name: post.title, url: `/${category}/${sub_category}/${slug}/` },
+];
+---
+
+<PostLayout
+  post={localizedPost}
+  locale={locale}
+  breadcrumbs={breadcrumbs}
+  canonical={canonical}
+  path={path}
+/>

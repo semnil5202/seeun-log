@@ -1,0 +1,108 @@
+---
+/**
+ * src/pages/[category]/[sub_category]/index.astro — Korean subcategory index pages
+ *
+ * Rendering: SSG. One page per category+subcategory combination at build time.
+ * Locale: ko (DEFAULT_LOCALE) — no URL prefix.
+ *
+ * Generated routes (/{category}/{sub_category}/):
+ *   /delicious/korean/    /delicious/western/  /delicious/japanese/  /delicious/pub/
+ *   /cafe/hotplace/       /cafe/study/
+ *   /travel/domestic/     /travel/overseas/    /travel/accommodation/
+ *
+ * SEO:
+ *   - canonical: "/{category}/{sub_category}/"
+ *   - BreadcrumbJsonLd: Home > Category > SubCategory
+ *
+ * PERF: getPaginatedPostsBySubCategory benefits from the compound
+ *       (category, sub_category) index recommended in docs/database.md.
+ */
+
+import ListLayout from "@/layouts/ListLayout.astro";
+import PostCardGrid from "@/components/post/PostCardGrid.astro";
+import Pagination from "@/components/navigation/Pagination.astro";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
+import { DEFAULT_LOCALE } from "@/types/common";
+import type { LocalizedPost } from "@/types/post";
+import { CATEGORY_SLUGS, SUB_CATEGORY_MAP } from "@/types/category";
+import type { CategorySlug } from "@/types/category";
+import {
+  getPaginatedPostsBySubCategory,
+  getSponsoredPosts,
+  getRecommendedPosts,
+} from "@/lib/api/posts";
+import { getCategoryLabel, getSubCategoryLabel } from "@/lib/i18n/categories";
+
+export async function getStaticPaths() {
+  // Build the full cartesian product of category × subcategory pairs.
+  // Using SUB_CATEGORY_MAP ensures only valid combinations are generated.
+  const paths: { params: { category: string; sub_category: string }; props: { category: CategorySlug; sub_category: string } }[] = [];
+
+  for (const category of CATEGORY_SLUGS) {
+    for (const sub_category of SUB_CATEGORY_MAP[category]) {
+      paths.push({
+        params: { category, sub_category },
+        props: { category, sub_category },
+      });
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  category: CategorySlug;
+  sub_category: string;
+}
+
+const { category, sub_category } = Astro.props;
+const locale = DEFAULT_LOCALE;
+
+// PERF: Parallel fetch — subcategory posts + sidebar data resolved together.
+const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
+  getPaginatedPostsBySubCategory(category, sub_category, 1),
+  getSponsoredPosts(),
+  getRecommendedPosts(),
+]);
+
+const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, locale }));
+const recommendedLocalized: LocalizedPost[] = recommended.map((p) => ({ ...p, locale }));
+
+const categoryLabel = getCategoryLabel(category, locale);
+const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
+const canonical = `/${category}/${sub_category}/`;
+const path = `/${category}/${sub_category}/`;
+
+const breadcrumbItems = [
+  { name: "홈", url: "/" },
+  { name: categoryLabel, url: `/${category}/` },
+  { name: subCategoryLabel, url: `/${category}/${sub_category}/` },
+];
+
+const pageTitle = `${subCategoryLabel} - ${categoryLabel} - 세은로그`;
+const pageDescription = `세은로그 ${categoryLabel} > ${subCategoryLabel} — 커플이 직접 다녀온 ${subCategoryLabel} 장소 리뷰 모음.`;
+---
+
+<ListLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical={canonical}
+  path={path}
+  locale={locale}
+  sponsoredPosts={sponsoredLocalized}
+  recommendedPosts={recommendedLocalized}
+>
+  {/* SEO: BreadcrumbJsonLd injected into <head> via named slot */}
+  <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
+
+  <PostCardGrid posts={posts} locale={locale} />
+
+  {totalPages > 1 && (
+    <Pagination
+      currentPage={1}
+      totalPages={totalPages}
+      baseUrl={canonical}
+      locale={locale}
+    />
+  )}
+</ListLayout>

@@ -1,0 +1,17 @@
+---
+import { getHreflangEntries, getXDefaultHref } from "@/lib/i18n/locales";
+
+interface Props {
+  path: string;
+}
+
+const { path } = Astro.props;
+const site = Astro.site?.origin ?? "";
+const entries = getHreflangEntries(path);
+const xDefault = getXDefaultHref(path);
+---
+
+{entries.map(({ locale, href }) => (
+  <link rel="alternate" hreflang={locale} href={`${site}${href}`} />
+))}
+<link rel="alternate" hreflang="x-default" href={`${site}${xDefault}`} />

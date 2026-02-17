@@ -1,0 +1,93 @@
+---
+/**
+ * Footer.astro
+ *
+ * Dual-purpose footer:
+ *   - PC  (lg+): minimal copyright bar + utility links
+ *   - Mobile(<lg): full SEO sitemap via CategoryTree (replaces hidden LeftSidebar)
+ *
+ * SEO requirement (from ui-specs.md):
+ *   Mobile crawlers must see all subcategory text links. Since LeftSidebar is
+ *   hidden on mobile, the Footer CategoryTree is the canonical link source for
+ *   mobile Googlebot. CategoryTree is wrapped in `block lg:hidden` so it
+ *   renders in the DOM on all viewport sizes — CSS controls visibility.
+ *
+ * The CategoryTree in footer uses `block lg:hidden` because:
+ *   - On PC, LeftSidebar already provides these links (no duplication needed).
+ *   - On mobile, the tree IS visible and serves SEO + user navigation.
+ *
+ * PERF: Pure static HTML. No JS.
+ * SEO:  <footer> landmark. Copyright in <small> for semantic accuracy.
+ *       Sitemap heading aids screen reader navigation.
+ */
+
+import CategoryTree from "@/components/navigation/CategoryTree.astro";
+import { t } from "@/lib/i18n/translations";
+import { getLocalePath } from "@/lib/i18n/locales";
+import type { Locale } from "@/types/common";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-gray-50 border-t border-gray-200 mt-16">
+
+  {/*
+    Mobile Sitemap Section — visible only on mobile (block lg:hidden).
+    Provides all subcategory links for mobile SEO crawlers.
+    This replaces LeftSidebar which is hidden on mobile.
+  */}
+  <div class="block lg:hidden px-4 pt-8 pb-6">
+    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+      {t("footer.sitemap", locale)}
+    </h2>
+    {/*
+      CategoryTree renders all categories + subcategories as links.
+      On mobile this is the sole source of full sitemap link coverage.
+    */}
+    <CategoryTree locale={locale} class="text-sm" />
+  </div>
+
+  {/* Divider only shown on mobile between sitemap and copyright */}
+  <div class="block lg:hidden mx-4 border-t border-gray-200" />
+
+  {/*
+    Bottom bar: copyright + utility links.
+    Shown on BOTH PC and mobile.
+  */}
+  <div class="max-w-screen-xl mx-auto px-4 lg:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+
+    {/* Copyright */}
+    <small class="text-xs text-gray-500 order-2 sm:order-1">
+      {currentYear} {t("footer.copyright", locale)}. All rights reserved.
+    </small>
+
+    {/* Utility links */}
+    <nav
+      aria-label="Footer navigation"
+      class="flex items-center gap-4 order-1 sm:order-2"
+    >
+      <a
+        href={getLocalePath("/privacy/", locale)}
+        class="text-xs text-gray-500 hover:text-rose-500 transition-colors duration-150"
+      >
+        {t("footer.privacy", locale)}
+      </a>
+      {/* PC-only sitemap link (on mobile the tree above already serves this) */}
+      <a
+        href={getLocalePath("/sitemap.xml", locale)}
+        class="hidden lg:inline text-xs text-gray-500 hover:text-rose-500 transition-colors duration-150"
+        aria-label="XML Sitemap"
+      >
+        {t("footer.sitemap", locale)}
+      </a>
+    </nav>
+
+  </div>
+
+</footer>

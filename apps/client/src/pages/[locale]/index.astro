@@ -1,0 +1,100 @@
+---
+/**
+ * src/pages/[locale]/index.astro — i18n home pages (/{locale}/)
+ *
+ * Rendering: SSG. One static page generated per non-default locale at build time.
+ * Locales: all LOCALES except DEFAULT_LOCALE ("ko") — Korean has no prefix per routing config.
+ *
+ * SEO:
+ *   - canonical: "/{locale}/"
+ *   - path: "/" (locale-agnostic path for hreflang generation across all locales)
+ *   - BreadcrumbJsonLd: Home only, injected into <head>
+ *
+ * COST: Parallel fetch of paginated posts + sidebar posts per locale.
+ *       Posts are localized via getLocalizedPost which adds translation lookup overhead.
+ *       On Supabase: each translation is a single compound-index lookup (post_id, locale).
+ */
+
+import ListLayout from "@/layouts/ListLayout.astro";
+import PostCardGrid from "@/components/post/PostCardGrid.astro";
+import Pagination from "@/components/navigation/Pagination.astro";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
+import { LOCALES, DEFAULT_LOCALE } from "@/types/common";
+import type { Locale } from "@/types/common";
+import type { LocalizedPost } from "@/types/post";
+import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/lib/api/posts";
+import { getLocalizedPost } from "@/lib/api/translations";
+import { t } from "@/lib/i18n/translations";
+
+export async function getStaticPaths() {
+  // Only generate pages for non-default locales.
+  // Korean (DEFAULT_LOCALE) is handled by src/pages/index.astro (no prefix).
+  const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
+
+  return nonDefaultLocales.map((locale) => ({
+    params: { locale },
+    props: { locale },
+  }));
+}
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// PERF: Parallel fetch — all 3 queries resolve concurrently at build time.
+const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
+  getPaginatedPosts(1),
+  getSponsoredPosts(),
+  getRecommendedPosts(),
+]);
+
+// Localize all posts for the target locale using translation fallback strategy.
+// COST: One translation lookup per post. On Supabase this hits the (post_id, locale)
+//       compound index. For pages with no translations (fallback to Korean), the lookup
+//       is a miss — acceptable cost at build time for SSG.
+const localizedPosts = await Promise.all(posts.map((p) => getLocalizedPost(p, locale)));
+const sponsoredLocalized: LocalizedPost[] = await Promise.all(
+  sponsored.map((p) => getLocalizedPost(p, locale))
+);
+const recommendedLocalized: LocalizedPost[] = await Promise.all(
+  recommended.map((p) => getLocalizedPost(p, locale))
+);
+
+const canonical = `/${locale}/`;
+// path is locale-agnostic for hreflang: generates all locale variants from "/"
+const path = "/";
+
+const homeLabel = t("nav.home", locale);
+const breadcrumbItems = [{ name: homeLabel, url: "/" }];
+
+// Localized page title: "{Home} — seeun log"
+const pageTitle = `${homeLabel} - seeun log`;
+const SITE_DESCRIPTION =
+  "세은로그 — 커플이 함께 다녀온 맛집, 카페, 여행지를 솔직하게 리뷰합니다.";
+---
+
+<ListLayout
+  title={pageTitle}
+  description={SITE_DESCRIPTION}
+  canonical={canonical}
+  path={path}
+  locale={locale}
+  sponsoredPosts={sponsoredLocalized}
+  recommendedPosts={recommendedLocalized}
+>
+  {/* SEO: BreadcrumbJsonLd injected into <head> via named slot */}
+  <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
+
+  <PostCardGrid posts={localizedPosts} locale={locale} />
+
+  {totalPages > 1 && (
+    <Pagination
+      currentPage={1}
+      totalPages={totalPages}
+      baseUrl={canonical}
+      locale={locale}
+    />
+  )}
+</ListLayout>

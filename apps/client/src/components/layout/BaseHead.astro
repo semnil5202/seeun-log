@@ -1,0 +1,35 @@
+---
+import "@/styles/global.css";
+import OpenGraph from "@/components/seo/OpenGraph.astro";
+import Hreflang from "@/components/seo/Hreflang.astro";
+import type { Locale } from "@/types/common";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  locale: Locale;
+  path: string;
+  type?: "website" | "article";
+}
+
+const { title, description, canonical, ogImage, locale, path, type = "website" } = Astro.props;
+const site = Astro.site?.origin ?? "";
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={`${site}${canonical}`} />
+<OpenGraph
+  title={title}
+  description={description}
+  url={`${site}${canonical}`}
+  image={ogImage}
+  locale={locale}
+  type={type}
+/>
+<Hreflang path={path} />
+<slot />

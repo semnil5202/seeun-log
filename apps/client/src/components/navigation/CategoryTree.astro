@@ -1,0 +1,64 @@
+---
+/**
+ * CategoryTree.astro
+ *
+ * Shared navigation component used by:
+ *   - LeftSidebar (PC): always visible as LNB
+ *   - Footer (Mobile): full sitemap for SEO crawlers
+ *
+ * The tree is always fully expanded — no accordion, no JS collapse.
+ * Each category and subcategory is an <a> tag for crawler visibility.
+ *
+ * PERF: Pure static HTML — zero JavaScript, no hydration cost.
+ * SEO:  Semantic <nav> with <ul>/<li> gives crawlers a clear link graph.
+ */
+
+import { getCategoryTree } from "@/lib/i18n/categories";
+import { getLocalePath } from "@/lib/i18n/locales";
+import type { Locale } from "@/types/common";
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: className } = Astro.props;
+
+const categories = getCategoryTree(locale);
+---
+
+<!--
+  Semantic <nav> with aria-label distinguishes this from other nav regions
+  on the same page (header nav vs sidebar nav vs footer nav).
+-->
+<nav aria-label="Category navigation" class={className}>
+  <ul class="space-y-4" role="list">
+    {
+      categories.map((category) => (
+        <li>
+          {/* Category top-level link */}
+          <a
+            href={getLocalePath(`/${category.slug}/`, locale)}
+            class="block font-semibold text-gray-900 hover:text-rose-500 transition-colors duration-150 text-sm uppercase tracking-wide"
+          >
+            {category.label}
+          </a>
+
+          {/* Subcategory list — always expanded, never hidden */}
+          <ul class="mt-2 ml-3 space-y-1 border-l border-gray-200 pl-3" role="list">
+            {category.subCategories.map((sub) => (
+              <li>
+                <a
+                  href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
+                  class="block text-sm text-gray-600 hover:text-rose-500 transition-colors duration-150 py-0.5"
+                >
+                  {sub.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

@@ -1,0 +1,45 @@
+---
+/**
+ * LeftSidebar.astro
+ *
+ * PC-only Left Navigation Bar (LNB) containing the full CategoryTree.
+ * Rendered in HTML at build time but hidden on mobile via `hidden lg:block`
+ * on the wrapper in ThreeColumnLayout.
+ *
+ * The sidebar itself uses `hidden lg:block` so it carries its own visibility
+ * rule — safe to render anywhere without wrapping callers needing awareness.
+ *
+ * Scroll strategy:
+ *   - The sidebar column is `min-h-0` inside the grid row so it doesn't
+ *     stretch the grid.
+ *   - Inner content is `sticky top-20` so the tree stays visible while
+ *     main content scrolls. 20 = 80px accounts for the sticky header height.
+ *   - overflow-y: auto with a max-height lets the sidebar scroll independently
+ *     if the category tree ever grows taller than the viewport.
+ *
+ * PERF: Zero JS. Pure SSG static HTML.
+ * SEO:  <aside> landmark wraps the nav. CategoryTree provides crawler link graph.
+ */
+
+import CategoryTree from "@/components/navigation/CategoryTree.astro";
+import type { Locale } from "@/types/common";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<aside
+  class="hidden lg:block w-60 flex-shrink-0"
+  aria-label="Category sidebar"
+>
+  {/* Sticky scroll container — stays in view while page content scrolls */}
+  <div
+    class="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto py-6 pr-4"
+    style="-ms-overflow-style: none; scrollbar-width: thin;"
+  >
+    <CategoryTree locale={locale} />
+  </div>
+</aside>

@@ -1,0 +1,34 @@
+---
+import type { Locale } from "@/types/common";
+import { LOCALE_LABELS } from "@/types/common";
+
+interface Props {
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+  locale: Locale;
+  type?: "website" | "article";
+}
+
+const { title, description, url, image, locale, type = "website" } = Astro.props;
+
+const ogLocaleMap: Record<Locale, string> = {
+  ko: "ko_KR",
+  en: "en_US",
+  ja: "ja_JP",
+  "zh-CN": "zh_CN",
+  "zh-TW": "zh_TW",
+  id: "id_ID",
+  vi: "vi_VN",
+  th: "th_TH",
+};
+---
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content="세은로그" />
+<meta property="og:locale" content={ogLocaleMap[locale]} />
+{image && <meta property="og:image" content={image} />}

@@ -1,0 +1,159 @@
+---
+/**
+ * RightSidebar.astro
+ *
+ * PC-only Right Sidebar showing Sponsored/Ad posts and Editor's Pick posts.
+ * Hidden on mobile (`hidden lg:block`) — replaced by In-Feed Ads on mobile.
+ *
+ * Content is passed in via props (not slots) so that ThreeColumnLayout can
+ * forward sponsored/recommended post data down from page-level queries.
+ * Using props (not slots) keeps data flow explicit and type-safe.
+ *
+ * Sticky behaviour: `sticky top-20` keeps sidebar in viewport while main
+ * content scrolls. top-20 (80px) clears the sticky header.
+ *
+ * PERF: No JS. Thumbnails will be lazy-loaded (not above fold on desktop
+ *       since LCP priority belongs to the first main post card).
+ * COST: Sidebar post data is fetched once at build time alongside main posts
+ *       — no additional DB round-trip at request time.
+ * SEO:  <aside> landmark. Sponsored content is visually labelled.
+ *       is_sponsored flag drives labelling — no hard-coded ad copy.
+ */
+
+import { t } from "@/lib/i18n/translations";
+import { getLocalePath } from "@/lib/i18n/locales";
+import type { Locale } from "@/types/common";
+import type { LocalizedPost } from "@/types/post";
+
+interface Props {
+  locale: Locale;
+  sponsoredPosts?: LocalizedPost[];
+  recommendedPosts?: LocalizedPost[];
+}
+
+const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
+---
+
+<aside
+  class="hidden lg:block w-70 flex-shrink-0"
+  aria-label="Sponsored and recommended posts"
+>
+  {/* Sticky scroll container */}
+  <div class="sticky top-20 py-6 pl-4 space-y-8">
+
+    {/* ---- Sponsored & Ads section ---- */}
+    <section aria-labelledby="sidebar-sponsored-heading">
+      <h2
+        id="sidebar-sponsored-heading"
+        class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pb-2 border-b border-gray-100"
+      >
+        {t("sidebar.sponsored", locale)}
+      </h2>
+
+      {
+        sponsoredPosts.length > 0 ? (
+          <ul class="space-y-4" role="list">
+            {sponsoredPosts.map((post) => (
+              <li>
+                <a
+                  href={getLocalePath(
+                    `/${post.category}/${post.sub_category}/${post.slug}/`,
+                    locale
+                  )}
+                  class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
+                >
+                  {/* Thumbnail */}
+                  <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={post.thumbnail}
+                      alt={post.title}
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Text */}
+                  <div class="flex-1 min-w-0">
+                    {/* Sponsored badge */}
+                    <span class="inline-block text-[10px] font-semibold text-rose-400 bg-rose-50 px-1.5 py-0.5 rounded mb-1">
+                      {t("post.sponsored", locale)}
+                    </span>
+                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-rose-500 transition-colors duration-150 leading-snug">
+                      {post.title}
+                    </p>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-gray-400 italic" />
+        )
+      }
+    </section>
+
+    {/* ---- Editor's Pick section ---- */}
+    <section aria-labelledby="sidebar-picks-heading">
+      <h2
+        id="sidebar-picks-heading"
+        class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pb-2 border-b border-gray-100"
+      >
+        {t("sidebar.editorsPick", locale)}
+      </h2>
+
+      {
+        recommendedPosts.length > 0 ? (
+          <ul class="space-y-4" role="list">
+            {recommendedPosts.map((post) => (
+              <li>
+                <a
+                  href={getLocalePath(
+                    `/${post.category}/${post.sub_category}/${post.slug}/`,
+                    locale
+                  )}
+                  class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
+                >
+                  {/* Thumbnail */}
+                  <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={post.thumbnail}
+                      alt={post.title}
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Text */}
+                  <div class="flex-1 min-w-0">
+                    {/* Editor's Pick badge */}
+                    <span class="inline-block text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded mb-1">
+                      {t("post.editorsPick", locale)}
+                    </span>
+                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-rose-500 transition-colors duration-150 leading-snug">
+                      {post.title}
+                    </p>
+                    {/* Rating */}
+                    {post.rating > 0 && (
+                      <p class="text-xs text-gray-400 mt-0.5">
+                        {t("post.rating", locale)} {post.rating.toFixed(1)}
+                      </p>
+                    )}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-gray-400 italic" />
+        )
+      }
+    </section>
+
+  </div>
+</aside>
