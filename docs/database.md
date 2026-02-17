@@ -21,6 +21,21 @@
 | `created_at` | timestamptz | 작성일 |
 | `updated_at` | timestamptz | 수정일 |
 
+## Table: `post_translations`
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | uuid | PK |
+| `post_id` | uuid (FK → posts.id) | 원본 포스트 참조 |
+| `locale` | text | 언어 코드 (`en`, `ja`, `zh-CN`, `zh-TW`, `id`, `vi`) |
+| `title` | text | 번역된 제목 |
+| `description` | text | 번역된 요약 |
+| `content` | text | 번역된 본문 |
+| `created_at` | timestamptz | 번역 생성일 |
+| `updated_at` | timestamptz | 번역 수정일 |
+
+**Constraints**: `UNIQUE(post_id, locale)`
+
 ## Index Recommendations
 
 - `slug` — unique index (URL lookup)
@@ -29,3 +44,4 @@
 - `is_sponsored` — 광고 콘텐츠 조회
 - `is_recommended` — Editor's Pick 조회
 - `created_at` — 최신순 정렬
+- `post_translations(post_id, locale)` — unique compound index (번역 조회)

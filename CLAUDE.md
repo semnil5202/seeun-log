@@ -50,11 +50,11 @@ pnpm --filter @seeun-log/client dev # client만 실행
 
 ### 콘텐츠 타입
 - 일반 포스트, 협찬 포스트 (`is_sponsored`), Editor's Pick (`is_recommended`)
-- 모든 콘텐츠는 한국어 기본, AI 자동 번역 지원
+- 한국어 기본, GPT-4o 자동 번역: en, ja, zh-CN, zh-TW, id, vi
 
 ## UI/UX Constraints (엄격 적용)
 
-- **PC (lg 이상)**: 3-Column — Left Sidebar (카테고리 트리 전체 펼침) / Main (카드 피드) / Right Sidebar (협찬, Pick, 태그)
+- **PC (lg 이상)**: 3-Column — Left Sidebar (카테고리 트리 전체 펼침) / Main (카드 피드) / Right Sidebar (협찬, Pick)
 - **Mobile (lg 미만)**: Header에 수평 snap scroll 네비게이션. In-Feed Ad는 index 1, 3에 삽입.
 - **금지 사항**: 햄버거 메뉴, Drawer Sidebar, 무한 스크롤
 - **반응형 전환**: `hidden lg:block` / `block lg:hidden`으로 CSS 토글. 별도 HTML 구조 금지.

@@ -4,7 +4,7 @@
 
 - **Project Name**: SEEUN-LOG
 - **Brand Name**: 세은로그 (seeun log)
-- **Language**: 한국어 기본, 다국어 지원 (AI 번역)
+- **Language**: 한국어 기본, 다국어 지원 (GPT-4o 번역): en, ja, zh-CN, zh-TW, id, vi
 
 ## Categories
 
@@ -44,8 +44,8 @@
 | (모두 펼침)           |  [Post Card 3]                                |  [Sponsored Ad 1]     |
 |                       |  ...                                          |  [Editor's Pick 1]    |
 | ▾ 맛집               |                                               |                       |
-|   한식 / 양식 / ...   |  [Pagination: < Prev 1 2 3 Next >]            |  🏷️ Popular Tags      |
-| ▾ 카페               |                                               |  #기념일 #오마카세     |
+|   한식 / 양식 / ...   |  [Pagination: < Prev 1 2 3 Next >]            |                       |
+| ▾ 카페               |                                               |                       |
 |   핫플 / 카공         |                                               |                       |
 | ▾ 여행               |                                               |                       |
 |   국내 / 해외 / 숙소  |                                               |                       |
@@ -61,7 +61,7 @@
 
 - Left Sidebar: Category Tree 항상 전체 펼침
 - Main: Card 형태 피드, 페이지네이션 (무한 스크롤 금지)
-- Right Sidebar: 협찬/광고 + Editor's Pick + 인기 태그
+- Right Sidebar: 협찬/광고 + Editor's Pick
 
 ---
 

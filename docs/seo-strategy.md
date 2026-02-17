@@ -43,6 +43,36 @@
 - 첫 번째 PostCard thumbnail: LCP Priority (`loading="eager"`)
 - 나머지: `loading="lazy"`
 
+## i18n (다국어)
+
+OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
+
+| 언어 | locale | routing prefix |
+|------|--------|----------------|
+| 한국어 (기본) | `ko` | `/` (prefix 없음) |
+| 중국어 간체 | `zh-CN` | `/zh-CN/` |
+| 일본어 | `ja` | `/ja/` |
+| 대만어 (중국어 번체) | `zh-TW` | `/zh-TW/` |
+| 영어 | `en` | `/en/` |
+| 인도네시아어 | `id` | `/id/` |
+| 베트남어 | `vi` | `/vi/` |
+
+### 다국어 URL 예시
+```
+/delicious/korean/{slug}           # 한국어 (기본)
+/en/delicious/korean/{slug}        # 영어
+/ja/delicious/korean/{slug}        # 일본어
+/zh-CN/delicious/korean/{slug}     # 중국어 간체
+/zh-TW/delicious/korean/{slug}     # 대만어
+/id/delicious/korean/{slug}        # 인도네시아어
+/vi/delicious/korean/{slug}        # 베트남어
+```
+
+### SEO 다국어 대응
+- `<link rel="alternate" hreflang="{locale}">` 태그 필수
+- `<link rel="alternate" hreflang="x-default">` → 한국어 페이지
+- Canonical은 각 언어 페이지 자기 자신을 가리킴
+
 ## URL Structure
 
 ```
@@ -52,4 +82,5 @@
 /delicious/korean/{slug}    # 개별 포스트
 /cafe/                      # 카페 카테고리
 /travel/                    # 여행 카테고리
+/{locale}/...               # 다국어 (위 i18n 섹션 참조)
 ```
