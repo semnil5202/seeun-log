@@ -1,0 +1,21 @@
+{
+  "name": "@seeun-log/client",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "astro": "^5"
+  },
+  "devDependencies": {
+    "@seeun-log/tsconfig": "workspace:*",
+    "@seeun-log/eslint-config": "workspace:*",
+    "eslint": "^9",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "extends": "@seeun-log/tsconfig/astro.json",
+  "include": ["src"]
+}
