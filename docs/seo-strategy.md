@@ -56,6 +56,7 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 | 영어 | `en` | `/en/` |
 | 인도네시아어 | `id` | `/id/` |
 | 베트남어 | `vi` | `/vi/` |
+| 태국어 | `th` | `/th/` |
 
 ### 다국어 URL 예시
 ```
@@ -66,6 +67,7 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 /zh-TW/delicious/korean/{slug}     # 대만어
 /id/delicious/korean/{slug}        # 인도네시아어
 /vi/delicious/korean/{slug}        # 베트남어
+/th/delicious/korean/{slug}        # 태국어
 ```
 
 ### SEO 다국어 대응

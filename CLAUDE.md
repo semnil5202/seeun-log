@@ -50,7 +50,7 @@ pnpm --filter @seeun-log/client dev # client만 실행
 
 ### 콘텐츠 타입
 - 일반 포스트, 협찬 포스트 (`is_sponsored`), Editor's Pick (`is_recommended`)
-- 한국어 기본, GPT-4o 자동 번역: en, ja, zh-CN, zh-TW, id, vi
+- 한국어 기본, GPT-4o 자동 번역: en, ja, zh-CN, zh-TW, id, vi, th
 
 ## UI/UX Constraints (엄격 적용)
 

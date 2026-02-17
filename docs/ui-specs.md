@@ -4,7 +4,7 @@
 
 - **Project Name**: SEEUN-LOG
 - **Brand Name**: 세은로그 (seeun log)
-- **Language**: 한국어 기본, 다국어 지원 (GPT-4o 번역): en, ja, zh-CN, zh-TW, id, vi
+- **Language**: 한국어 기본, 다국어 지원 (GPT-4o 번역): en, ja, zh-CN, zh-TW, id, vi, th
 
 ## Categories
 
