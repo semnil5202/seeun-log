@@ -113,6 +113,7 @@ Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변�
   ```
 - **라이브러리 함수 (lib/)**: 공개 함수에 JSDoc — 기능 설명 + `@param` 만.
 - **인라인 주석**: 복잡한 비즈니스 로직이나 비자명한 알고리즘에만 허용.
+- **TODO 주석**: 추후 구현이 필요한 부분에 `// TODO: 설명` 허용.
 
 ### 금지 사항
 
@@ -121,12 +122,22 @@ Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변�
 - CSS 동작 설명 주석 금지 (Tailwind 클래스가 자체 문서 역할).
 - Props interface 필드별 JSDoc 금지 — 타입 이름이 충분히 설명적이어야 함.
 
+## Workflow Rules
+
+### PM-First 원칙
+
+새 기능 구현, 아키텍처 변경, 요구사항이 모호한 작업은 **반드시 product-manager 에이전트를 먼저 실행**하여 요구사항을 정리한 후 구현에 착수한다.
+
+- PM이 요구사항/스펙을 docs/에 정리하거나 명확한 지시를 내린 후 fullstack-engineer가 구현.
+- 단순 버그 수정, 린트 에러 해결, 설정 변경 등 명확한 작업은 PM 단계를 생략 가능.
+- 판단 기준: "이 작업의 범위와 요구사항이 명확한가?" — 명확하지 않으면 PM부터.
+
 ## Sub-Agent System
 
 `.claude/agents/`에 3개 전문 에이전트 구성:
 
+- **product-manager** (opus) — 요구사항 정리, 전략 기획, 문서 관리. 코드 파일 수정 불가, .md 파일만 편집 가능. **새 기능/아키텍처 변경 시 항상 첫 번째로 실행.**
 - **fullstack-engineer** (sonnet) — 기능 구현, 리팩토링. Security → Correctness → Performance → Cost → Maintainability 순서로 판단.
-- **product-manager** (opus) — 요구사항 정리, 전략 기획, 문서 관리. 코드 파일 수정 불가, .md 파일만 편집 가능.
 - **quality-reviewer** (sonnet) — 코드 품질 감사. 공유 자산 일관성, Performance/SEO, 문서-코드 동기화, 보안, 건설적 피드백 5개 차원.
 
 에이전트 메모리: `.claude/agent-memory/{agent-name}/` — 프로젝트 스코프, 세션 간 지식 축적.
