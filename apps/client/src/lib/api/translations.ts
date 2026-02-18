@@ -1,35 +1,12 @@
-/**
- * Translation query API — build-time data access layer for the Astro SSG client.
- *
- * Provides locale-aware access to post content. Falls back to the original
- * Korean content when no translation exists for the requested locale.
- *
- * MIGRATION PATH: Replace MOCK_TRANSLATIONS imports with Supabase queries.
- * The compound unique index on (post_id, locale) in docs/database.md means
- * every translation lookup is an O(1) index seek on Supabase — no changes
- * to the function signatures are needed.
- *
- * SECURITY: No user-supplied data is interpolated into queries here.
- * postId and locale are always typed values from internal callers.
- */
+/** 빌드 타임 번역 쿼리 API. Mock 데이터 기반이며 Supabase 마이그레이션 시 함수 시그니처는 유지한다. */
 
 import type { Post, PostTranslation, LocalizedPost } from '@/types/post';
 import type { Locale } from '@/types/common';
 import { MOCK_TRANSLATIONS } from '@/lib/mock/translations';
 
-// ── Public API ────────────────────────────────────────────────────────────────
-
 /**
  * Returns the translation for a specific post and locale, or `undefined`
  * when no translation has been created yet.
- *
- * PERF: Supabase replacement:
- *   .from("post_translations")
- *   .select("*")
- *   .eq("post_id", postId)
- *   .eq("locale", locale)
- *   .maybeSingle()
- * — hits the unique compound index (post_id, locale) directly.
  */
 export async function getTranslation(
   postId: string,
@@ -41,12 +18,6 @@ export async function getTranslation(
 /**
  * Returns all available translations for a given post, in insertion order.
  * Useful for building hreflang entries on detail pages.
- *
- * PERF: Supabase replacement:
- *   .from("post_translations")
- *   .select("*")
- *   .eq("post_id", postId)
- * — index on post_id in the compound (post_id, locale) index covers this.
  */
 export async function getTranslationsForPost(postId: string): Promise<PostTranslation[]> {
   return MOCK_TRANSLATIONS.filter((t) => t.post_id === postId);
@@ -68,19 +39,14 @@ export async function getLocalizedPost(post: Post, locale: Locale): Promise<Loca
 
   if (translation) {
     return {
-      // Spread all non-text fields unchanged (category, slug, thumbnail, etc.)
       ...post,
-      // Override the three text fields with translated values
       title: translation.title,
       description: translation.description,
       content: translation.content,
-      // Attach the resolved locale so consumers know what was rendered
       locale,
     };
   }
 
-  // Fallback: serve the original Korean content with the requested locale tag.
-  // Consumers can detect a missing translation by comparing locale !== "ko".
   return {
     ...post,
     locale,

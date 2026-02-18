@@ -1,26 +1,5 @@
 ---
-/**
- * ThreeColumnLayout.astro
- *
- * Structural 3-column grid used by list/index pages.
- *
- * Grid definition:
- *   - Mobile: single column (sidebars hidden via their own `hidden lg:block`)
- *   - PC (lg+): [240px sidebar] [1fr main] [280px sidebar]
- *
- * The grid columns are defined only at lg+ via Tailwind's responsive prefix.
- * On mobile the grid collapses to 1 column and the sidebar <aside> elements
- * are hidden by their own `hidden lg:block` class — the main slot fills 100%.
- *
- * Data flow:
- *   sponsoredPosts + recommendedPosts are passed down from the page (SSG query)
- *   through this layout to RightSidebar. All data is resolved at build time.
- *
- * PERF: CSS Grid has no layout thrash. No JS layout listeners.
- *        Sidebar components are static HTML — no hydration boundary.
- * CLS:  Explicit grid column widths prevent layout shift as content loads.
- *       Images inside sidebar cards declare width/height (handled in RightSidebar).
- */
+/** 3-column 그리드 레이아웃. 모바일은 1컬럼, PC(lg+)는 [240px][1fr][280px] 구조. */
 
 import LeftSidebar from "@/components/layout/LeftSidebar.astro";
 import RightSidebar from "@/components/layout/RightSidebar.astro";
@@ -36,33 +15,16 @@ interface Props {
 const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
 ---
 
-{/*
-  Outer container: max-width centers content on wide screens.
-  px-4 on mobile, px-6 on lg+ for comfortable reading margin.
-*/}
 <div class="max-w-screen-xl mx-auto px-4 lg:px-6">
 
-  {/*
-    Grid layout:
-      - grid-cols-1 on mobile  → single column, sidebars self-hide
-      - lg:grid-cols-[240px_1fr_280px] on PC → 3 columns
-    gap-8 provides consistent gutter between columns.
-
-    Note: The sidebar <aside> elements use `hidden lg:block` internally,
-    so they take up no space in the 1-column mobile grid.
-    The named grid areas are implicit (order in DOM = column order).
-  */}
   <div class="grid grid-cols-1 lg:grid-cols-[240px_1fr_280px] gap-0 lg:gap-8 min-h-screen">
 
-    {/* Column 1: Left Sidebar — hides itself on mobile */}
     <LeftSidebar locale={locale} />
 
-    {/* Column 2: Main content — always visible, receives page content via slot */}
     <main class="min-w-0 py-6">
       <slot />
     </main>
 
-    {/* Column 3: Right Sidebar — hides itself on mobile */}
     <RightSidebar
       locale={locale}
       sponsoredPosts={sponsoredPosts}

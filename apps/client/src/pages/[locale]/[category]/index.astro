@@ -1,19 +1,5 @@
 ---
-/**
- * src/pages/[locale]/[category]/index.astro — i18n category index pages
- *
- * Rendering: SSG. One page per (non-default locale) × category combination at build time.
- * Generated routes: /{locale}/{category}/
- *   e.g. /en/delicious/   /ja/cafe/   /zh-CN/travel/  etc.
- *
- * SEO:
- *   - canonical: "/{locale}/{category}/"
- *   - path: "/{category}/" — locale-agnostic for hreflang generation
- *   - BreadcrumbJsonLd: Home > Category (injected into <head>)
- *
- * COST: getLocalizedPost runs per sidebar post — on Supabase each is a single
- *       compound-index lookup (post_id, locale). Acceptable at SSG build time.
- */
+/** 다국어 카테고리 인덱스 (/{locale}/{category}/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
 import PostCardGrid from "@/components/post/PostCardGrid.astro";
@@ -34,7 +20,6 @@ import { getCategoryLabel } from "@/lib/i18n/categories";
 import { t } from "@/lib/i18n/translations";
 
 export async function getStaticPaths() {
-  // Cross product: non-default locales × all category slugs.
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
   const paths: {
     params: { locale: string; category: string };
@@ -60,14 +45,12 @@ interface Props {
 
 const { locale, category } = Astro.props;
 
-// PERF: Parallel fetch — category posts + sidebar data resolved concurrently.
 const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
   getPaginatedPostsByCategory(category, 1),
   getSponsoredPosts(),
   getRecommendedPosts(),
 ]);
 
-// Localize all post data for the target locale.
 const localizedPosts = await Promise.all(posts.map((p) => getLocalizedPost(p, locale)));
 const sponsoredLocalized: LocalizedPost[] = await Promise.all(
   sponsored.map((p) => getLocalizedPost(p, locale))
@@ -79,9 +62,7 @@ const recommendedLocalized: LocalizedPost[] = await Promise.all(
 const categoryLabel = getCategoryLabel(category, locale);
 const homeLabel = t("nav.home", locale);
 
-// canonical is the full locale-prefixed URL for this page.
 const canonical = `/${locale}/${category}/`;
-// path is locale-agnostic — BaseHead > Hreflang uses this to build all variants.
 const path = `/${category}/`;
 
 const breadcrumbItems = [
@@ -102,7 +83,6 @@ const pageDescription = `세은로그 ${categoryLabel} 카테고리 — 커플�
   sponsoredPosts={sponsoredLocalized}
   recommendedPosts={recommendedLocalized}
 >
-  {/* SEO: BreadcrumbJsonLd injected into <head> via named slot */}
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 
   <PostCardGrid posts={localizedPosts} locale={locale} />

@@ -1,16 +1,5 @@
 ---
-/**
- * PCHeader.astro
- *
- * Desktop-only header rendered inside a `hidden lg:block` wrapper by Header.astro.
- * Never rendered standalone — always toggled via CSS, not JS.
- *
- * Layout (flex, horizontal):
- *   [Logo]  [맛집 | 카페 | 여행]  [Language]  [Search]
- *
- * PERF: No client-side JS. Language selector and search are links/anchors.
- * SEO:  <header> + <nav> with semantic roles. Logo links to home.
- */
+/** PC 전용 헤더. 로고, 카테고리 네비게이션, 언어 선택, 검색을 포함한다. */
 
 import { getCategoryTree } from "@/lib/i18n/categories";
 import { getLocalePath } from "@/lib/i18n/locales";
@@ -31,7 +20,6 @@ const homeHref = getLocalePath("/", locale);
 <header class="w-full bg-white border-b border-gray-100">
   <div class="max-w-screen-xl mx-auto px-6 h-16 flex items-center gap-8">
 
-    {/* Logo */}
     <a
       href={homeHref}
       class="flex-shrink-0 text-xl font-bold text-rose-500 tracking-tight hover:text-rose-600 transition-colors duration-150"
@@ -40,7 +28,6 @@ const homeHref = getLocalePath("/", locale);
       세은로그
     </a>
 
-    {/* Category navigation — text links separated by dividers */}
     <nav aria-label="Main navigation" class="flex items-center gap-1">
       {
         categories.map((category, index) => (
@@ -51,7 +38,6 @@ const homeHref = getLocalePath("/", locale);
             >
               {category.label}
             </a>
-            {/* Vertical divider between items, not after the last one */}
             {index < categories.length - 1 && (
               <span class="text-gray-300 select-none" aria-hidden="true">|</span>
             )}
@@ -60,20 +46,13 @@ const homeHref = getLocalePath("/", locale);
       }
     </nav>
 
-    {/* Push right: language selector + search icon */}
     <div class="ml-auto flex items-center gap-4">
 
-      {/*
-        Language selector: displayed as a <details>/<summary> dropdown.
-        Pure CSS/HTML — no JS needed, keyboard accessible.
-        PERF: No hydration cost. Closes automatically on blur via CSS.
-      */}
       <details class="relative group">
         <summary
           class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-rose-500 transition-colors duration-150 cursor-pointer list-none select-none"
           aria-label={t("nav.language", locale)}
         >
-          {/* Globe icon (SVG inline — no extra HTTP request) */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="w-4 h-4"
@@ -105,7 +84,6 @@ const homeHref = getLocalePath("/", locale);
           </svg>
         </summary>
 
-        {/* Dropdown menu */}
         <div class="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
           {
             LOCALES.map((loc) => (
@@ -126,7 +104,6 @@ const homeHref = getLocalePath("/", locale);
         </div>
       </details>
 
-      {/* Search — placeholder link; will point to /search page */}
       <a
         href={getLocalePath("/search/", locale)}
         class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-rose-500 transition-colors duration-150 rounded-md hover:bg-rose-50"

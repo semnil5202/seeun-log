@@ -1,22 +1,5 @@
 ---
-/**
- * MobileHeader.astro
- *
- * Mobile-only header rendered inside a `block lg:hidden` wrapper by Header.astro.
- *
- * Layout (row):
- *   [Logo]  [← snap scroll nav: 맛집 한식 양식 ... 카페 핫플 ... 여행 ...]  [🌐][🔍]
- *
- * Navigation rules (from ui-specs.md):
- *   - scroll-snap-type: x mandatory  →  each nav item snaps
- *   - mask-image fade on the right    →  scroll-hint UX without JS
- *   - NO hamburger, NO drawer
- *
- * PERF: Pure CSS scroll snapping — zero JavaScript.
- *       mask-image is paint-only, no layout cost.
- * SEO:  All category + subcategory links are in the DOM (crawlable).
- *       The <nav> element signals navigation landmark to screen readers.
- */
+/** 모바일 전용 헤더. 카테고리 snap-scroll 네비게이션을 포함한다. */
 
 import { getCategoryTree } from "@/lib/i18n/categories";
 import { getLocalePath } from "@/lib/i18n/locales";
@@ -37,7 +20,6 @@ const homeHref = getLocalePath("/", locale);
 <header class="w-full bg-white border-b border-gray-100">
   <div class="flex items-center h-14 px-4 gap-3">
 
-    {/* Logo — smaller on mobile */}
     <a
       href={homeHref}
       class="flex-shrink-0 text-base font-bold text-rose-500 tracking-tight hover:text-rose-600 transition-colors duration-150"
@@ -46,19 +28,6 @@ const homeHref = getLocalePath("/", locale);
       세은로그
     </a>
 
-    {/*
-      Horizontal snap-scroll navigation.
-      Contains category headings AND all subcategory items as a flat scrollable row.
-
-      CSS notes:
-        - overflow-x: auto + scrollbar hidden via [-ms-overflow-style:none] and [scrollbar-width:none]
-        - scroll-snap-type: x mandatory — each item snaps on touch/flick
-        - mask-image fade-right — visual hint that more content is scrollable
-        - flex-nowrap ensures items stay on one line
-
-      PERF: mask-image and overflow properties are GPU-accelerated (compositor layer).
-            No JS scroll listener needed.
-    */}
     <nav
       aria-label="Category navigation"
       class="flex-1 min-w-0 overflow-x-auto flex items-center gap-1 scroll-smooth"
@@ -70,15 +39,9 @@ const homeHref = getLocalePath("/", locale);
         -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
       "
     >
-      {/*
-        Flat row: category label (bold), then its subcategory links.
-        All items share the same row — no hierarchy shown visually,
-        but semantic grouping via data-category helps future JS if needed.
-      */}
       {
         categories.map((category) => (
           <>
-            {/* Category separator chip */}
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
               class="flex-shrink-0 scroll-snap-align-start px-3 py-1.5 rounded-full text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors duration-150 whitespace-nowrap"
@@ -88,7 +51,6 @@ const homeHref = getLocalePath("/", locale);
               {category.label}
             </a>
 
-            {/* Subcategory pills */}
             {category.subCategories.map((sub) => (
               <a
                 href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
@@ -104,14 +66,11 @@ const homeHref = getLocalePath("/", locale);
         ))
       }
 
-      {/* Trailing spacer so last items aren't clipped by the mask fade */}
       <span class="flex-shrink-0 w-12 aria-hidden" aria-hidden="true" />
     </nav>
 
-    {/* Right actions: Language + Search */}
     <div class="flex-shrink-0 flex items-center gap-2">
 
-      {/* Language — links to locale root; no dropdown on mobile to keep it simple */}
       <a
         href={getLocalePath("/", locale)}
         class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-rose-500 transition-colors duration-150 rounded-md"
@@ -134,7 +93,6 @@ const homeHref = getLocalePath("/", locale);
         </svg>
       </a>
 
-      {/* Search */}
       <a
         href={getLocalePath("/search/", locale)}
         class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-rose-500 transition-colors duration-150 rounded-md"

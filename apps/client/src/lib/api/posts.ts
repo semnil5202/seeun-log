@@ -1,22 +1,8 @@
-/**
- * Post query API — build-time data access layer for the Astro SSG client.
- *
- * All functions are async so the call-site code is identical whether we are
- * reading from the in-memory mock (now) or from Supabase (later).
- *
- * MIGRATION PATH: Replace the MOCK_POSTS import and the in-memory filter/sort
- * logic with a Supabase client call. Function signatures must NOT change.
- *
- * PERF: Results are sorted by created_at descending (newest first) at the
- * bottom of every query to mirror the `ORDER BY created_at DESC` index that
- * is recommended in docs/database.md.
- */
+/** 빌드 타임 포스트 쿼리 API. Mock 데이터 기반이며 Supabase 마이그레이션 시 함수 시그니처는 유지한다. */
 
 import type { Post } from '@/types/post';
 import type { CategorySlug } from '@/types/category';
 import { MOCK_POSTS } from '@/lib/mock/posts';
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Stable newest-first sort. Operates on a shallow copy to avoid mutation. */
 function sortByDateDesc(posts: Post[]): Post[] {
@@ -25,35 +11,18 @@ function sortByDateDesc(posts: Post[]): Post[] {
   );
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
-
-/**
- * Returns all posts sorted newest-first.
- *
- * COST: Full table scan on mock data. Supabase replacement should use:
- *   .select("*").order("created_at", { ascending: false })
- */
+/** Returns all posts sorted newest-first. */
 export async function getAllPosts(): Promise<Post[]> {
   return sortByDateDesc(MOCK_POSTS);
 }
 
-/**
- * Returns all posts in a top-level category, sorted newest-first.
- *
- * PERF: Supabase replacement benefits from the `category` index recommended
- * in docs/database.md.
- */
+/** Returns all posts in a top-level category, sorted newest-first. */
 export async function getPostsByCategory(category: CategorySlug): Promise<Post[]> {
   const filtered = MOCK_POSTS.filter((p) => p.category === category);
   return sortByDateDesc(filtered);
 }
 
-/**
- * Returns posts in a specific sub-category, sorted newest-first.
- *
- * PERF: Supabase replacement benefits from the compound `(category, sub_category)`
- * index recommended in docs/database.md.
- */
+/** Returns posts in a specific sub-category, sorted newest-first. */
 export async function getPostsBySubCategory(
   category: CategorySlug,
   subCategory: string,
@@ -67,29 +36,18 @@ export async function getPostsBySubCategory(
 /**
  * Looks up a single post by its URL slug.
  * Returns `undefined` when no match is found (caller decides how to 404).
- *
- * PERF: Supabase replacement should use `.eq("slug", slug).single()` which
- * hits the unique slug index directly.
  */
 export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   return MOCK_POSTS.find((p) => p.slug === slug);
 }
 
-/**
- * Returns sponsored posts sorted newest-first (Right Sidebar / In-Feed Ad).
- *
- * PERF: Supabase replacement benefits from the `is_sponsored` index.
- */
+/** Returns sponsored posts sorted newest-first (Right Sidebar / In-Feed Ad). */
 export async function getSponsoredPosts(): Promise<Post[]> {
   const filtered = MOCK_POSTS.filter((p) => p.is_sponsored);
   return sortByDateDesc(filtered);
 }
 
-/**
- * Returns Editor's Pick posts sorted newest-first (Right Sidebar).
- *
- * PERF: Supabase replacement benefits from the `is_recommended` index.
- */
+/** Returns Editor's Pick posts sorted newest-first (Right Sidebar). */
 export async function getRecommendedPosts(): Promise<Post[]> {
   const filtered = MOCK_POSTS.filter((p) => p.is_recommended);
   return sortByDateDesc(filtered);
@@ -105,9 +63,6 @@ export async function getPostCount(): Promise<number> {
  *
  * @param page    1-based page number.
  * @param perPage Posts per page. Defaults to 9 (matches 3-column grid).
- *
- * PERF: Supabase replacement should use `.range(from, to)` with
- * `{ count: "exact" }` to get total count in a single request.
  */
 export async function getPaginatedPosts(
   page: number,

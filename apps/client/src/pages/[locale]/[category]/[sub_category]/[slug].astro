@@ -1,21 +1,5 @@
 ---
-/**
- * src/pages/[locale]/[category]/[sub_category]/[slug].astro — i18n post detail pages
- *
- * Rendering: SSG. One page per (non-default locale) × post combination at build time.
- * Generated routes: /{locale}/{category}/{sub_category}/{slug}/
- *   e.g. /en/delicious/korean/gangnam-pasta/
- *
- * SEO:
- *   - canonical: "/{locale}/{category}/{sub_category}/{slug}/"
- *   - path: "/{category}/{sub_category}/{slug}/" for hreflang generation
- *   - BreadcrumbJsonLd: Home > Category > SubCategory > Post Title (in head)
- *   - BlogPostingJsonLd + ReviewSchema (in head via PostLayout)
- *
- * COST: getLocalizedPost per post = one translation lookup (post_id, locale) compound index.
- *       Total paths = (LOCALES.length - 1) × posts.count. For 7 locales × 12 posts = 84 pages.
- *       All resolved at build time — zero runtime compute.
- */
+/** 다국어 포스트 상세 페이지 (/{locale}/{category}/{sub_category}/{slug}/) */
 
 import PostLayout from "@/layouts/PostLayout.astro";
 import { LOCALES, DEFAULT_LOCALE } from "@/types/common";
@@ -30,8 +14,6 @@ export async function getStaticPaths() {
   const posts = await getAllPosts();
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 
-  // Cross product: all non-default locales × all posts.
-  // COST: (LOCALES.length - 1) × posts.length path entries. All resolved at build time.
   const paths: {
     params: { locale: string; category: string; sub_category: string; slug: string };
     props: { locale: Locale; slug: string; category: CategorySlug; sub_category: string };
@@ -68,25 +50,19 @@ interface Props {
 
 const { locale, slug, category, sub_category } = Astro.props;
 
-// Fetch the source post — unique slug index lookup.
-// PERF: On Supabase this is a single .eq("slug", slug).single() — O(1).
 const post = await getPostBySlug(slug);
 
 if (!post) {
   return Astro.redirect(`/${locale}/${category}/`, 302);
 }
 
-// Localize post content for the requested locale.
-// Falls back to Korean source if no translation exists for this locale.
 const localizedPost = await getLocalizedPost(post, locale);
 
 const homeLabel = t("nav.home", locale);
 const categoryLabel = getCategoryLabel(category, locale);
 const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
 
-// canonical is the full locale-prefixed URL.
 const canonical = `/${locale}/${category}/${sub_category}/${slug}/`;
-// path is locale-agnostic for hreflang — same content across all locales.
 const path = `/${category}/${sub_category}/${slug}/`;
 
 const breadcrumbs = [

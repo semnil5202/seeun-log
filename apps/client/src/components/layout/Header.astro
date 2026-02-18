@@ -1,23 +1,5 @@
 ---
-/**
- * Header.astro
- *
- * Responsive header shell. Combines PCHeader and MobileHeader using CSS-only
- * responsive toggling — NO JavaScript, NO separate DOM trees loaded conditionally.
- *
- * Responsive strategy (from ui-specs.md):
- *   - PC  (lg+): PCHeader visible   via `hidden lg:block`
- *   - Mobile(<lg): MobileHeader visible via `block lg:hidden`
- *
- * Both headers are rendered into the HTML at build time so crawlers see both.
- * CSS controls which is visible at each breakpoint.
- *
- * PERF: `position: sticky; top: 0` keeps header in compositor layer.
- *        z-index: 40 prevents content overlap during scroll.
- *        will-change: transform not used — sticky is already GPU-promoted.
- * SEO:  <header> element is a top-level landmark. Each sub-header has its
- *       own <nav> with unique aria-label for screen reader disambiguation.
- */
+/** 반응형 헤더. PC는 PCHeader, Mobile은 MobileHeader를 CSS 토글로 전환한다. */
 
 import PCHeader from "@/components/layout/PCHeader.astro";
 import MobileHeader from "@/components/layout/MobileHeader.astro";
@@ -30,18 +12,11 @@ interface Props {
 const { locale } = Astro.props;
 ---
 
-{/*
-  Outer sticky wrapper: handles stickiness, z-index, and background.
-  The individual PCHeader/MobileHeader components handle their own
-  internal layout but are NOT sticky themselves — that lives here.
-*/}
 <div class="sticky top-0 z-40 bg-white shadow-sm">
-  {/* PC header: hidden on mobile, visible on lg+ */}
   <div class="hidden lg:block">
     <PCHeader locale={locale} />
   </div>
 
-  {/* Mobile header: visible on mobile, hidden on lg+ */}
   <div class="block lg:hidden">
     <MobileHeader locale={locale} />
   </div>

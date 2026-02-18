@@ -1,23 +1,5 @@
 ---
-/**
- * src/pages/[category]/index.astro — Korean category index pages (/{category}/)
- *
- * Rendering: SSG. One page generated per CATEGORY_SLUG at build time.
- * Locale: ko (DEFAULT_LOCALE) — no URL prefix.
- *
- * Generated routes:
- *   /delicious/
- *   /cafe/
- *   /travel/
- *
- * SEO:
- *   - canonical: "/{category}/"
- *   - path: "/{category}/" for hreflang (same path, different locale prefixes)
- *   - BreadcrumbJsonLd: Home > Category
- *
- * COST: getPaginatedPostsByCategory hits the `category` index in Supabase.
- *       sidebar queries are parallel to minimize build time.
- */
+/** 한국어 카테고리 인덱스 (/{category}/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
 import PostCardGrid from "@/components/post/PostCardGrid.astro";
@@ -48,14 +30,12 @@ interface Props {
 const { category } = Astro.props;
 const locale = DEFAULT_LOCALE;
 
-// PERF: Parallel fetch — category posts + sidebar data in one Promise.all.
 const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
   getPaginatedPostsByCategory(category, 1),
   getSponsoredPosts(),
   getRecommendedPosts(),
 ]);
 
-// Cast Post[] → LocalizedPost[] for sidebar props (Korean = source language).
 const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, locale }));
 const recommendedLocalized: LocalizedPost[] = recommended.map((p) => ({ ...p, locale }));
 
@@ -81,7 +61,6 @@ const pageDescription = `세은로그 ${categoryLabel} 카테고리 — 커플�
   sponsoredPosts={sponsoredLocalized}
   recommendedPosts={recommendedLocalized}
 >
-  {/* SEO: BreadcrumbJsonLd injected into <head> via named slot */}
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 
   <PostCardGrid posts={posts} locale={locale} />

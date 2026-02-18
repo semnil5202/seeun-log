@@ -1,25 +1,5 @@
 ---
-/**
- * ListLayout.astro
- *
- * Page layout for all list/index pages (category index, subcategory index, home).
- * Composes:
- *   Layout.astro          → HTML shell, <head>, Header, Footer
- *     ThreeColumnLayout   → 3-column grid (LeftSidebar + main + RightSidebar)
- *       <slot />          → page-specific card feed + pagination
- *
- * Rendering strategy: SSG (Static Site Generation)
- *   Astro builds all list pages at build time from Supabase data.
- *   No server-side rendering at request time → zero compute cost per visit.
- *   All post data (sponsored, recommended, feed) is fetched once per build.
- *
- * Props mirror Layout.astro's SEO props plus the data needed for sidebars.
- *
- * COST: sponsoredPosts and recommendedPosts are passed in from the calling page
- *       which already fetched them. No duplicate DB queries within this component.
- * SEO:  canonical + title + description forwarded to BaseHead via Layout.
- *       ThreeColumnLayout renders semantic <main> + <aside> landmarks.
- */
+/** 리스트 페이지 레이아웃. Layout + ThreeColumnLayout을 조합하여 3-column 그리드를 구성한다. */
 
 import Layout from "@/layouts/Layout.astro";
 import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout.astro";
@@ -28,21 +8,13 @@ import { DEFAULT_LOCALE } from "@/types/common";
 import type { LocalizedPost } from "@/types/post";
 
 interface Props {
-  /** Page <title> and og:title */
   title: string;
-  /** Page meta description and og:description */
   description: string;
-  /** Absolute canonical URL path (e.g. "/delicious/korean/") */
   canonical: string;
-  /** Locale for i18n rendering */
   locale?: Locale;
-  /** Path used for hreflang generation (same as canonical path) */
   path: string;
-  /** Optional OG image override */
   ogImage?: string;
-  /** Posts marked is_sponsored — rendered in RightSidebar on PC */
   sponsoredPosts?: LocalizedPost[];
-  /** Posts marked is_recommended — rendered in RightSidebar on PC */
   recommendedPosts?: LocalizedPost[];
 }
 
@@ -67,29 +39,12 @@ const {
   path={path}
   type="website"
 >
-  {/* Forward JSON-LD scripts from the page into the <head> slot of Layout */}
   <slot name="head" slot="head" />
-  {/*
-    ThreeColumnLayout handles the grid structure.
-    The named slot content (card feed + pagination) goes into ThreeColumnLayout's
-    default slot, which is rendered inside <main>.
-  */}
   <ThreeColumnLayout
     locale={locale}
     sponsoredPosts={sponsoredPosts}
     recommendedPosts={recommendedPosts}
   >
-    {/*
-      Named slot forwarding: the page's slot content flows through ListLayout's
-      default slot into ThreeColumnLayout's default slot → into <main>.
-
-      Callers use ListLayout like this:
-        <ListLayout ...props>
-          <PostCard ... />
-          <PostCard ... />
-          <Pagination ... />
-        </ListLayout>
-    */}
     <slot />
   </ThreeColumnLayout>
 </Layout>

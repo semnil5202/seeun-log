@@ -1,21 +1,5 @@
 ---
-/**
- * Pagination.astro
- *
- * Classic page-based pagination: « Prev  1  2  3  Next »
- *
- * IMPORTANT: NO infinite scroll — per ui-specs.md this is strictly forbidden.
- *
- * SEO: Uses <nav aria-label="pagination"> for landmark accessibility and
- *      crawler discoverability. Page links are standard <a> tags so spiders
- *      can follow paginated content without JavaScript.
- *
- * URL strategy: Simple query-param style `{baseUrl}?page={n}`.
- *   - baseUrl should already include the locale prefix if needed.
- *   - Page 1 links to baseUrl (no query param) to keep the canonical clean.
- *
- * PERF: Pure static HTML — zero JS, zero hydration cost.
- */
+/** 페이지 기반 페이지네이션 (무한스크롤 금지). 최대 5페이지 윈도우를 표시한다. */
 import type { Locale } from "@/types/common";
 import { t } from "@/lib/i18n/translations";
 
@@ -39,9 +23,6 @@ const isLastPage = currentPage >= totalPages;
  * Build the href for a given page number.
  * Page 1 → baseUrl (canonical, no ?page param)
  * Page n → baseUrl?page=n
- *
- * PERF: Avoid generating the full page range array when totalPages is large —
- * use a windowed approach: show at most 5 page numbers centred on currentPage.
  */
 function pageHref(page: number): string {
   if (page <= 1) return baseUrl;
@@ -51,7 +32,6 @@ function pageHref(page: number): string {
 /**
  * Build a windowed page range of up to 5 pages centred around currentPage,
  * clamped within [1, totalPages].
- *
  * Examples:
  *   totalPages=10, currentPage=1  → [1, 2, 3, 4, 5]
  *   totalPages=10, currentPage=5  → [3, 4, 5, 6, 7]
@@ -72,14 +52,12 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
 ---
 
 <nav aria-label="pagination" class="flex items-center justify-center gap-1 py-8">
-  {/* Previous button */}
   {isFirstPage ? (
     <span
       class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
       aria-disabled="true"
       aria-label={prevLabel}
     >
-      {/* Left chevron icon */}
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1" aria-hidden="true">
         <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
       </svg>
@@ -99,7 +77,6 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
     </a>
   )}
 
-  {/* Page number links */}
   {pageNumbers.map((page) => {
     const isCurrent = page === currentPage;
     return isCurrent ? (
@@ -121,7 +98,6 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
     );
   })}
 
-  {/* Next button */}
   {isLastPage ? (
     <span
       class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"

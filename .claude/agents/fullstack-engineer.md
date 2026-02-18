@@ -97,10 +97,8 @@ For every implementation task:
 
 ## Output Standards
 
-- Write clean, well-commented code explaining _why_, not just _what_.
-- Flag any security concerns with `// SECURITY:` comments.
-- Flag any performance considerations with `// PERF:` comments.
-- Flag any cost implications with `// COST:` comments.
+- CLAUDE.md의 Comment Policy를 엄격히 따른다. `// PERF:`, `// SEO:`, `// COST:` 등의 태그 주석을 코드에 남기지 않는다.
+- 성능/보안/비용 관련 판단은 코드가 아닌 docs/ 문서나 PR 설명에 기술한다.
 - When suggesting database changes, always include index recommendations.
 - When creating pages/routes, always specify SSR/SSG/CSR strategy with rationale.
 

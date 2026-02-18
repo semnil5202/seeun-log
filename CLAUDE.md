@@ -19,6 +19,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev                           # 전체 dev 서버 기동
 pnpm build                         # 전체 빌드 (topological)
 pnpm lint                          # 전체 린트
+pnpm format                        # Prettier 포맷팅
+pnpm format:check                  # 포맷 검사
 pnpm --filter @seeun-log/admin dev # admin만 실행
 pnpm --filter @seeun-log/client dev # client만 실행
 ```
@@ -94,6 +96,30 @@ docs/
 ```
 
 Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변경이 docs와 불일치하면 quality-reviewer가 REJECT.
+
+## Comment Policy
+
+코드 주석은 최소한으로 유지한다. 자명한 코드에 주석을 달지 않는다.
+
+### 허용 기준
+
+- **페이지/컨테이너 (pages/, layouts/)**: 파일 상단 JSDoc 1줄 — 기능 + URL 패턴만 기술.
+  ```
+  /** 한국어 카테고리 인덱스 (/{category}/) */
+  ```
+- **공통 컴포넌트 (components/)**: 파일 상단 JSDoc 1-2줄 — 컴포넌트가 하는 일만 기술.
+  ```
+  /** 반응형 헤더. PC는 PCHeader, Mobile은 MobileHeader를 CSS 토글로 전환한다. */
+  ```
+- **라이브러리 함수 (lib/)**: 공개 함수에 JSDoc — 기능 설명 + `@param` 만.
+- **인라인 주석**: 복잡한 비즈니스 로직이나 비자명한 알고리즘에만 허용.
+
+### 금지 사항
+
+- `// PERF:`, `// SEO:`, `// COST:`, `// CLS:`, `// MIGRATION PATH:` 태그 주석 금지 — docs/에 기술.
+- `{/* 컴포넌트 이름 */}`, `{/* Thumbnail */}`, `{/* Logo */}` 등 자명한 HTML 섹션 주석 금지.
+- CSS 동작 설명 주석 금지 (Tailwind 클래스가 자체 문서 역할).
+- Props interface 필드별 JSDoc 금지 — 타입 이름이 충분히 설명적이어야 함.
 
 ## Sub-Agent System
 

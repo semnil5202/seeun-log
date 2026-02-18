@@ -1,22 +1,5 @@
 ---
-/**
- * src/pages/[category]/[sub_category]/index.astro — Korean subcategory index pages
- *
- * Rendering: SSG. One page per category+subcategory combination at build time.
- * Locale: ko (DEFAULT_LOCALE) — no URL prefix.
- *
- * Generated routes (/{category}/{sub_category}/):
- *   /delicious/korean/    /delicious/western/  /delicious/japanese/  /delicious/pub/
- *   /cafe/hotplace/       /cafe/study/
- *   /travel/domestic/     /travel/overseas/    /travel/accommodation/
- *
- * SEO:
- *   - canonical: "/{category}/{sub_category}/"
- *   - BreadcrumbJsonLd: Home > Category > SubCategory
- *
- * PERF: getPaginatedPostsBySubCategory benefits from the compound
- *       (category, sub_category) index recommended in docs/database.md.
- */
+/** 한국어 서브카테고리 인덱스 (/{category}/{sub_category}/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
 import PostCardGrid from "@/components/post/PostCardGrid.astro";
@@ -34,8 +17,6 @@ import {
 import { getCategoryLabel, getSubCategoryLabel } from "@/lib/i18n/categories";
 
 export async function getStaticPaths() {
-  // Build the full cartesian product of category × subcategory pairs.
-  // Using SUB_CATEGORY_MAP ensures only valid combinations are generated.
   const paths: { params: { category: string; sub_category: string }; props: { category: CategorySlug; sub_category: string } }[] = [];
 
   for (const category of CATEGORY_SLUGS) {
@@ -58,7 +39,6 @@ interface Props {
 const { category, sub_category } = Astro.props;
 const locale = DEFAULT_LOCALE;
 
-// PERF: Parallel fetch — subcategory posts + sidebar data resolved together.
 const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
   getPaginatedPostsBySubCategory(category, sub_category, 1),
   getSponsoredPosts(),
@@ -92,7 +72,6 @@ const pageDescription = `세은로그 ${categoryLabel} > ${subCategoryLabel} —
   sponsoredPosts={sponsoredLocalized}
   recommendedPosts={recommendedLocalized}
 >
-  {/* SEO: BreadcrumbJsonLd injected into <head> via named slot */}
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 
   <PostCardGrid posts={posts} locale={locale} />
