@@ -1,11 +1,11 @@
-import { LOCALES, DEFAULT_LOCALE, type Locale } from "@/types/common";
+import { LOCALES, DEFAULT_LOCALE, type Locale } from '@/types/common';
 
 export function isLocale(value: string): value is Locale {
   return (LOCALES as readonly string[]).includes(value);
 }
 
 export function getLocalePath(path: string, locale: Locale): string {
-  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   if (locale === DEFAULT_LOCALE) return cleanPath;
   return `/${locale}${cleanPath}`;
 }

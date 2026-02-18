@@ -3,6 +3,7 @@
 ## Project: 세은로그 (seeun-log)
 
 Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
+
 - `apps/admin` — Next.js 15, App Router, CSR, port 3001
 - `apps/client` — Astro 5 SSG, Tailwind CSS, React islands only for interactivity
 
@@ -44,6 +45,7 @@ Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 /{category}/{sub_category}/{slug}/   # Korean (no prefix)
 /{locale}/{category}/{sub_category}/{slug}/  # Other locales
 ```
+
 Always trailing slash.
 
 ## SEO Rules
@@ -81,6 +83,7 @@ Always trailing slash.
 ## Layout Shell (apps/client) — BUILT
 
 Key files and their relationships:
+
 - `src/layouts/ListLayout.astro` — list page entry: Layout > ThreeColumnLayout > slot
 - `src/layouts/Layout.astro` — HTML shell: BaseHead + Header + slot + Footer. Has `<slot name="head" />` inside `<head>` for JSON-LD injection.
 - `src/layouts/PostLayout.astro` — post detail layout: Layout (single-column, no sidebars). Props: post, locale, breadcrumbs, canonical, path.
@@ -96,6 +99,7 @@ Key files and their relationships:
 ## Pages & Routing (apps/client) — BUILT
 
 All 7 page files + PostLayout built. 137 pages generated at build time.
+
 - `src/pages/index.astro` — Korean home (/)
 - `src/pages/[locale]/index.astro` — i18n home (/{locale}/)
 - `src/pages/[category]/index.astro` — Korean category (/{category}/)
@@ -105,6 +109,7 @@ All 7 page files + PostLayout built. 137 pages generated at build time.
 - `src/pages/[locale]/[category]/[sub_category]/[slug].astro` — i18n post detail
 
 Key page patterns:
+
 - `canonical` = full locale-aware path (e.g. `/en/delicious/`)
 - `path` = locale-agnostic path (e.g. `/delicious/`) — used by BaseHead > Hreflang for all locale variants
 - Korean cast Post→LocalizedPost: `{ ...post, locale: "ko" }` (no translation fetch needed)
@@ -113,6 +118,7 @@ Key page patterns:
 - PostLayout uses `<Fragment slot="head">` to inject both BreadcrumbJsonLd + BlogPostingJsonLd
 
 Key layout patterns:
+
 - PC language dropdown: `<details>`/`<summary>` — zero JS, keyboard accessible
 - LeftSidebar: `sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto` for independent scrolling
 - Both PCHeader + MobileHeader always in DOM; CSS-only toggles — crawlers see both

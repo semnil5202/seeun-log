@@ -1,7 +1,7 @@
-import type { CategorySlug, AllSubCategorySlug } from "./category";
-import type { Locale } from "./common";
+import type { CategorySlug, AllSubCategorySlug } from './category';
+import type { Locale } from './common';
 
-export interface Post {
+export type Post = {
   id: string;
   slug: string;
   title: string;
@@ -18,9 +18,9 @@ export interface Post {
   price_level: string;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface PostTranslation {
+export type PostTranslation = {
   id: string;
   post_id: string;
   locale: Locale;
@@ -29,11 +29,11 @@ export interface PostTranslation {
   content: string;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface LocalizedPost extends Omit<Post, "title" | "description" | "content"> {
+export type LocalizedPost = {
   title: string;
   description: string;
   content: string;
   locale: Locale;
-}
+} & Omit<Post, 'title' | 'description' | 'content'>;

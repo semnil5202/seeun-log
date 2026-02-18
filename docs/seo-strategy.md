@@ -17,9 +17,11 @@
 ## Schema.org (JSON-LD)
 
 ### 전체 페이지
+
 - `BreadcrumbList`
 
 ### 상세 페이지
+
 - `BlogPosting` + `Review` (nested)
   - `itemReviewed`: Restaurant / Place
   - `reviewRating`: 1-5 stars
@@ -47,18 +49,19 @@
 
 OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 
-| 언어 | locale | routing prefix |
-|------|--------|----------------|
-| 한국어 (기본) | `ko` | `/` (prefix 없음) |
-| 중국어 간체 | `zh-CN` | `/zh-CN/` |
-| 일본어 | `ja` | `/ja/` |
-| 대만어 (중국어 번체) | `zh-TW` | `/zh-TW/` |
-| 영어 | `en` | `/en/` |
-| 인도네시아어 | `id` | `/id/` |
-| 베트남어 | `vi` | `/vi/` |
-| 태국어 | `th` | `/th/` |
+| 언어                 | locale  | routing prefix    |
+| -------------------- | ------- | ----------------- |
+| 한국어 (기본)        | `ko`    | `/` (prefix 없음) |
+| 중국어 간체          | `zh-CN` | `/zh-CN/`         |
+| 일본어               | `ja`    | `/ja/`            |
+| 대만어 (중국어 번체) | `zh-TW` | `/zh-TW/`         |
+| 영어                 | `en`    | `/en/`            |
+| 인도네시아어         | `id`    | `/id/`            |
+| 베트남어             | `vi`    | `/vi/`            |
+| 태국어               | `th`    | `/th/`            |
 
 ### 다국어 URL 예시
+
 ```
 /delicious/korean/{slug}           # 한국어 (기본)
 /en/delicious/korean/{slug}        # 영어
@@ -71,6 +74,7 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 ```
 
 ### SEO 다국어 대응
+
 - `<link rel="alternate" hreflang="{locale}">` 태그 필수
 - `<link rel="alternate" hreflang="x-default">` → 한국어 페이지
 - Canonical은 각 언어 페이지 자기 자신을 가리킴

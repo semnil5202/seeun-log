@@ -4,16 +4,16 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Admin | Next.js 15 (App Router, React 19) |
-| Client | Astro 5 (SSG) |
-| Styling | Tailwind CSS |
-| DB | Supabase (PostgreSQL) |
-| AI | OpenAI GPT-4o (다국어 번역) |
-| CI/CD | GitHub Actions |
-| Hosting | AWS S3 + CloudFront |
-| Monorepo | pnpm + TurboRepo |
+| Layer    | Technology                        |
+| -------- | --------------------------------- |
+| Admin    | Next.js 15 (App Router, React 19) |
+| Client   | Astro 5 (SSG)                     |
+| Styling  | Tailwind CSS                      |
+| DB       | Supabase (PostgreSQL)             |
+| AI       | OpenAI GPT-4o (다국어 번역)       |
+| CI/CD    | GitHub Actions                    |
+| Hosting  | AWS S3 + CloudFront               |
+| Monorepo | pnpm + TurboRepo                  |
 
 ## Project Structure
 
@@ -52,11 +52,11 @@ pnpm --filter @seeun-log/client dev   # localhost:4321
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | 전체 dev 서버 기동 (Turbo) |
-| `pnpm build` | 전체 프로덕션 빌드 |
-| `pnpm lint` | 전체 ESLint 검사 |
+| Command      | Description                |
+| ------------ | -------------------------- |
+| `pnpm dev`   | 전체 dev 서버 기동 (Turbo) |
+| `pnpm build` | 전체 프로덕션 빌드         |
+| `pnpm lint`  | 전체 ESLint 검사           |
 
 ## Architecture
 

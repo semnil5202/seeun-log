@@ -4,11 +4,22 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./base": "./base.js"
+    "./base": "./base.js",
+    "./react": "./react.js",
+    "./nextjs": "./nextjs.js"
+  },
+  "dependencies": {
+    "typescript-eslint": "^8",
+    "eslint-plugin-import-x": "^4",
+    "eslint-import-resolver-typescript": "^4",
+    "eslint-plugin-react": "^7",
+    "eslint-plugin-react-hooks": "^5",
+    "@next/eslint-plugin-next": "^15",
+    "@tanstack/eslint-plugin-query": "^5",
+    "eslint-config-prettier": "^10",
+    "globals": "^16"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8",
-    "@typescript-eslint/parser": "^8",
     "eslint": "^9"
   }
 }

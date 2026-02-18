@@ -1,20 +1,20 @@
-import type { Locale } from "./common";
+import type { Locale } from './common';
 
-export interface SeoMeta {
+export type SeoMeta = {
   title: string;
   description: string;
   canonical: string;
   ogImage?: string;
   locale: Locale;
-  type?: "website" | "article";
-}
+  type?: 'website' | 'article';
+};
 
-export interface BreadcrumbItem {
+export type BreadcrumbItem = {
   name: string;
   url: string;
-}
+};
 
-export interface BlogPostingSchema {
+export type BlogPostingSchema = {
   title: string;
   description: string;
   datePublished: string;
@@ -22,14 +22,14 @@ export interface BlogPostingSchema {
   image: string;
   url: string;
   authorName: string;
-}
+};
 
-export interface ReviewSchema {
+export type ReviewSchema = {
   itemReviewed: {
-    type: "Restaurant" | "Place";
+    type: 'Restaurant' | 'Place';
     name: string;
     address: string;
   };
   reviewRating: number;
   authorName: string;
-}
+};

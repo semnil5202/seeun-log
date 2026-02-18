@@ -38,17 +38,21 @@ pnpm --filter @seeun-log/client dev # client만 실행
 ## Business Rules
 
 ### Categories
+
 - **맛집** (delicious): 한식, 양식, 일식, 주점
 - **카페** (cafe): 핫플, 카공
 - **여행** (travel): 국내, 해외, 숙소
 
 ### URL Structure
+
 ```
 /{category}/{sub_category}/{slug}
 ```
+
 예: `/delicious/korean/gangnam-pasta`
 
 ### 콘텐츠 타입
+
 - 일반 포스트, 협찬 포스트 (`is_sponsored`), Editor's Pick (`is_recommended`)
 - 한국어 기본, GPT-4o 자동 번역: en, ja, zh-CN, zh-TW, id, vi, th
 

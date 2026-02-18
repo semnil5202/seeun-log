@@ -12,16 +12,16 @@
  * is recommended in docs/database.md.
  */
 
-import type { Post } from "@/types/post";
-import type { CategorySlug } from "@/types/category";
-import { MOCK_POSTS } from "@/lib/mock/posts";
+import type { Post } from '@/types/post';
+import type { CategorySlug } from '@/types/category';
+import { MOCK_POSTS } from '@/lib/mock/posts';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Stable newest-first sort. Operates on a shallow copy to avoid mutation. */
 function sortByDateDesc(posts: Post[]): Post[] {
   return [...posts].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 }
 
@@ -56,10 +56,10 @@ export async function getPostsByCategory(category: CategorySlug): Promise<Post[]
  */
 export async function getPostsBySubCategory(
   category: CategorySlug,
-  subCategory: string
+  subCategory: string,
 ): Promise<Post[]> {
   const filtered = MOCK_POSTS.filter(
-    (p) => p.category === category && p.sub_category === subCategory
+    (p) => p.category === category && p.sub_category === subCategory,
   );
   return sortByDateDesc(filtered);
 }
@@ -111,7 +111,7 @@ export async function getPostCount(): Promise<number> {
  */
 export async function getPaginatedPosts(
   page: number,
-  perPage = 9
+  perPage = 9,
 ): Promise<{ posts: Post[]; totalPages: number }> {
   const sorted = sortByDateDesc(MOCK_POSTS);
   const totalPages = Math.ceil(sorted.length / perPage);
@@ -129,7 +129,7 @@ export async function getPaginatedPosts(
 export async function getPaginatedPostsByCategory(
   category: CategorySlug,
   page: number,
-  perPage = 9
+  perPage = 9,
 ): Promise<{ posts: Post[]; totalPages: number }> {
   const sorted = sortByDateDesc(MOCK_POSTS.filter((p) => p.category === category));
   const totalPages = Math.ceil(sorted.length / perPage);
@@ -148,10 +148,10 @@ export async function getPaginatedPostsBySubCategory(
   category: CategorySlug,
   subCategory: string,
   page: number,
-  perPage = 9
+  perPage = 9,
 ): Promise<{ posts: Post[]; totalPages: number }> {
   const sorted = sortByDateDesc(
-    MOCK_POSTS.filter((p) => p.category === category && p.sub_category === subCategory)
+    MOCK_POSTS.filter((p) => p.category === category && p.sub_category === subCategory),
   );
   const totalPages = Math.ceil(sorted.length / perPage);
   const from = (page - 1) * perPage;

@@ -13,9 +13,9 @@
  * postId and locale are always typed values from internal callers.
  */
 
-import type { Post, PostTranslation, LocalizedPost } from "@/types/post";
-import type { Locale } from "@/types/common";
-import { MOCK_TRANSLATIONS } from "@/lib/mock/translations";
+import type { Post, PostTranslation, LocalizedPost } from '@/types/post';
+import type { Locale } from '@/types/common';
+import { MOCK_TRANSLATIONS } from '@/lib/mock/translations';
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
@@ -33,11 +33,9 @@ import { MOCK_TRANSLATIONS } from "@/lib/mock/translations";
  */
 export async function getTranslation(
   postId: string,
-  locale: Locale
+  locale: Locale,
 ): Promise<PostTranslation | undefined> {
-  return MOCK_TRANSLATIONS.find(
-    (t) => t.post_id === postId && t.locale === locale
-  );
+  return MOCK_TRANSLATIONS.find((t) => t.post_id === postId && t.locale === locale);
 }
 
 /**
