@@ -22,7 +22,7 @@ const homeHref = getLocalePath("/", locale);
 
     <a
       href={homeHref}
-      class="flex-shrink-0 text-base font-bold text-rose-500 tracking-tight hover:text-rose-600 transition-colors duration-150"
+      class="shrink-0 text-base font-bold text-rose-500 tracking-tight hover:text-rose-600 transition-colors duration-150"
       aria-label="세은로그 홈으로 이동"
     >
       세은로그
@@ -44,7 +44,7 @@ const homeHref = getLocalePath("/", locale);
           <>
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
-              class="flex-shrink-0 scroll-snap-align-start px-3 py-1.5 rounded-full text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors duration-150 whitespace-nowrap"
+              class="shrink-0 scroll-snap-align-start px-3 py-1.5 rounded-full text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors duration-150 whitespace-nowrap"
               style="scroll-snap-align: start;"
               data-category={category.slug}
             >
@@ -54,7 +54,7 @@ const homeHref = getLocalePath("/", locale);
             {category.subCategories.map((sub) => (
               <a
                 href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
-                class="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-rose-50 hover:text-rose-500 transition-colors duration-150 whitespace-nowrap"
+                class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-rose-50 hover:text-rose-500 transition-colors duration-150 whitespace-nowrap"
                 style="scroll-snap-align: start;"
                 data-category={category.slug}
                 data-sub-category={sub.slug}
@@ -66,10 +66,10 @@ const homeHref = getLocalePath("/", locale);
         ))
       }
 
-      <span class="flex-shrink-0 w-12 aria-hidden" aria-hidden="true" />
+      <span class="shrink-0 w-12 aria-hidden" aria-hidden="true" />
     </nav>
 
-    <div class="flex-shrink-0 flex items-center gap-2">
+    <div class="shrink-0 flex items-center gap-2">
 
       <a
         href={getLocalePath("/", locale)}

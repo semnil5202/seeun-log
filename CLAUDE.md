@@ -33,7 +33,7 @@ pnpm --filter @seeun-log/client dev # client만 실행
 - **AI 번역**: OpenAI GPT-4o로 다국어 번역 처리
 - **TypeScript**: Strict mode. ES2022, bundler resolution. Path alias `@/*` → `./src/*` (admin).
 - **ESLint**: Flat config (v9). `_` prefix 변수 unused 허용.
-- **Styling**: Tailwind CSS utility classes.
+- **Styling**: Tailwind CSS utility classes. Canonical class 사용 필수 (`flex-shrink-0` → `shrink-0`, `flex-grow` → `grow`, `overflow-ellipsis` → `text-ellipsis` 등).
 
 상세 아키텍처: [`docs/architecture.md`](docs/architecture.md)
 

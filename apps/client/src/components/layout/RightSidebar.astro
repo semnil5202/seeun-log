@@ -16,7 +16,7 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
 ---
 
 <aside
-  class="hidden lg:block w-70 flex-shrink-0"
+  class="hidden lg:block w-70 shrink-0"
   aria-label="Sponsored and recommended posts"
 >
   <div class="sticky top-20 py-6 pl-4 space-y-8">
@@ -41,7 +41,7 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
                   )}
                   class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
                 >
-                  <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                  <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
                     <img
                       src={post.thumbnail}
                       alt={post.title}
@@ -91,7 +91,7 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
                   )}
                   class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
                 >
-                  <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                  <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
                     <img
                       src={post.thumbnail}
                       alt={post.title}
