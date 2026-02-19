@@ -122,6 +122,56 @@ Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변�
 - CSS 동작 설명 주석 금지 (Tailwind 클래스가 자체 문서 역할).
 - Props interface 필드별 JSDoc 금지 — 타입 이름이 충분히 설명적이어야 함.
 
+## Folder Structure Convention
+
+### Client App (`apps/client`)
+
+Astro SSG 앱은 **Feature-based + Shared** 구조를 따른다.
+
+```
+src/
+├── features/{feature-name}/     # 도메인별 기능 단위
+│   ├── components/              # Feature 전용 Astro 컴포넌트
+│   ├── api/                     # Feature 전용 데이터 API (빌드 타임 fetch)
+│   ├── mock/                    # Feature 전용 mock 데이터 (개발/테스트)
+│   ├── types/                   # Feature 전용 타입 (선택)
+│   └── constants/               # Feature 전용 상수 (선택)
+├── shared/                      # 크로스 커팅 공유 모듈
+│   ├── components/{group}/      # 공유 컴포넌트 (layout, navigation, seo)
+│   ├── lib/                     # 공유 유틸리티 (i18n 등)
+│   └── types/                   # 공유 타입
+├── layouts/                     # Astro 레이아웃 (root 유지 — Astro 컨벤션)
+├── pages/                       # Astro 파일 라우팅 (root 유지 — 필수)
+└── styles/                      # 글로벌 스타일
+```
+
+### Admin App (`apps/admin`)
+
+Next.js App Router 앱은 **Feature → Container → Component** 패턴을 따른다.
+
+```
+src/
+├── app/                         # Next.js App Router (root 유지 — 필수)
+├── features/{feature-name}/     # 도메인별 기능 단위
+│   ├── containers/              # hooks + 자식 컴포넌트 조합 (비즈니스 로직 + UI)
+│   ├── components/              # 순수 UI 컴포넌트 (props → JSX)
+│   ├── hooks/                   # 커스텀 훅 (상태 관리, API 호출)
+│   ├── api/                     # Server Actions / API Route 핸들러
+│   ├── types/                   # Feature 전용 타입 (선택)
+│   └── constants/               # Feature 전용 상수 (선택)
+└── shared/                      # 크로스 커팅 공유 모듈
+    ├── components/ui/           # 공유 UI 프리미티브 (Button, Input 등)
+    ├── lib/                     # 공유 유틸리티 (Supabase 클라이언트 등)
+    └── types/                   # 공유 타입
+```
+
+### 공통 규칙
+
+- Feature 간 직접 import 금지. 공유 필요 시 `shared/`로 이동.
+- 새 컴포넌트: 1개 feature에서만 사용 → `features/{name}/components/`, 2개 이상 → `shared/components/`.
+- Astro에서는 `containers/` 미사용 — 페이지가 오케스트레이션 역할 담당.
+- Admin `containers/`: hooks + 자식 컴포넌트 조합. `components/`: props만 받는 순수 UI.
+
 ## Workflow Rules
 
 ### PM-First 원칙

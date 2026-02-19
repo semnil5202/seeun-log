@@ -1,0 +1,36 @@
+---
+/** 3-column 그리드 레이아웃. 모바일은 1컬럼, PC(lg+)는 [240px][1fr][280px] 구조. */
+
+import LeftSidebar from "@/shared/components/layout/LeftSidebar.astro";
+import RightSidebar from "@/shared/components/layout/RightSidebar.astro";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+
+interface Props {
+  locale: Locale;
+  sponsoredPosts?: LocalizedPost[];
+  recommendedPosts?: LocalizedPost[];
+}
+
+const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
+---
+
+<div class="max-w-screen-xl mx-auto px-4 lg:px-6">
+
+  <div class="grid grid-cols-1 lg:grid-cols-[240px_1fr_280px] gap-0 lg:gap-8 min-h-screen">
+
+    <LeftSidebar locale={locale} />
+
+    <main class="min-w-0 py-6">
+      <slot />
+    </main>
+
+    <RightSidebar
+      locale={locale}
+      sponsoredPosts={sponsoredPosts}
+      recommendedPosts={recommendedPosts}
+    />
+
+  </div>
+
+</div>

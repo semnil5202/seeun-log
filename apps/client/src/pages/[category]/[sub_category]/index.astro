@@ -2,19 +2,19 @@
 /** 한국어 서브카테고리 인덱스 (/{category}/{sub_category}/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
-import PostCardGrid from "@/components/post/PostCardGrid.astro";
-import Pagination from "@/components/navigation/Pagination.astro";
-import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
-import { DEFAULT_LOCALE } from "@/types/common";
-import type { LocalizedPost } from "@/types/post";
-import { CATEGORY_SLUGS, SUB_CATEGORY_MAP } from "@/types/category";
-import type { CategorySlug } from "@/types/category";
+import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
+import Pagination from "@/shared/components/navigation/Pagination.astro";
+import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
+import { DEFAULT_LOCALE } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import { CATEGORY_SLUGS, SUB_CATEGORY_MAP } from "@/shared/types/category";
+import type { CategorySlug } from "@/shared/types/category";
 import {
   getPaginatedPostsBySubCategory,
   getSponsoredPosts,
   getRecommendedPosts,
-} from "@/lib/api/posts";
-import { getCategoryLabel, getSubCategoryLabel } from "@/lib/i18n/categories";
+} from "@/features/post-feed/api/posts";
+import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 
 export async function getStaticPaths() {
   const paths: { params: { category: string; sub_category: string }; props: { category: CategorySlug; sub_category: string } }[] = [];

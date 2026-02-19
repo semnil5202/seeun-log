@@ -2,10 +2,10 @@
 /** 리스트 페이지 레이아웃. Layout + ThreeColumnLayout을 조합하여 3-column 그리드를 구성한다. */
 
 import Layout from "@/layouts/Layout.astro";
-import ThreeColumnLayout from "@/components/layout/ThreeColumnLayout.astro";
-import type { Locale } from "@/types/common";
-import { DEFAULT_LOCALE } from "@/types/common";
-import type { LocalizedPost } from "@/types/post";
+import ThreeColumnLayout from "@/shared/components/layout/ThreeColumnLayout.astro";
+import type { Locale } from "@/shared/types/common";
+import { DEFAULT_LOCALE } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
 
 interface Props {
   title: string;

@@ -2,11 +2,11 @@
 /** 한국어 포스트 상세 페이지 (/{category}/{sub_category}/{slug}/) */
 
 import PostLayout from "@/layouts/PostLayout.astro";
-import { DEFAULT_LOCALE } from "@/types/common";
-import type { LocalizedPost } from "@/types/post";
-import type { CategorySlug } from "@/types/category";
-import { getAllPosts, getPostBySlug } from "@/lib/api/posts";
-import { getCategoryLabel, getSubCategoryLabel } from "@/lib/i18n/categories";
+import { DEFAULT_LOCALE } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import type { CategorySlug } from "@/shared/types/category";
+import { getAllPosts, getPostBySlug } from "@/features/post-feed/api/posts";
+import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();

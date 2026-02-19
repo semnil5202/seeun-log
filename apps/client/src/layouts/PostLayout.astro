@@ -2,13 +2,13 @@
 /** 포스트 상세 레이아웃. 단일 컬럼으로 breadcrumb, 썸네일, 본문, 장소 정보를 렌더링한다. */
 
 import Layout from "@/layouts/Layout.astro";
-import Breadcrumb from "@/components/navigation/Breadcrumb.astro";
-import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
-import BlogPostingJsonLd from "@/components/seo/BlogPostingJsonLd.astro";
-import type { LocalizedPost } from "@/types/post";
-import type { Locale } from "@/types/common";
-import type { BreadcrumbItem } from "@/types/seo";
-import { t } from "@/lib/i18n/translations";
+import Breadcrumb from "@/shared/components/navigation/Breadcrumb.astro";
+import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
+import BlogPostingJsonLd from "@/shared/components/seo/BlogPostingJsonLd.astro";
+import type { LocalizedPost } from "@/shared/types/post";
+import type { Locale } from "@/shared/types/common";
+import type { BreadcrumbItem } from "@/shared/types/seo";
+import { t } from "@/shared/lib/i18n/translations";
 
 interface Props {
   post: LocalizedPost;

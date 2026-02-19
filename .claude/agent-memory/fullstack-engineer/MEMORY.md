@@ -33,11 +33,14 @@ Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 
 ## Types
 
-- `Post` from `@/types/post` — includes `is_sponsored`, `is_recommended`, `rating`, `category`, `sub_category`, `slug`, `thumbnail`.
-- `LocalizedPost` from `@/types/post` (NOT `@/types/common`) — extends Post with `locale` field.
-- `BreadcrumbItem` from `@/types/seo` — `{ name: string; url: string }`.
-- `Locale` from `@/types/common` — 8 locales, default `"ko"`.
-- `CategorySlug` — `"delicious" | "cafe" | "travel"`.
+Type files live at `src/shared/types/` (moved from `src/types/`). Always import via `@/shared/types/`.
+
+- `Post` from `@/shared/types/post` — includes `is_sponsored`, `is_recommended`, `rating`, `category`, `sub_category`, `slug`, `thumbnail`.
+- `LocalizedPost` from `@/shared/types/post` (NOT `@/shared/types/common`) — extends Post with `locale` field.
+- `BreadcrumbItem` from `@/shared/types/seo` — `{ name: string; url: string }`.
+- `Locale` from `@/shared/types/common` — 8 locales, default `"ko"`.
+- `CategorySlug` — `"delicious" | "cafe" | "travel"`. From `@/shared/types/category`.
+- Files inside `src/shared/types/` themselves use relative imports (`'./category'`, `'./common'`) — NOT `@/` aliases.
 
 ## URL Structure
 

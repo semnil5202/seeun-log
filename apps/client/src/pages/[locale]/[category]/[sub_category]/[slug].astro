@@ -2,13 +2,13 @@
 /** 다국어 포스트 상세 페이지 (/{locale}/{category}/{sub_category}/{slug}/) */
 
 import PostLayout from "@/layouts/PostLayout.astro";
-import { LOCALES, DEFAULT_LOCALE } from "@/types/common";
-import type { Locale } from "@/types/common";
-import type { CategorySlug } from "@/types/category";
-import { getAllPosts, getPostBySlug } from "@/lib/api/posts";
-import { getLocalizedPost } from "@/lib/api/translations";
-import { getCategoryLabel, getSubCategoryLabel } from "@/lib/i18n/categories";
-import { t } from "@/lib/i18n/translations";
+import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+import type { CategorySlug } from "@/shared/types/category";
+import { getAllPosts, getPostBySlug } from "@/features/post-feed/api/posts";
+import { getLocalizedPost } from "@/features/post-feed/api/translations";
+import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
+import { t } from "@/shared/lib/i18n/translations";
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();

@@ -2,12 +2,12 @@
 /** 한국어 홈 페이지 (/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
-import PostCardGrid from "@/components/post/PostCardGrid.astro";
-import Pagination from "@/components/navigation/Pagination.astro";
-import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
-import { DEFAULT_LOCALE } from "@/types/common";
-import type { LocalizedPost } from "@/types/post";
-import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/lib/api/posts";
+import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
+import Pagination from "@/shared/components/navigation/Pagination.astro";
+import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
+import { DEFAULT_LOCALE } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/features/post-feed/api/posts";
 
 const locale = DEFAULT_LOCALE;
 

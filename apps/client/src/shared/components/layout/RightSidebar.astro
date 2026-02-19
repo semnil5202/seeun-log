@@ -1,0 +1,130 @@
+---
+/** PC 전용 우측 사이드바. 협찬 포스트와 Editor's Pick을 표시한다. */
+
+import { t } from "@/shared/lib/i18n/translations";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+
+interface Props {
+  locale: Locale;
+  sponsoredPosts?: LocalizedPost[];
+  recommendedPosts?: LocalizedPost[];
+}
+
+const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
+---
+
+<aside
+  class="hidden lg:block w-70 shrink-0"
+  aria-label="Sponsored and recommended posts"
+>
+  <div class="sticky top-20 py-6 pl-4 space-y-8">
+
+    <section aria-labelledby="sidebar-sponsored-heading">
+      <h2
+        id="sidebar-sponsored-heading"
+        class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pb-2 border-b border-gray-100"
+      >
+        {t("sidebar.sponsored", locale)}
+      </h2>
+
+      {
+        sponsoredPosts.length > 0 ? (
+          <ul class="space-y-4" role="list">
+            {sponsoredPosts.map((post) => (
+              <li>
+                <a
+                  href={getLocalePath(
+                    `/${post.category}/${post.sub_category}/${post.slug}/`,
+                    locale
+                  )}
+                  class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
+                >
+                  <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={post.thumbnail}
+                      alt={post.title}
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <span class="inline-block text-[10px] font-semibold text-rose-400 bg-rose-50 px-1.5 py-0.5 rounded mb-1">
+                      {t("post.sponsored", locale)}
+                    </span>
+                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-rose-500 transition-colors duration-150 leading-snug">
+                      {post.title}
+                    </p>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-gray-400 italic" />
+        )
+      }
+    </section>
+
+    <section aria-labelledby="sidebar-picks-heading">
+      <h2
+        id="sidebar-picks-heading"
+        class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pb-2 border-b border-gray-100"
+      >
+        {t("sidebar.editorsPick", locale)}
+      </h2>
+
+      {
+        recommendedPosts.length > 0 ? (
+          <ul class="space-y-4" role="list">
+            {recommendedPosts.map((post) => (
+              <li>
+                <a
+                  href={getLocalePath(
+                    `/${post.category}/${post.sub_category}/${post.slug}/`,
+                    locale
+                  )}
+                  class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
+                >
+                  <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={post.thumbnail}
+                      alt={post.title}
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <span class="inline-block text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded mb-1">
+                      {t("post.editorsPick", locale)}
+                    </span>
+                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-rose-500 transition-colors duration-150 leading-snug">
+                      {post.title}
+                    </p>
+                    {post.rating > 0 && (
+                      <p class="text-xs text-gray-400 mt-0.5">
+                        {t("post.rating", locale)} {post.rating.toFixed(1)}
+                      </p>
+                    )}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-gray-400 italic" />
+        )
+      }
+    </section>
+
+  </div>
+</aside>

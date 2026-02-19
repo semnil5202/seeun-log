@@ -1,0 +1,53 @@
+---
+import JsonLd from "./JsonLd.astro";
+import type { BlogPostingSchema, ReviewSchema } from "@/shared/types/seo";
+
+interface Props {
+  posting: BlogPostingSchema;
+  review?: ReviewSchema;
+}
+
+const { posting, review } = Astro.props;
+const site = Astro.site?.origin ?? "";
+
+const schema: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: posting.title,
+  description: posting.description,
+  datePublished: posting.datePublished,
+  dateModified: posting.dateModified,
+  image: posting.image,
+  url: `${site}${posting.url}`,
+  author: {
+    "@type": "Person",
+    name: posting.authorName,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "세은로그",
+  },
+};
+
+if (review) {
+  schema.review = {
+    "@type": "Review",
+    itemReviewed: {
+      "@type": review.itemReviewed.type,
+      name: review.itemReviewed.name,
+      address: review.itemReviewed.address,
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: review.reviewRating,
+      bestRating: 5,
+    },
+    author: {
+      "@type": "Person",
+      name: review.authorName,
+    },
+  };
+}
+---
+
+<JsonLd schema={schema} />

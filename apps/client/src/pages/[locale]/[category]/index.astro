@@ -2,22 +2,22 @@
 /** 다국어 카테고리 인덱스 (/{locale}/{category}/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
-import PostCardGrid from "@/components/post/PostCardGrid.astro";
-import Pagination from "@/components/navigation/Pagination.astro";
-import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
-import { LOCALES, DEFAULT_LOCALE } from "@/types/common";
-import type { Locale } from "@/types/common";
-import type { LocalizedPost } from "@/types/post";
-import { CATEGORY_SLUGS } from "@/types/category";
-import type { CategorySlug } from "@/types/category";
+import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
+import Pagination from "@/shared/components/navigation/Pagination.astro";
+import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
+import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import { CATEGORY_SLUGS } from "@/shared/types/category";
+import type { CategorySlug } from "@/shared/types/category";
 import {
   getPaginatedPostsByCategory,
   getSponsoredPosts,
   getRecommendedPosts,
-} from "@/lib/api/posts";
-import { getLocalizedPost } from "@/lib/api/translations";
-import { getCategoryLabel } from "@/lib/i18n/categories";
-import { t } from "@/lib/i18n/translations";
+} from "@/features/post-feed/api/posts";
+import { getLocalizedPost } from "@/features/post-feed/api/translations";
+import { getCategoryLabel } from "@/shared/lib/i18n/categories";
+import { t } from "@/shared/lib/i18n/translations";
 
 export async function getStaticPaths() {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);

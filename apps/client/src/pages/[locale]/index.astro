@@ -2,15 +2,15 @@
 /** 다국어 홈 페이지 (/{locale}/) */
 
 import ListLayout from "@/layouts/ListLayout.astro";
-import PostCardGrid from "@/components/post/PostCardGrid.astro";
-import Pagination from "@/components/navigation/Pagination.astro";
-import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd.astro";
-import { LOCALES, DEFAULT_LOCALE } from "@/types/common";
-import type { Locale } from "@/types/common";
-import type { LocalizedPost } from "@/types/post";
-import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/lib/api/posts";
-import { getLocalizedPost } from "@/lib/api/translations";
-import { t } from "@/lib/i18n/translations";
+import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
+import Pagination from "@/shared/components/navigation/Pagination.astro";
+import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
+import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/features/post-feed/api/posts";
+import { getLocalizedPost } from "@/features/post-feed/api/translations";
+import { t } from "@/shared/lib/i18n/translations";
 
 export async function getStaticPaths() {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);

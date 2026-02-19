@@ -1,0 +1,125 @@
+---
+/** 페이지 기반 페이지네이션 (무한스크롤 금지). 최대 5페이지 윈도우를 표시한다. */
+import type { Locale } from "@/shared/types/common";
+import { t } from "@/shared/lib/i18n/translations";
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  /** Base URL for pagination links, e.g. `/delicious/korean/` or `/en/cafe/hotplace/` */
+  baseUrl: string;
+  locale: Locale;
+}
+
+const { currentPage, totalPages, baseUrl, locale } = Astro.props;
+
+const prevLabel = t("pagination.prev", locale);
+const nextLabel = t("pagination.next", locale);
+
+const isFirstPage = currentPage <= 1;
+const isLastPage = currentPage >= totalPages;
+
+/**
+ * Build the href for a given page number.
+ * Page 1 → baseUrl (canonical, no ?page param)
+ * Page n → baseUrl?page=n
+ */
+function pageHref(page: number): string {
+  if (page <= 1) return baseUrl;
+  return `${baseUrl}?page=${page}`;
+}
+
+/**
+ * Build a windowed page range of up to 5 pages centred around currentPage,
+ * clamped within [1, totalPages].
+ * Examples:
+ *   totalPages=10, currentPage=1  → [1, 2, 3, 4, 5]
+ *   totalPages=10, currentPage=5  → [3, 4, 5, 6, 7]
+ *   totalPages=10, currentPage=10 → [6, 7, 8, 9, 10]
+ */
+const WINDOW = 5;
+const halfWindow = Math.floor(WINDOW / 2);
+let rangeStart = Math.max(1, currentPage - halfWindow);
+let rangeEnd = Math.min(totalPages, rangeStart + WINDOW - 1);
+// Shift the window left when it hits the end boundary
+if (rangeEnd - rangeStart < WINDOW - 1) {
+  rangeStart = Math.max(1, rangeEnd - WINDOW + 1);
+}
+const pageNumbers: number[] = [];
+for (let p = rangeStart; p <= rangeEnd; p++) {
+  pageNumbers.push(p);
+}
+---
+
+<nav aria-label="pagination" class="flex items-center justify-center gap-1 py-8">
+  {isFirstPage ? (
+    <span
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
+      aria-disabled="true"
+      aria-label={prevLabel}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1" aria-hidden="true">
+        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      {prevLabel}
+    </span>
+  ) : (
+    <a
+      href={pageHref(currentPage - 1)}
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+      aria-label={prevLabel}
+      rel="prev"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1" aria-hidden="true">
+        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+      {prevLabel}
+    </a>
+  )}
+
+  {pageNumbers.map((page) => {
+    const isCurrent = page === currentPage;
+    return isCurrent ? (
+      <span
+        class="inline-flex items-center justify-center w-9 h-9 text-sm font-bold text-white bg-rose-500 border border-rose-500 rounded-lg"
+        aria-current="page"
+        aria-label={`Page ${page}`}
+      >
+        {page}
+      </span>
+    ) : (
+      <a
+        href={pageHref(page)}
+        class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+        aria-label={`Page ${page}`}
+      >
+        {page}
+      </a>
+    );
+  })}
+
+  {isLastPage ? (
+    <span
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
+      aria-disabled="true"
+      aria-label={nextLabel}
+    >
+      {nextLabel}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+      </svg>
+    </span>
+  ) : (
+    <a
+      href={pageHref(currentPage + 1)}
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+      aria-label={nextLabel}
+      rel="next"
+    >
+      {nextLabel}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1" aria-hidden="true">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+      </svg>
+    </a>
+  )}
+</nav>

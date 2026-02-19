@@ -1,0 +1,126 @@
+---
+/** 모바일 전용 헤더. 카테고리 snap-scroll 네비게이션을 포함한다. */
+
+import { getCategoryTree } from "@/shared/lib/i18n/categories";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import { t } from "@/shared/lib/i18n/translations";
+import { LOCALES, LOCALE_LABELS } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const categories = getCategoryTree(locale);
+const homeHref = getLocalePath("/", locale);
+---
+
+<header class="w-full bg-white border-b border-gray-100">
+  <div class="flex items-center h-14 px-4 gap-3">
+
+    <a
+      href={homeHref}
+      class="shrink-0 text-base font-bold text-rose-500 tracking-tight hover:text-rose-600 transition-colors duration-150"
+      aria-label="세은로그 홈으로 이동"
+    >
+      세은로그
+    </a>
+
+    <nav
+      aria-label="Category navigation"
+      class="flex-1 min-w-0 overflow-x-auto flex items-center gap-1 scroll-smooth"
+      style="
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        mask-image: linear-gradient(to right, black 85%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+      "
+    >
+      {
+        categories.map((category) => (
+          <>
+            <a
+              href={getLocalePath(`/${category.slug}/`, locale)}
+              class="shrink-0 scroll-snap-align-start px-3 py-1.5 rounded-full text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 transition-colors duration-150 whitespace-nowrap"
+              style="scroll-snap-align: start;"
+              data-category={category.slug}
+            >
+              {category.label}
+            </a>
+
+            {category.subCategories.map((sub) => (
+              <a
+                href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
+                class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-rose-50 hover:text-rose-500 transition-colors duration-150 whitespace-nowrap"
+                style="scroll-snap-align: start;"
+                data-category={category.slug}
+                data-sub-category={sub.slug}
+              >
+                {sub.label}
+              </a>
+            ))}
+          </>
+        ))
+      }
+
+      <span class="shrink-0 w-12 aria-hidden" aria-hidden="true" />
+    </nav>
+
+    <div class="shrink-0 flex items-center gap-2">
+
+      <a
+        href={getLocalePath("/", locale)}
+        class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-rose-500 transition-colors duration-150 rounded-md"
+        aria-label={t("nav.language", locale)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+      </a>
+
+      <a
+        href={getLocalePath("/search/", locale)}
+        class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-rose-500 transition-colors duration-150 rounded-md"
+        aria-label={t("nav.search", locale)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </a>
+
+    </div>
+  </div>
+</header>
+
+{/* Hide scrollbar for webkit browsers — must be in a <style> block */}
+<style>
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+</style>

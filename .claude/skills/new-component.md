@@ -15,13 +15,17 @@ Astro 컴포넌트 파일을 프로젝트 컨벤션에 맞게 생성합니다.
 ```
 
 - `ComponentName`: PascalCase 이름 (예: `AdBanner`, `ReviewStars`)
-- `directory`: `components/` 하위 경로 (기본값: `components/`). 예: `layout`, `post`, `navigation`, `seo`
+- `directory`: 대상 경로. 예:
+  - Feature 전용: `features/post-feed/components`
+  - 공유 레이아웃: `shared/components/layout`
+  - 공유 네비게이션: `shared/components/navigation`
+  - 공유 SEO: `shared/components/seo`
 
 ## 실행 절차
 
 1. **인자 파싱**: 컴포넌트 이름과 디렉토리를 확인한다. 이름이 PascalCase가 아니면 변환한다.
-2. **중복 확인**: `apps/client/src/components/` 하위에 같은 이름의 파일이 이미 있으면 중단하고 알린다.
-3. **파일 생성**: 아래 템플릿으로 `apps/client/src/components/{directory}/{ComponentName}.astro` 파일을 생성한다.
+2. **중복 확인**: `apps/client/src/` 하위에 같은 이름의 파일이 이미 있으면 중단하고 알린다.
+3. **파일 생성**: 아래 템플릿으로 `apps/client/src/{directory}/{ComponentName}.astro` 파일을 생성한다.
 4. **확인**: 생성된 파일 경로를 출력한다.
 
 ## 템플릿
