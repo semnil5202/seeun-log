@@ -1,23 +1,5 @@
 ---
-/**
- * PostCardGrid.astro
- *
- * Renders a responsive CSS grid of PostCard / SponsoredCard components.
- *
- * Mobile In-Feed Ad insertion (per ui-specs.md):
- *   - At visual positions 1 and 3 in the feed, inject ad placeholders.
- *   - Placeholders use `block lg:hidden` so they are ONLY visible on mobile.
- *   - PC ads live in the Right Sidebar — no duplicate HTML structure needed.
- *
- * IMPORTANT: No infinite scroll. Pagination is handled by the parent page.
- *
- * PERF: The first card receives index=0 so PostCard applies LCP priority
- *       (loading="eager", fetchpriority="high") to the above-the-fold thumbnail.
- *       All subsequent cards are index>0 and lazy-load their images.
- *
- * COST: Ad slots are static HTML placeholders at build time (SSG).
- *       Real ad scripts will hydrate client-side only; no server cost at build.
- */
+/** 포스트 피드를 단일 컬럼 리스트로 렌더링한다. 모바일 인피드 광고 슬롯 포함. */
 import type { Post } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import PostCard from "./PostCard.astro";
@@ -30,17 +12,6 @@ interface Props {
 
 const { posts, locale } = Astro.props;
 
-/**
- * Build a flat ordered list of items to render in the grid.
- * Items are either a post (with its card index) or an ad slot at a specific position.
- *
- * Per ui-specs.md:
- *   Position 1 (after first post) → Ad slot 1
- *   Position 3 (after third visible post) → Ad slot 2
- *
- * We track card feed index separately so that the LCP index (0) always maps
- * to the very first post card regardless of ad slot insertion.
- */
 type GridItem =
   | { type: "post"; post: Post; cardIndex: number }
   | { type: "ad"; adIndex: number };
@@ -49,8 +20,6 @@ const gridItems: GridItem[] = [];
 let cardIndex = 0;
 
 for (let i = 0; i < posts.length; i++) {
-  // Insert ad placeholder BEFORE pushing the post at positions 1 and 3
-  // (i.e., after the 1st and 3rd cards have been pushed → visual slot 1 and 3)
   if (cardIndex === 1 || cardIndex === 3) {
     gridItems.push({ type: "ad", adIndex: cardIndex === 1 ? 1 : 2 });
   }
@@ -60,24 +29,15 @@ for (let i = 0; i < posts.length; i++) {
 }
 ---
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<div class="flex flex-col gap-10">
   {gridItems.map((item) => {
     if (item.type === "ad") {
-      /**
-       * Mobile-only ad placeholder.
-       * `block lg:hidden` — visible on mobile, hidden on PC (CSS toggle only,
-       * no separate HTML structure per ui-specs.md constraint).
-       *
-       * COST: Actual ad SDK will be injected client-side via a script tag.
-       *       The placeholder reserves layout space to prevent CLS on ad load.
-       */
       return (
         <div
           class="block lg:hidden"
           aria-label={`Advertisement ${item.adIndex}`}
           role="complementary"
         >
-          {/* CLS mitigation: explicit min-height reserves space before ad loads */}
           <div class="w-full min-h-[100px] bg-gray-100 rounded-xl flex items-center justify-center border border-dashed border-gray-300">
             <span class="text-xs text-gray-400 font-normal tracking-wide uppercase select-none">
               Ad
@@ -87,7 +47,6 @@ for (let i = 0; i < posts.length; i++) {
       );
     }
 
-    // Render sponsored posts with SponsoredCard, regular posts with PostCard
     if (item.post.is_sponsored) {
       return (
         <SponsoredCard

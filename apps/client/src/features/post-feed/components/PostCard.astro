@@ -1,26 +1,13 @@
 ---
-/**
- * PostCard.astro
- *
- * Displays a single post as a card with thumbnail, category badge,
- * title, description, and optional rating.
- *
- * PERF: index === 0 triggers LCP-priority loading (eager + fetchpriority="high").
- *       All other images are lazy-loaded to defer offscreen network cost.
- *
- * SEO: Wrapped in <article> for semantic HTML. Title in <h2> to preserve
- *      heading hierarchy within the feed list context.
- */
+/** 단일 포스트 카드. 썸네일 + 제목 + 설명 + 메타 정보를 표시한다. */
 import type { Post } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
-import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
+import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
-import { t } from "@/shared/lib/i18n/translations";
 
 interface Props {
   post: Post;
   locale: Locale;
-  /** Position index in the feed — index 0 receives LCP priority treatment */
   index: number;
   class?: string;
 }
@@ -32,25 +19,21 @@ const postPath = `/${post.category}/${post.sub_category}/${post.slug}/`;
 const localizedHref = getLocalePath(postPath, locale);
 
 const categoryLabel = getCategoryLabel(post.category, locale);
-const subCategoryLabel = getSubCategoryLabel(post.sub_category, locale);
-const ratingLabel = t("post.rating", locale);
-
-/**
- * PERF: Always supply explicit width/height to prevent CLS.
- * Using a standard 16:9 aspect ratio (640x360) for all thumbnails.
- * The actual image is sized via CSS (w-full aspect-video object-cover).
- */
+const dateStr = new Date(post.created_at).toLocaleDateString(locale, {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 ---
 
-<article class:list={["group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200", className]}>
-  <a href={localizedHref} class="block" aria-label={post.title}>
-    {/* Thumbnail */}
-    <div class="relative w-full aspect-video overflow-hidden bg-gray-100">
+<article class:list={["group", className]}>
+  <a href={localizedHref} class="block">
+    <div class="w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
       <img
         src={post.thumbnail}
         alt={post.title}
         width="640"
-        height="360"
+        height="180"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading={isLcp ? "eager" : "lazy"}
         fetchpriority={isLcp ? "high" : "auto"}
@@ -58,44 +41,26 @@ const ratingLabel = t("post.rating", locale);
       />
     </div>
 
-    {/* Card body */}
-    <div class="p-4 flex flex-col gap-2">
-      {/* Category badges */}
-      <div class="flex items-center gap-1.5 flex-wrap">
-        <span class="inline-block text-xs font-semibold text-white bg-primary-500 rounded-full px-2.5 py-0.5">
-          {categoryLabel}
-        </span>
-        <span class="inline-block text-xs font-normal text-primary-600 bg-primary-50 rounded-full px-2.5 py-0.5">
-          {subCategoryLabel}
-        </span>
-      </div>
-
-      {/* Title — h2 preserves heading hierarchy within feed list */}
-      <h2 class="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
+    <div class="mt-4 flex flex-col gap-2">
+      <h2 class="text-title2 font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
         {post.title}
       </h2>
 
-      {/* Description */}
-      <p class="text-sm text-gray-500 line-clamp-2">
+      <p class="text-body2 text-gray-500 line-clamp-2">
         {post.description}
       </p>
 
-      {/* Rating — only shown when a numeric rating exists */}
-      {post.rating > 0 && (
-        <div class="flex items-center gap-1 mt-1" aria-label={`${ratingLabel}: ${post.rating}`}>
-          {/* PERF: Inline SVG avoids extra HTTP request for icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            class="w-4 h-4 text-yellow-400"
-            aria-hidden="true"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span class="text-sm font-semibold text-gray-700">{post.rating.toFixed(1)}</span>
-        </div>
-      )}
+      <div class="flex items-center gap-1.5 text-caption1 text-gray-400">
+        <time datetime={post.created_at}>{dateStr}</time>
+        {post.place_name && (
+          <>
+            <span aria-hidden="true">&middot;</span>
+            <span>{post.place_name}</span>
+          </>
+        )}
+        <span aria-hidden="true">&middot;</span>
+        <span>{categoryLabel}</span>
+      </div>
     </div>
   </a>
 </article>
