@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@seeun-log/config": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5",
     "tailwindcss": "^4.1.18"

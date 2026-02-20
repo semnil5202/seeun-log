@@ -10,9 +10,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@seeun-log/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.18",
     "next": "^15",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@seeun-log/eslint-config": "workspace:*",
