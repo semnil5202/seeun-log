@@ -54,7 +54,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
 <nav aria-label="pagination" class="flex items-center justify-center gap-1 py-8">
   {isFirstPage ? (
     <span
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
+      class="inline-flex items-center px-3 py-2 text-sm font-normal text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
       aria-disabled="true"
       aria-label={prevLabel}
     >
@@ -66,7 +66,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
   ) : (
     <a
       href={pageHref(currentPage - 1)}
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
+      class="inline-flex items-center px-3 py-2 text-sm font-normal text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
       aria-label={prevLabel}
       rel="prev"
     >
@@ -90,7 +90,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
     ) : (
       <a
         href={pageHref(page)}
-        class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
+        class="inline-flex items-center justify-center w-9 h-9 text-sm font-normal text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
         aria-label={`Page ${page}`}
       >
         {page}
@@ -100,7 +100,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
 
   {isLastPage ? (
     <span
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
+      class="inline-flex items-center px-3 py-2 text-sm font-normal text-gray-300 bg-white border border-gray-200 rounded-lg cursor-not-allowed select-none"
       aria-disabled="true"
       aria-label={nextLabel}
     >
@@ -112,7 +112,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
   ) : (
     <a
       href={pageHref(currentPage + 1)}
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
+      class="inline-flex items-center px-3 py-2 text-sm font-normal text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
       aria-label={nextLabel}
       rel="next"
     >

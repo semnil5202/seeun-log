@@ -6,6 +6,16 @@
 - **Brand Name**: 세은로그 (seeun log)
 - **Language**: 한국어 기본, 다국어 지원 (GPT-4o 번역): en, ja, zh-CN, zh-TW, id, vi, th
 
+### Color System
+
+- **Primary**: Sage Green (`primary-50` ~ `primary-900`, base `#A6BAA1`)
+- **Secondary**: Soft Coral (`secondary-50` ~ `secondary-900`, base `#D4A594`)
+- **Logo**: `primary-600` (`#6F8B68`), hover `primary-700`
+- **협찬/Editor's Pick UI**: Secondary 계열
+- **별점**: Yellow (범용 컨벤션)
+
+테마 토큰 정의: `packages/config/theme.css` | 상세 가이드: [`docs/theme.md`](theme.md)
+
 ## Categories
 
 ```

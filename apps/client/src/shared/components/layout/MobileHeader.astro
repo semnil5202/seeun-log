@@ -54,7 +54,7 @@ const homeHref = getLocalePath("/", locale);
             {category.subCategories.map((sub) => (
               <a
                 href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
-                class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-primary-50 hover:text-primary-500 transition-colors duration-150 whitespace-nowrap"
+                class="shrink-0 px-3 py-1.5 rounded-full text-xs font-normal text-gray-600 bg-gray-100 hover:bg-primary-50 hover:text-primary-500 transition-colors duration-150 whitespace-nowrap"
                 style="scroll-snap-align: start;"
                 data-category={category.slug}
                 data-sub-category={sub.slug}

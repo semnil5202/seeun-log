@@ -69,3 +69,11 @@ graph LR
 | OpenAI GPT-4o         | 다국어 번역       |
 | GitHub Actions        | CI/CD, SSG 빌드   |
 | AWS S3 + CloudFront   | 정적 호스팅 + CDN |
+
+## 공유 패키지
+
+| 패키지                 | 역할                                                          |
+| ---------------------- | ------------------------------------------------------------- |
+| `packages/tsconfig`    | 공유 TypeScript 설정 (base, nextjs, astro)                    |
+| `packages/eslint-config` | 공유 ESLint Flat Config                                     |
+| `packages/config`      | 공유 Tailwind 테마 (`theme.css` — 컬러 팔레트, 시맨틱 토큰)  |

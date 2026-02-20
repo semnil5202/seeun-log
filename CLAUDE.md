@@ -10,8 +10,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **apps/client** — Astro 5 (SSG). 공개 블로그 뷰어. React는 interactive island에만 사용.
 - **packages/tsconfig** — 공유 TypeScript 설정 (base, nextjs, astro)
 - **packages/eslint-config** — 공유 ESLint 설정
+- **packages/config** — 공유 Tailwind 테마 설정 (컬러 팔레트, 시맨틱 토큰)
 
-향후 추가 예정: `packages/types` (공유 TS 인터페이스), `packages/ui` (공유 React 컴포넌트), `packages/config` (공유 Tailwind 설정)
+향후 추가 예정: `packages/types` (공유 TS 인터페이스), `packages/ui` (공유 React 컴포넌트)
 
 ## Commands
 
@@ -33,7 +34,7 @@ pnpm --filter @seeun-log/client dev # client만 실행
 - **AI 번역**: OpenAI GPT-4o로 다국어 번역 처리
 - **TypeScript**: Strict mode. ES2022, bundler resolution. Path alias `@/*` → `./src/*` (admin).
 - **ESLint**: Flat config (v9). `_` prefix 변수 unused 허용.
-- **Styling**: Tailwind CSS utility classes. Canonical class 사용 필수 (`flex-shrink-0` → `shrink-0`, `flex-grow` → `grow`, `overflow-ellipsis` → `text-ellipsis` 등).
+- **Styling**: Tailwind CSS v4 utility classes. 공통 테마는 `@seeun-log/config/theme.css`에서 `@theme inline`으로 정의하며, 양 앱(`apps/client`, `apps/admin`)에서 import. Canonical class 사용 필수 (`flex-shrink-0` → `shrink-0`, `flex-grow` → `grow`, `overflow-ellipsis` → `text-ellipsis` 등). 상세 컬러 시스템: [`docs/theme.md`](docs/theme.md)
 
 상세 아키텍처: [`docs/architecture.md`](docs/architecture.md)
 
@@ -92,7 +93,8 @@ docs/
 ├── architecture.md   # 시스템 아키텍처, 배포 플로우, 외부 서비스
 ├── ui-specs.md       # PC/Mobile 레이아웃 규칙, 컴포넌트 스펙, 반응형 전략
 ├── database.md       # DB 스키마, 인덱스 권장사항
-└── seo-strategy.md   # SEO, JSON-LD, URL 구조, 이미지 최적화
+├── seo-strategy.md   # SEO, JSON-LD, URL 구조, 이미지 최적화
+└── theme.md          # 컬러 팔레트, 시맨틱 토큰, 테마 사용 가이드
 ```
 
 Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변경이 docs와 불일치하면 quality-reviewer가 REJECT.

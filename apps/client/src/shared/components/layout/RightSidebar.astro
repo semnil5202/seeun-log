@@ -57,7 +57,7 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
                     <span class="inline-block text-[10px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
                       {t("post.sponsored", locale)}
                     </span>
-                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
+                    <p class="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
                       {post.title}
                     </p>
                   </div>
@@ -107,7 +107,7 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
                     <span class="inline-block text-[10px] font-semibold text-secondary-600 bg-secondary-50 px-1.5 py-0.5 rounded mb-1">
                       {t("post.editorsPick", locale)}
                     </span>
-                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
+                    <p class="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
                       {post.title}
                     </p>
                     {post.rating > 0 && (
