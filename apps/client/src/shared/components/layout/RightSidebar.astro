@@ -38,40 +38,87 @@ const { locale, sponsoredPosts = [] } = Astro.props;
 
       {
         sponsoredPosts.length > 0 ? (
-          <ul class="space-y-4" role="list">
-            {sponsoredPosts.map((post) => (
-              <li>
-                <a
-                  href={getLocalePath(
-                    `/${post.category}/${post.sub_category}/${post.slug}/`,
-                    locale
-                  )}
-                  class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
-                >
-                  <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-                    <img
-                      src={post.thumbnail}
-                      alt={post.title}
-                      width={64}
-                      height={64}
-                      loading="lazy"
-                      decoding="async"
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
+          <div class="space-y-4">
+            <ul class="space-y-4" role="list">
+              {sponsoredPosts.slice(0, 2).map((post) => (
+                <li>
+                  <a
+                    href={getLocalePath(
+                      `/${post.category}/${post.sub_category}/${post.slug}/`,
+                      locale
+                    )}
+                    class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
+                  >
+                    <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                      <img
+                        src={post.thumbnail}
+                        alt={post.title}
+                        width={64}
+                        height={64}
+                        loading="lazy"
+                        decoding="async"
+                        class="w-full h-full object-cover"
+                      />
+                    </div>
 
-                  <div class="flex-1 min-w-0">
-                    <span class="inline-block text-[12px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
-                      {t("post.sponsored", locale)}
-                    </span>
-                    <p class="text-body2 font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
-                      {post.title}
-                    </p>
-                  </div>
-                </a>
-              </li>
-            ))}
-          </ul>
+                    <div class="flex-1 min-w-0">
+                      <span class="inline-block text-[12px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
+                        {t("post.sponsored", locale)}
+                      </span>
+                      <p class="text-body2 font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
+                        {post.title}
+                      </p>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div
+              class="w-full h-[100px] bg-gray-100 rounded-xl flex items-center justify-center"
+              role="complementary"
+              aria-label="In-feed advertisement"
+            >
+              <span class="text-body2 text-gray-400 select-none">In-feed Adsense</span>
+            </div>
+
+            {sponsoredPosts.length > 2 && (
+              <ul class="space-y-4" role="list">
+                {sponsoredPosts.slice(2, 4).map((post) => (
+                  <li>
+                    <a
+                      href={getLocalePath(
+                        `/${post.category}/${post.sub_category}/${post.slug}/`,
+                        locale
+                      )}
+                      class="group flex items-start gap-3 hover:opacity-90 transition-opacity duration-150"
+                    >
+                      <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                        <img
+                          src={post.thumbnail}
+                          alt={post.title}
+                          width={64}
+                          height={64}
+                          loading="lazy"
+                          decoding="async"
+                          class="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      <div class="flex-1 min-w-0">
+                        <span class="inline-block text-[12px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
+                          {t("post.sponsored", locale)}
+                        </span>
+                        <p class="text-body2 font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
+                          {post.title}
+                        </p>
+                      </div>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         ) : (
           <p class="text-caption1 text-gray-400 italic" />
         )
