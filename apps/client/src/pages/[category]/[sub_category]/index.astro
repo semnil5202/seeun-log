@@ -12,7 +12,6 @@ import type { CategorySlug } from "@/shared/types/category";
 import {
   getPaginatedPostsBySubCategory,
   getSponsoredPosts,
-  getRecommendedPosts,
 } from "@/features/post-feed/api/posts";
 import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 
@@ -39,14 +38,12 @@ interface Props {
 const { category, sub_category } = Astro.props;
 const locale = DEFAULT_LOCALE;
 
-const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
+const [{ posts, totalPages }, sponsored] = await Promise.all([
   getPaginatedPostsBySubCategory(category, sub_category, 1),
   getSponsoredPosts(),
-  getRecommendedPosts(),
 ]);
 
 const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, locale }));
-const recommendedLocalized: LocalizedPost[] = recommended.map((p) => ({ ...p, locale }));
 
 const categoryLabel = getCategoryLabel(category, locale);
 const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
@@ -70,7 +67,6 @@ const pageDescription = `세은로그 ${categoryLabel} > ${subCategoryLabel} —
   path={path}
   locale={locale}
   sponsoredPosts={sponsoredLocalized}
-  recommendedPosts={recommendedLocalized}
 >
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 

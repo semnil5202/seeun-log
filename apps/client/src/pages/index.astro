@@ -7,18 +7,16 @@ import Pagination from "@/shared/components/navigation/Pagination.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import { DEFAULT_LOCALE } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
-import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/features/post-feed/api/posts";
+import { getPaginatedPosts, getSponsoredPosts } from "@/features/post-feed/api/posts";
 
 const locale = DEFAULT_LOCALE;
 
-const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
+const [{ posts, totalPages }, sponsored] = await Promise.all([
   getPaginatedPosts(1),
   getSponsoredPosts(),
-  getRecommendedPosts(),
 ]);
 
 const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, locale }));
-const recommendedLocalized: LocalizedPost[] = recommended.map((p) => ({ ...p, locale }));
 
 const breadcrumbItems = [{ name: "홈", url: "/" }];
 
@@ -33,7 +31,6 @@ const SITE_DESCRIPTION =
   path="/"
   locale={locale}
   sponsoredPosts={sponsoredLocalized}
-  recommendedPosts={recommendedLocalized}
 >
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 

@@ -15,7 +15,6 @@ interface Props {
   path: string;
   ogImage?: string;
   sponsoredPosts?: LocalizedPost[];
-  recommendedPosts?: LocalizedPost[];
 }
 
 const {
@@ -26,7 +25,6 @@ const {
   path,
   ogImage,
   sponsoredPosts = [],
-  recommendedPosts = [],
 } = Astro.props;
 ---
 
@@ -43,7 +41,6 @@ const {
   <ThreeColumnLayout
     locale={locale}
     sponsoredPosts={sponsoredPosts}
-    recommendedPosts={recommendedPosts}
   >
     <slot />
   </ThreeColumnLayout>

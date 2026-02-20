@@ -9,15 +9,14 @@ import type { LocalizedPost } from "@/shared/types/post";
 interface Props {
   locale: Locale;
   sponsoredPosts?: LocalizedPost[];
-  recommendedPosts?: LocalizedPost[];
 }
 
-const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
+const { locale, sponsoredPosts = [] } = Astro.props;
 ---
 
 <div class="max-w-screen-xl mx-auto px-4 lg:px-6">
 
-  <div class="grid grid-cols-1 lg:grid-cols-[240px_1fr_280px] gap-0 lg:gap-8 min-h-screen">
+  <div class="grid grid-cols-1 lg:grid-cols-[180px_1fr_336px] gap-0 lg:gap-8 min-h-screen">
 
     <LeftSidebar locale={locale} />
 
@@ -28,7 +27,6 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
     <RightSidebar
       locale={locale}
       sponsoredPosts={sponsoredPosts}
-      recommendedPosts={recommendedPosts}
     />
 
   </div>

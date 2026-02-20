@@ -8,7 +8,7 @@ import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
-import { getPaginatedPosts, getSponsoredPosts, getRecommendedPosts } from "@/features/post-feed/api/posts";
+import { getPaginatedPosts, getSponsoredPosts } from "@/features/post-feed/api/posts";
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { t } from "@/shared/lib/i18n/translations";
 
@@ -27,18 +27,14 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const [{ posts, totalPages }, sponsored, recommended] = await Promise.all([
+const [{ posts, totalPages }, sponsored] = await Promise.all([
   getPaginatedPosts(1),
   getSponsoredPosts(),
-  getRecommendedPosts(),
 ]);
 
 const localizedPosts = await Promise.all(posts.map((p) => getLocalizedPost(p, locale)));
 const sponsoredLocalized: LocalizedPost[] = await Promise.all(
   sponsored.map((p) => getLocalizedPost(p, locale))
-);
-const recommendedLocalized: LocalizedPost[] = await Promise.all(
-  recommended.map((p) => getLocalizedPost(p, locale))
 );
 
 const canonical = `/${locale}/`;
@@ -59,7 +55,6 @@ const SITE_DESCRIPTION =
   path={path}
   locale={locale}
   sponsoredPosts={sponsoredLocalized}
-  recommendedPosts={recommendedLocalized}
 >
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 
