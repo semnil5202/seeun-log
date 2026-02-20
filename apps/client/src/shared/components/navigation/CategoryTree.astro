@@ -39,7 +39,7 @@ const categories = getCategoryTree(locale);
           {/* Category top-level link */}
           <a
             href={getLocalePath(`/${category.slug}/`, locale)}
-            class="block font-semibold text-gray-900 hover:text-rose-500 transition-colors duration-150 text-sm uppercase tracking-wide"
+            class="block font-semibold text-gray-900 hover:text-primary-500 transition-colors duration-150 text-sm uppercase tracking-wide"
           >
             {category.label}
           </a>
@@ -50,7 +50,7 @@ const categories = getCategoryTree(locale);
               <li>
                 <a
                   href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
-                  class="block text-sm text-gray-600 hover:text-rose-500 transition-colors duration-150 py-0.5"
+                  class="block text-sm text-gray-600 hover:text-primary-500 transition-colors duration-150 py-0.5"
                 >
                   {sub.label}
                 </a>

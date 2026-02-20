@@ -54,10 +54,10 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
                   </div>
 
                   <div class="flex-1 min-w-0">
-                    <span class="inline-block text-[10px] font-semibold text-rose-400 bg-rose-50 px-1.5 py-0.5 rounded mb-1">
+                    <span class="inline-block text-[10px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
                       {t("post.sponsored", locale)}
                     </span>
-                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-rose-500 transition-colors duration-150 leading-snug">
+                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
                       {post.title}
                     </p>
                   </div>
@@ -104,10 +104,10 @@ const { locale, sponsoredPosts = [], recommendedPosts = [] } = Astro.props;
                   </div>
 
                   <div class="flex-1 min-w-0">
-                    <span class="inline-block text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded mb-1">
+                    <span class="inline-block text-[10px] font-semibold text-secondary-600 bg-secondary-50 px-1.5 py-0.5 rounded mb-1">
                       {t("post.editorsPick", locale)}
                     </span>
-                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-rose-500 transition-colors duration-150 leading-snug">
+                    <p class="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
                       {post.title}
                     </p>
                     {post.rating > 0 && (

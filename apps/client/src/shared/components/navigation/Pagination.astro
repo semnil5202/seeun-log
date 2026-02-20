@@ -66,7 +66,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
   ) : (
     <a
       href={pageHref(currentPage - 1)}
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
       aria-label={prevLabel}
       rel="prev"
     >
@@ -81,7 +81,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
     const isCurrent = page === currentPage;
     return isCurrent ? (
       <span
-        class="inline-flex items-center justify-center w-9 h-9 text-sm font-bold text-white bg-rose-500 border border-rose-500 rounded-lg"
+        class="inline-flex items-center justify-center w-9 h-9 text-sm font-bold text-white bg-primary-500 border border-primary-500 rounded-lg"
         aria-current="page"
         aria-label={`Page ${page}`}
       >
@@ -90,7 +90,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
     ) : (
       <a
         href={pageHref(page)}
-        class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+        class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
         aria-label={`Page ${page}`}
       >
         {page}
@@ -112,7 +112,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
   ) : (
     <a
       href={pageHref(currentPage + 1)}
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
       aria-label={nextLabel}
       rel="next"
     >

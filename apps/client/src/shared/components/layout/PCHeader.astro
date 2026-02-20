@@ -22,7 +22,7 @@ const homeHref = getLocalePath("/", locale);
 
     <a
       href={homeHref}
-      class="shrink-0 text-xl font-bold text-rose-500 tracking-tight hover:text-rose-600 transition-colors duration-150"
+      class="shrink-0 text-xl font-bold text-primary-600 tracking-tight hover:text-primary-700 transition-colors duration-150"
       aria-label="세은로그 홈으로 이동"
     >
       세은로그
@@ -34,7 +34,7 @@ const homeHref = getLocalePath("/", locale);
           <>
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
-              class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-rose-500 transition-colors duration-150 rounded-md hover:bg-rose-50"
+              class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-primary-500 transition-colors duration-150 rounded-md hover:bg-primary-50"
             >
               {category.label}
             </a>
@@ -50,7 +50,7 @@ const homeHref = getLocalePath("/", locale);
 
       <details class="relative group">
         <summary
-          class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-rose-500 transition-colors duration-150 cursor-pointer list-none select-none"
+          class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-primary-500 transition-colors duration-150 cursor-pointer list-none select-none"
           aria-label={t("nav.language", locale)}
         >
           <svg
@@ -91,8 +91,8 @@ const homeHref = getLocalePath("/", locale);
                 href={getLocalePath("/", loc)}
                 class={`block px-4 py-2 text-sm transition-colors duration-100 ${
                   loc === locale
-                    ? "text-rose-500 font-semibold bg-rose-50"
-                    : "text-gray-700 hover:bg-gray-50 hover:text-rose-500"
+                    ? "text-primary-500 font-semibold bg-primary-50"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-primary-500"
                 }`}
                 hreflang={loc}
                 lang={loc}
@@ -106,7 +106,7 @@ const homeHref = getLocalePath("/", locale);
 
       <a
         href={getLocalePath("/search/", locale)}
-        class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-rose-500 transition-colors duration-150 rounded-md hover:bg-rose-50"
+        class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md hover:bg-primary-50"
         aria-label={t("nav.search", locale)}
       >
         <svg
