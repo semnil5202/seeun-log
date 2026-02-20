@@ -1,5 +1,5 @@
 ---
-/** 포스트 피드를 단일 컬럼 리스트로 렌더링한다. 모바일 인피드 광고 슬롯 포함. */
+/** 포스트 피드를 단일 컬럼 리스트로 렌더링한다. 2번째, 6번째 슬롯에 인피드 광고 삽입. */
 import type { Post } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import PostCard from "./PostCard.astro";
@@ -12,36 +12,33 @@ interface Props {
 
 const { posts, locale } = Astro.props;
 
-type GridItem =
+type FeedItem =
   | { type: "post"; post: Post; cardIndex: number }
-  | { type: "ad"; adIndex: number };
+  | { type: "ad" };
 
-const gridItems: GridItem[] = [];
+const feedItems: FeedItem[] = [];
 let cardIndex = 0;
 
 for (let i = 0; i < posts.length; i++) {
-  if (cardIndex === 1 || cardIndex === 3) {
-    gridItems.push({ type: "ad", adIndex: cardIndex === 1 ? 1 : 2 });
+  if (cardIndex === 1 || cardIndex === 5) {
+    feedItems.push({ type: "ad" });
   }
 
-  gridItems.push({ type: "post", post: posts[i]!, cardIndex });
+  feedItems.push({ type: "post", post: posts[i]!, cardIndex });
   cardIndex++;
 }
 ---
 
 <div class="flex flex-col gap-10">
-  {gridItems.map((item) => {
+  {feedItems.map((item) => {
     if (item.type === "ad") {
       return (
         <div
-          class="block lg:hidden"
-          aria-label={`Advertisement ${item.adIndex}`}
           role="complementary"
+          aria-label="Advertisement"
         >
-          <div class="w-full min-h-[100px] bg-gray-100 rounded-xl flex items-center justify-center border border-dashed border-gray-300">
-            <span class="text-xs text-gray-400 font-normal tracking-wide uppercase select-none">
-              Ad
-            </span>
+          <div class="w-full h-[250px] bg-gray-100 rounded-xl flex items-center justify-center">
+            <span class="text-body2 text-gray-400 select-none">In-feed Adsense</span>
           </div>
         </div>
       );
