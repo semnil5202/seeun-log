@@ -68,7 +68,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
       href={pageHref(currentPage - 1)}
       class="inline-flex items-center px-3 py-2 text-sm font-normal text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
       aria-label={prevLabel}
-      rel="prev"
+      rel={currentPage - 1 <= 1 ? "prev" : "prev nofollow"}
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1" aria-hidden="true">
         <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -92,6 +92,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
         href={pageHref(page)}
         class="inline-flex items-center justify-center w-9 h-9 text-sm font-normal text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
         aria-label={`Page ${page}`}
+        rel={page <= 1 ? undefined : "nofollow"}
       >
         {page}
       </a>
@@ -114,7 +115,7 @@ for (let p = rangeStart; p <= rangeEnd; p++) {
       href={pageHref(currentPage + 1)}
       class="inline-flex items-center px-3 py-2 text-sm font-normal text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-primary-600 hover:border-primary-300 transition-colors"
       aria-label={nextLabel}
-      rel="next"
+      rel="next nofollow"
     >
       {nextLabel}
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1" aria-hidden="true">
