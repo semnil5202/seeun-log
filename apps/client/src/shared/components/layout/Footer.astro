@@ -1,7 +1,7 @@
 ---
-/** 사이트 푸터. 모바일에서는 CategoryTree 사이트맵을 표시하여 SEO 크롤링을 보장한다. */
+/** 사이트 푸터. 모바일에서는 카테고리를 가로로 나열하여 SEO 크롤링을 보장한다. */
 
-import CategoryTree from "@/shared/components/navigation/CategoryTree.astro";
+import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import type { Locale } from "@/shared/types/common";
@@ -13,22 +13,43 @@ interface Props {
 const { locale } = Astro.props;
 
 const currentYear = new Date().getFullYear();
+const categories = getCategoryTree(locale);
 ---
 
 <footer class="bg-gray-50 border-t border-gray-200 mt-16">
 
   <div class="block lg:hidden px-4 pt-8 pb-6">
-    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
-      {t("footer.sitemap", locale)}
-    </h2>
-    <CategoryTree locale={locale} class="text-sm" />
+    <nav aria-label="Footer category navigation">
+      {
+        categories.map((category) => (
+          <div class="mb-4">
+            <a
+              href={getLocalePath(`/${category.slug}/`, locale)}
+              class="text-body2 font-bold text-gray-900 uppercase tracking-wide hover:text-primary-500 transition-colors duration-150"
+            >
+              {category.label}
+            </a>
+            <div class="mt-2 flex flex-wrap gap-2">
+              {category.subCategories.map((sub) => (
+                <a
+                  href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
+                  class="text-body2 text-gray-600 hover:text-primary-500 transition-colors duration-150"
+                >
+                  {sub.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </nav>
   </div>
 
   <div class="block lg:hidden mx-4 border-t border-gray-200" />
 
   <div class="max-w-screen-xl mx-auto px-4 lg:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
 
-    <small class="text-xs text-gray-500 order-2 sm:order-1">
+    <small class="text-body2 text-gray-500 order-2 sm:order-1">
       {currentYear} {t("footer.copyright", locale)}. All rights reserved.
     </small>
 
@@ -38,13 +59,13 @@ const currentYear = new Date().getFullYear();
     >
       <a
         href={getLocalePath("/privacy/", locale)}
-        class="text-xs text-gray-500 hover:text-primary-500 transition-colors duration-150"
+        class="text-body2 text-gray-500 hover:text-primary-500 transition-colors duration-150"
       >
         {t("footer.privacy", locale)}
       </a>
       <a
         href={getLocalePath("/sitemap.xml", locale)}
-        class="hidden lg:inline text-xs text-gray-500 hover:text-primary-500 transition-colors duration-150"
+        class="text-body2 text-gray-500 hover:text-primary-500 transition-colors duration-150"
         aria-label="XML Sitemap"
       >
         {t("footer.sitemap", locale)}

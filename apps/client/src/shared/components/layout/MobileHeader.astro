@@ -1,10 +1,9 @@
 ---
-/** 모바일 전용 헤더. 카테고리 snap-scroll 네비게이션을 포함한다. */
+/** 모바일 전용 헤더. PC 헤더와 동일한 디자인으로 카테고리 top-level만 표시한다. */
 
 import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
-import { LOCALES, LOCALE_LABELS } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
 
 interface Props {
@@ -18,58 +17,35 @@ const homeHref = getLocalePath("/", locale);
 ---
 
 <header class="w-full bg-white border-b border-gray-100">
-  <div class="flex items-center h-14 px-4 gap-3">
+  <div class="flex items-center h-14 px-4 gap-4">
 
     <a
       href={homeHref}
-      class="shrink-0 text-body1 font-bold text-primary-600 tracking-tight hover:text-primary-700 transition-colors duration-150"
+      class="shrink-0 text-title2 font-bold text-primary-600 tracking-tight hover:text-primary-700 transition-colors duration-150"
       aria-label="세은로그 홈으로 이동"
     >
       세은로그
     </a>
 
-    <nav
-      aria-label="Category navigation"
-      class="flex-1 min-w-0 overflow-x-auto flex items-center gap-1 scroll-smooth"
-      style="
-        scroll-snap-type: x mandatory;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        mask-image: linear-gradient(to right, black 85%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
-      "
-    >
+    <nav aria-label="Main navigation" class="flex items-center gap-1">
       {
-        categories.map((category) => (
+        categories.map((category, index) => (
           <>
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
-              class="shrink-0 scroll-snap-align-start px-3 py-1.5 rounded-full text-caption1 font-bold text-white bg-primary-500 hover:bg-primary-600 transition-colors duration-150 whitespace-nowrap"
-              style="scroll-snap-align: start;"
-              data-category={category.slug}
+              class="px-2.5 py-1.5 text-body2 font-semibold text-gray-700 hover:text-primary-500 transition-colors duration-150 rounded-md hover:bg-primary-50"
             >
               {category.label}
             </a>
-
-            {category.subCategories.map((sub) => (
-              <a
-                href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
-                class="shrink-0 px-3 py-1.5 rounded-full text-caption1 font-normal text-gray-600 bg-gray-100 hover:bg-primary-50 hover:text-primary-500 transition-colors duration-150 whitespace-nowrap"
-                style="scroll-snap-align: start;"
-                data-category={category.slug}
-                data-sub-category={sub.slug}
-              >
-                {sub.label}
-              </a>
-            ))}
+            {index < categories.length - 1 && (
+              <span class="text-gray-300 select-none" aria-hidden="true">|</span>
+            )}
           </>
         ))
       }
-
-      <span class="shrink-0 w-12 aria-hidden" aria-hidden="true" />
     </nav>
 
-    <div class="shrink-0 flex items-center gap-2">
+    <div class="ml-auto shrink-0 flex items-center gap-2">
 
       <a
         href={getLocalePath("/", locale)}
@@ -117,10 +93,3 @@ const homeHref = getLocalePath("/", locale);
     </div>
   </div>
 </header>
-
-{/* Hide scrollbar for webkit browsers — must be in a <style> block */}
-<style>
-  nav::-webkit-scrollbar {
-    display: none;
-  }
-</style>
