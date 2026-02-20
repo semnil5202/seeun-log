@@ -137,19 +137,19 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Typography — base 16px */
-  --text-headline1: 28px;
-  --text-headline1--line-height: 36px;
-  --text-headline2: 24px;
-  --text-headline2--line-height: 32px;
-  --text-title1: 20px;
-  --text-title1--line-height: 28px;
-  --text-title2: 18px;
-  --text-title2--line-height: 26px;
-  --text-body1: 16px;
-  --text-body1--line-height: 24px;
-  --text-body2: 14px;
-  --text-body2--line-height: 20px;
-  --text-caption1: 12px;
-  --text-caption1--line-height: 16px;
+  /* Typography — base 18px */
+  --text-headline1: 30px;
+  --text-headline1--line-height: 38px;
+  --text-headline2: 26px;
+  --text-headline2--line-height: 34px;
+  --text-title1: 22px;
+  --text-title1--line-height: 30px;
+  --text-title2: 20px;
+  --text-title2--line-height: 28px;
+  --text-body1: 18px;
+  --text-body1--line-height: 26px;
+  --text-body2: 16px;
+  --text-body2--line-height: 22px;
+  --text-caption1: 14px;
+  --text-caption1--line-height: 18px;
 }

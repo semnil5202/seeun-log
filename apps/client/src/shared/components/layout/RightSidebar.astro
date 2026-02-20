@@ -25,13 +25,13 @@ const { locale, sponsoredPosts = [] } = Astro.props;
       role="complementary"
       aria-label="Advertisement"
     >
-      <span class="text-sm text-gray-400 select-none">Adsense</span>
+      <span class="text-body2 text-gray-400 select-none">Adsense</span>
     </div>
 
     <section aria-labelledby="sidebar-sponsored-heading">
       <h2
         id="sidebar-sponsored-heading"
-        class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 pb-2 border-b border-gray-100"
+        class="text-caption1 font-bold text-gray-400 uppercase tracking-widest mb-3 pb-2 border-b border-gray-100"
       >
         {t("sidebar.sponsored", locale)}
       </h2>
@@ -61,10 +61,10 @@ const { locale, sponsoredPosts = [] } = Astro.props;
                   </div>
 
                   <div class="flex-1 min-w-0">
-                    <span class="inline-block text-[10px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
+                    <span class="inline-block text-[12px] font-semibold text-primary-400 bg-primary-50 px-1.5 py-0.5 rounded mb-1">
                       {t("post.sponsored", locale)}
                     </span>
-                    <p class="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
+                    <p class="text-body2 font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-500 transition-colors duration-150 leading-snug">
                       {post.title}
                     </p>
                   </div>
@@ -73,7 +73,7 @@ const { locale, sponsoredPosts = [] } = Astro.props;
             ))}
           </ul>
         ) : (
-          <p class="text-xs text-gray-400 italic" />
+          <p class="text-caption1 text-gray-400 italic" />
         )
       }
     </section>
