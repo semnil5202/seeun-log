@@ -55,7 +55,7 @@ const { items, locale } = Astro.props;
         >
           {isLast ? (
             <span
-              class="font-semibold text-gray-800 truncate max-w-[200px]"
+              class="font-semibold text-gray-800"
               aria-current="page"
               itemprop="name"
             >
@@ -65,7 +65,7 @@ const { items, locale } = Astro.props;
             <>
               <a
                 href={localizedHref}
-                class="hover:text-primary-600 hover:underline underline-offset-2 transition-colors truncate max-w-[120px]"
+                class="hover:text-primary-600 hover:underline underline-offset-2 transition-colors"
                 itemprop="item"
               >
                 <span itemprop="name">{item.name}</span>
