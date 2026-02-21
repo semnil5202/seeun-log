@@ -63,7 +63,8 @@ pnpm --filter @seeun-log/client dev # client만 실행
 
 - **PC (lg 이상)**: 3-Column — Left Sidebar (카테고리 트리 전체 펼침) / Main (카드 피드) / Right Sidebar (협찬, Pick)
 - **Mobile (lg 미만)**: Header에 수평 snap scroll 네비게이션. In-Feed Ad는 index 1, 3에 삽입.
-- **금지 사항**: 햄버거 메뉴, Drawer Sidebar, 무한 스크롤
+- **금지 사항**: 햄버거 메뉴, Drawer Sidebar
+- **피드 로딩**: 무한스크롤 (SSG 첫 페이지 + Static JSON fetch로 추가 로드)
 - **반응형 전환**: `hidden lg:block` / `block lg:hidden`으로 CSS 토글. 별도 HTML 구조 금지.
 - **Mobile Footer**: Left Sidebar 대체 — 전체 서브카테고리 링크 필수 (SEO)
 

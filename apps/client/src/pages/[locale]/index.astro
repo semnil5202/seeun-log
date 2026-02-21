@@ -3,7 +3,6 @@
 
 import ListLayout from "@/layouts/ListLayout.astro";
 import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
-import Pagination from "@/shared/components/navigation/Pagination.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
@@ -58,14 +57,11 @@ const SITE_DESCRIPTION =
 >
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 
-  <PostCardGrid posts={localizedPosts} locale={locale} />
-
-  {totalPages > 1 && (
-    <Pagination
-      currentPage={1}
-      totalPages={totalPages}
-      baseUrl={canonical}
-      locale={locale}
-    />
-  )}
+  <PostCardGrid
+    posts={localizedPosts}
+    locale={locale}
+    feedEndpoint={`/api/feed/${locale}/all/`}
+    hasNextPage={totalPages > 1}
+    sponsoredLabel={t("post.sponsored", locale)}
+  />
 </ListLayout>

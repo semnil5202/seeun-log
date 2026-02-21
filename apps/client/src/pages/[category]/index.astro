@@ -3,7 +3,6 @@
 
 import ListLayout from "@/layouts/ListLayout.astro";
 import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
-import Pagination from "@/shared/components/navigation/Pagination.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import { DEFAULT_LOCALE } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
@@ -14,6 +13,7 @@ import {
   getSponsoredPosts,
 } from "@/features/post-feed/api/posts";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
+import { t } from "@/shared/lib/i18n/translations";
 
 export async function getStaticPaths() {
   return CATEGORY_SLUGS.map((category) => ({
@@ -59,14 +59,11 @@ const pageDescription = `세은로그 ${categoryLabel} 카테고리 — 커플�
 >
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
 
-  <PostCardGrid posts={posts} locale={locale} />
-
-  {totalPages > 1 && (
-    <Pagination
-      currentPage={1}
-      totalPages={totalPages}
-      baseUrl={canonical}
-      locale={locale}
-    />
-  )}
+  <PostCardGrid
+    posts={posts}
+    locale={locale}
+    feedEndpoint={`/api/feed/${locale}/${category}/`}
+    hasNextPage={totalPages > 1}
+    sponsoredLabel={t("post.sponsored", locale)}
+  />
 </ListLayout>

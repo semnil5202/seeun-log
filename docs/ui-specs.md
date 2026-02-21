@@ -9,9 +9,8 @@
 ### Color System
 
 - **Primary**: Sage Green (`primary-50` ~ `primary-900`, base `#A6BAA1`)
-- **Secondary**: Soft Coral (`secondary-50` ~ `secondary-900`, base `#D4A594`)
 - **Logo**: `primary-600` (`#6F8B68`), hover `primary-700`
-- **협찬/Editor's Pick UI**: Secondary 계열
+- **추천 UI**: Primary 계열
 - **별점**: Yellow (범용 컨벤션)
 
 테마 토큰 정의: `packages/config/theme.css` | 상세 가이드: [`docs/theme.md`](theme.md)
@@ -54,7 +53,7 @@
 | (모두 펼침)           |  [Post Card 3]                                |  [Sponsored Ad 1]     |
 |                       |  ...                                          |  [Editor's Pick 1]    |
 | ▾ 맛집               |                                               |                       |
-|   한식 / 양식 / ...   |  [Pagination: < Prev 1 2 3 Next >]            |                       |
+|   한식 / 양식 / ...   |  [Infinite Scroll: 스크롤 시 추가 로드]        |                       |
 | ▾ 카페               |                                               |                       |
 |   핫플 / 카공         |                                               |                       |
 | ▾ 여행               |                                               |                       |
@@ -70,7 +69,7 @@
 ### PC 핵심 규칙
 
 - Left Sidebar: Category Tree 항상 전체 펼침
-- Main: Card 형태 피드, 페이지네이션 (무한 스크롤 금지)
+- Main: Card 형태 피드, 무한스크롤 (SSG 첫 페이지 + Static JSON fetch)
 - Right Sidebar: 협찬/광고 + Editor's Pick
 
 ---
@@ -106,7 +105,7 @@
    - SSG 빌드 시 index 1, 3에 광고 삽입
    - CSS `lg:hidden` / `hidden lg:block`으로 visibility 토글 (별도 HTML 구조 금지)
 
-3. **Pagination**: `< 이전 1 2 3 다음 >` (무한 스크롤 금지)
+3. **피드 로딩**: 무한스크롤 (SSG 첫 페이지 + Static JSON fetch로 추가 로드)
 
 4. **Footer (SEO Enhanced)**: Left Sidebar 대체 — 전체 서브카테고리 텍스트 링크 필수
 

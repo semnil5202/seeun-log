@@ -8,9 +8,12 @@ import SponsoredCard from "./SponsoredCard.astro";
 interface Props {
   posts: Post[];
   locale: Locale;
+  feedEndpoint?: string;
+  hasNextPage?: boolean;
+  sponsoredLabel?: string;
 }
 
-const { posts, locale } = Astro.props;
+const { posts, locale, feedEndpoint, hasNextPage = false, sponsoredLabel = "" } = Astro.props;
 
 type FeedItem =
   | { type: "post"; post: Post; cardIndex: number }
@@ -29,7 +32,14 @@ for (let i = 0; i < posts.length; i++) {
 }
 ---
 
-<div class="flex flex-col gap-10">
+<div
+  id="post-feed"
+  class="flex flex-col gap-10"
+  data-feed-endpoint={feedEndpoint}
+  data-next-page="2"
+  data-has-next={String(hasNextPage)}
+  data-sponsored-label={sponsoredLabel}
+>
   {feedItems.map((item) => {
     if (item.type === "ad") {
       return (
@@ -63,3 +73,141 @@ for (let i = 0; i < posts.length; i++) {
     );
   })}
 </div>
+
+{feedEndpoint && (
+  <div id="feed-sentinel" class="flex items-center justify-center py-8">
+    <div id="feed-loader" class="w-8 h-8 border-3 border-gray-200 border-t-primary-400 rounded-full animate-spin" />
+  </div>
+)}
+
+{feedEndpoint && (
+  <script>
+    const feed = document.getElementById("post-feed");
+    const sentinel = document.getElementById("feed-sentinel");
+    const loader = document.getElementById("feed-loader");
+
+    if (feed && sentinel) {
+      const endpoint = feed.dataset.feedEndpoint!;
+      let nextPage = parseInt(feed.dataset.nextPage!, 10);
+      let hasNext = feed.dataset.hasNext === "true";
+      let loading = false;
+      const sponsoredLabel = feed.dataset.sponsoredLabel || "";
+
+      function createAdSlot(): HTMLDivElement {
+        const wrapper = document.createElement("div");
+        wrapper.setAttribute("role", "complementary");
+        wrapper.setAttribute("aria-label", "Advertisement");
+        const inner = document.createElement("div");
+        inner.className = "w-full h-[250px] bg-gray-100 rounded-xl flex items-center justify-center";
+        const span = document.createElement("span");
+        span.className = "text-body2 text-gray-400 select-none";
+        span.textContent = "In-feed Adsense";
+        inner.appendChild(span);
+        wrapper.appendChild(inner);
+        return wrapper;
+      }
+
+      function createPostCard(post: any): HTMLElement {
+        const article = document.createElement("article");
+        article.className = "group";
+
+        const isSponsored = post.isSponsored;
+        const hoverClass = isSponsored
+          ? "group-hover:text-primary-600 transition-colors"
+          : "group-hover:text-primary-600 transition-colors";
+
+        let badgeHtml = "";
+        if (isSponsored) {
+          badgeHtml = `<span class="absolute top-3 left-3 text-xs font-bold text-white bg-primary-400 rounded-full px-2.5 py-0.5">${sponsoredLabel}</span>`;
+        }
+
+        const placeHtml = post.placeName
+          ? `<span aria-hidden="true">&middot;</span><span>${post.placeName}</span>`
+          : "";
+
+        article.innerHTML = `
+          <a href="${post.href}" class="block">
+            <div class="${isSponsored ? "relative " : ""}w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
+              <img
+                src="${post.thumbnail}"
+                alt="${post.title}"
+                width="640"
+                height="180"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                decoding="async"
+              />
+              ${badgeHtml}
+            </div>
+            <div class="mt-4 flex flex-col gap-2">
+              <h2 class="text-title2 font-bold text-gray-900 line-clamp-2 ${hoverClass}">
+                ${post.title}
+              </h2>
+              <p class="text-body2 text-gray-500 line-clamp-2">${post.description}</p>
+              <div class="flex items-center gap-1.5 text-caption1 text-gray-400">
+                <time>${post.dateStr}</time>
+                ${placeHtml}
+                <span aria-hidden="true">&middot;</span>
+                <span>${post.categoryLabel}</span>
+              </div>
+            </div>
+          </a>
+        `;
+
+        return article;
+      }
+
+      async function loadNextPage() {
+        if (loading || !hasNext) return;
+        loading = true;
+
+        try {
+          const res = await fetch(`${endpoint}${nextPage}.json`);
+          if (!res.ok) {
+            hasNext = false;
+            sentinel.remove();
+            return;
+          }
+
+          const data = await res.json();
+          const posts: any[] = data.posts;
+          hasNext = data.hasNext;
+
+          let localIndex = 0;
+          for (const post of posts) {
+            if (localIndex === 1 || localIndex === 5) {
+              feed.appendChild(createAdSlot());
+            }
+            feed.appendChild(createPostCard(post));
+            localIndex++;
+          }
+
+          nextPage++;
+
+          if (!hasNext) {
+            sentinel.remove();
+          }
+        } catch {
+          hasNext = false;
+          sentinel.remove();
+        } finally {
+          loading = false;
+        }
+      }
+
+      if (hasNext) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (entries[0]?.isIntersecting) {
+              loadNextPage();
+            }
+          },
+          { rootMargin: "200px" },
+        );
+        observer.observe(sentinel);
+      } else {
+        sentinel.remove();
+      }
+    }
+  </script>
+)}
