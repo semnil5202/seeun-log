@@ -1,5 +1,5 @@
 ---
-/** 협찬 포스트 카드. secondary 컬러 배지로 일반 카드와 시각적으로 구분한다. */
+/** 추천 포스트 카드. primary 컬러 배지로 일반 카드와 시각적으로 구분한다. */
 import type { Post } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
@@ -41,13 +41,13 @@ const dateStr = new Date(post.created_at).toLocaleDateString(locale, {
         decoding={isLcp ? "sync" : "async"}
       />
 
-      <span class="absolute top-3 left-3 text-xs font-bold text-white bg-secondary-400 rounded-full px-2.5 py-0.5">
+      <span class="absolute top-3 left-3 text-xs font-bold text-white bg-primary-400 rounded-full px-2.5 py-0.5">
         {sponsoredLabel}
       </span>
     </div>
 
     <div class="mt-4 flex flex-col gap-2">
-      <h2 class="text-title2 font-bold text-gray-900 line-clamp-2 group-hover:text-secondary-600 transition-colors">
+      <h2 class="text-title2 font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
         {post.title}
       </h2>
 

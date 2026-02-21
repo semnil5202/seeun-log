@@ -32,17 +32,6 @@
   --color-primary-800: #40543d;
   --color-primary-900: #2a3928;
 
-  /* Secondary — Soft Coral (base: #D4A594) */
-  --color-secondary-50: #fdf6f3;
-  --color-secondary-100: #faeae4;
-  --color-secondary-200: #f3d2c6;
-  --color-secondary-300: #e8b9a9;
-  --color-secondary-400: #d4a594;
-  --color-secondary-500: #bf8a78;
-  --color-secondary-600: #a5705e;
-  --color-secondary-700: #875849;
-  --color-secondary-800: #664136;
-  --color-secondary-900: #462c25;
 
   /* Gray */
   --color-gray-0: #ffffff;
@@ -100,12 +89,6 @@
   --color-primary-strong: var(--color-primary-500);
   --color-primary-heavy: var(--color-primary-700);
 
-  /* Semantic — Secondary */
-  --color-secondary-extralight: var(--color-secondary-50);
-  --color-secondary-light: var(--color-secondary-100);
-  --color-secondary-normal: var(--color-secondary-400);
-  --color-secondary-strong: var(--color-secondary-500);
-  --color-secondary-heavy: var(--color-secondary-700);
 
   /* Semantic — Label */
   --color-label-inverse: var(--color-gray-0);

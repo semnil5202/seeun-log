@@ -81,7 +81,7 @@ const publishDate = new Date(post.created_at).toLocaleDateString(locale, {
         {(post.is_sponsored || post.is_recommended) && (
           <div class="flex gap-2 mb-3">
             {post.is_sponsored && (
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-secondary-100 text-secondary-800">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
                 {sponsoredLabel}
               </span>
             )}
