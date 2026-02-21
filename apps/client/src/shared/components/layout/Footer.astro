@@ -16,24 +16,24 @@ const currentYear = new Date().getFullYear();
 const categories = getCategoryTree(locale);
 ---
 
-<footer class="bg-gray-50 border-t border-gray-200 mt-16">
+<footer class="bg-gray-50 border-t border-gray-200 mt-12">
 
-  <div class="block lg:hidden px-4 pt-8 pb-6">
+  <div class="block lg:hidden px-4 pt-5 pb-4">
     <nav aria-label="Footer category navigation">
       {
         categories.map((category) => (
-          <div class="mb-4">
+          <div class="mb-3">
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
-              class="text-body2 font-bold text-gray-900 uppercase tracking-wide hover:text-primary-500 transition-colors duration-150"
+              class="text-[12px] font-bold text-gray-900 uppercase tracking-wide hover:text-primary-500 transition-colors duration-150"
             >
               {category.label}
             </a>
-            <div class="mt-2 flex flex-wrap gap-2">
+            <div class="mt-1.5 flex flex-wrap gap-2">
               {category.subCategories.map((sub) => (
                 <a
                   href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
-                  class="text-body2 text-gray-600 hover:text-primary-500 transition-colors duration-150"
+                  class="text-[12px] text-gray-600 hover:text-primary-500 transition-colors duration-150"
                 >
                   {sub.label}
                 </a>
@@ -47,25 +47,26 @@ const categories = getCategoryTree(locale);
 
   <div class="block lg:hidden mx-4 border-t border-gray-200" />
 
-  <div class="max-w-screen-xl mx-auto px-4 lg:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <div class="max-w-screen-xl mx-auto px-4 lg:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
 
-    <small class="text-body2 text-gray-500 order-2 sm:order-1">
+    <small class="text-[12px] text-gray-500 order-2 sm:order-1">
       {currentYear} {t("footer.copyright", locale)}. All rights reserved.
     </small>
 
     <nav
       aria-label="Footer navigation"
-      class="flex items-center gap-4 order-1 sm:order-2"
+      class="flex items-center gap-3 order-1 sm:order-2"
     >
       <a
         href={getLocalePath("/privacy/", locale)}
-        class="text-body2 text-gray-500 hover:text-primary-500 transition-colors duration-150"
+        class="text-[12px] text-gray-500 hover:text-primary-500 transition-colors duration-150"
       >
         {t("footer.privacy", locale)}
       </a>
+      <span class="text-gray-300 select-none" aria-hidden="true">|</span>
       <a
         href={getLocalePath("/sitemap.xml", locale)}
-        class="text-body2 text-gray-500 hover:text-primary-500 transition-colors duration-150"
+        class="text-[12px] text-gray-500 hover:text-primary-500 transition-colors duration-150"
         aria-label="XML Sitemap"
       >
         {t("footer.sitemap", locale)}
