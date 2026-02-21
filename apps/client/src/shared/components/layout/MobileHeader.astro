@@ -4,7 +4,9 @@
 import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
+import { DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
+import { CATEGORY_SLUGS, type CategorySlug } from "@/shared/types/category";
 
 interface Props {
   locale: Locale;
@@ -14,6 +16,11 @@ const { locale } = Astro.props;
 
 const categories = getCategoryTree(locale);
 const homeHref = getLocalePath("/", locale);
+
+const segments = Astro.url.pathname.split("/").filter(Boolean);
+if (locale !== DEFAULT_LOCALE && segments[0] === locale) segments.shift();
+const activeCategory: CategorySlug | null =
+  CATEGORY_SLUGS.includes(segments[0] as CategorySlug) ? (segments[0] as CategorySlug) : null;
 ---
 
 <header class="w-full bg-white border-b border-gray-100">
@@ -33,7 +40,13 @@ const homeHref = getLocalePath("/", locale);
           <>
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
-              class="px-2.5 py-1.5 text-body2 font-semibold text-gray-700 hover:text-primary-500 transition-colors duration-150 rounded-md hover:bg-primary-50"
+              class:list={[
+                "px-2.5 py-1.5 text-body2 font-semibold transition-colors duration-150 rounded-md hover:bg-primary-50",
+                activeCategory === category.slug
+                  ? "text-primary-600"
+                  : "text-gray-700 hover:text-primary-500",
+              ]}
+              aria-current={activeCategory === category.slug ? "true" : undefined}
             >
               {category.label}
             </a>

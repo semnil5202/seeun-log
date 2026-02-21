@@ -1,5 +1,5 @@
 ---
-/** 3-column 그리드 레이아웃. 모바일은 1컬럼, PC(lg+)는 [120~180px][1fr][300px] 구조. */
+/** 3-column 그리드 레이아웃. 모바일은 1컬럼, PC(lg+)는 [180px][1fr][300px] 구조. */
 
 import LeftSidebar from "@/shared/components/layout/LeftSidebar.astro";
 import RightSidebar from "@/shared/components/layout/RightSidebar.astro";
@@ -16,7 +16,7 @@ const { locale, sponsoredPosts = [] } = Astro.props;
 
 <div class="max-w-screen-xl mx-auto px-4 lg:px-6">
 
-  <div class="grid grid-cols-1 lg:grid-cols-[clamp(120px,calc(100%-1052px),180px)_1fr_300px] gap-0 lg:gap-8 min-h-screen">
+  <div class="grid grid-cols-1 lg:grid-cols-[180px_1fr_300px] gap-0 lg:gap-8 min-h-screen">
 
     <LeftSidebar locale={locale} />
 
