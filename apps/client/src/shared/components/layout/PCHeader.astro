@@ -118,83 +118,27 @@ const activeCategory: CategorySlug | null =
         </div>
       </details>
 
-      <div class="flex items-center">
-        <form
-          id="pc-search-form"
-          action={searchHref}
-          method="get"
-          class="flex items-center w-0 opacity-0 overflow-hidden transition-all duration-300"
+      <a
+        href={searchHref}
+        class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md hover:bg-primary-50"
+        aria-label={t("nav.search", locale)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
         >
-          <input
-            type="search"
-            name="q"
-            placeholder={t("nav.search", locale)}
-            autocomplete="off"
-            class="w-full h-9 px-3 text-sm text-gray-900 bg-gray-100 rounded-lg border border-gray-200 outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-colors"
-          />
-          <button
-            type="button"
-            id="pc-search-close"
-            class="shrink-0 flex items-center justify-center w-8 h-8 ml-1 text-gray-400 hover:text-gray-600 transition-colors duration-150"
-            aria-label="검색 닫기"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </form>
-
-        <button
-          type="button"
-          id="pc-search-toggle"
-          class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md hover:bg-primary-50"
-          aria-label={t("nav.search", locale)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </button>
-      </div>
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </a>
 
     </div>
   </div>
 </header>
-
-<script>
-  const toggle = document.getElementById('pc-search-toggle');
-  const form = document.getElementById('pc-search-form');
-  const close = document.getElementById('pc-search-close');
-  const input = form?.querySelector('input');
-
-  toggle?.addEventListener('click', () => {
-    form?.classList.remove('w-0', 'opacity-0');
-    form?.classList.add('w-[250px]', 'opacity-100');
-    toggle.classList.add('hidden');
-    input?.focus();
-  });
-
-  close?.addEventListener('click', () => {
-    form?.classList.add('w-0', 'opacity-0');
-    form?.classList.remove('w-[250px]', 'opacity-100');
-    if (input) input.value = '';
-    setTimeout(() => {
-      toggle?.classList.remove('hidden');
-    }, 300);
-  });
-
-  input?.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') close?.click();
-  });
-</script>
