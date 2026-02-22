@@ -1,7 +1,6 @@
 ---
-/** 사이트 푸터. 모바일에서는 카테고리를 가로로 나열하여 SEO 크롤링을 보장한다. */
+/** 사이트 푸터. */
 
-import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import type { Locale } from "@/shared/types/common";
@@ -13,39 +12,9 @@ interface Props {
 const { locale } = Astro.props;
 
 const currentYear = new Date().getFullYear();
-const categories = getCategoryTree(locale);
 ---
 
 <footer class="bg-gray-50 border-t border-gray-200 mt-12">
-
-  <div class="block lg:hidden px-4 pt-5 pb-4">
-    <nav aria-label="Footer category navigation">
-      {
-        categories.map((category) => (
-          <div class="mb-3">
-            <a
-              href={getLocalePath(`/${category.slug}/`, locale)}
-              class="text-[12px] font-bold text-gray-900 uppercase tracking-wide hover:text-primary-500 transition-colors duration-150"
-            >
-              {category.label}
-            </a>
-            <div class="mt-1.5 flex flex-wrap gap-2">
-              {category.subCategories.map((sub) => (
-                <a
-                  href={getLocalePath(`/${category.slug}/${sub.slug}/`, locale)}
-                  class="text-[12px] text-gray-600 hover:text-primary-500 transition-colors duration-150"
-                >
-                  {sub.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        ))
-      }
-    </nav>
-  </div>
-
-  <div class="block lg:hidden mx-4 border-t border-gray-200" />
 
   <div class="max-w-screen-xl mx-auto px-4 lg:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
 
