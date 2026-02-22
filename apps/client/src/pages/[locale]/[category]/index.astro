@@ -45,7 +45,7 @@ const { locale, category } = Astro.props;
 
 const [{ posts, totalPages }, sponsored] = await Promise.all([
   getPaginatedPostsByCategory(category, 1),
-  getSponsoredPosts(),
+  getSponsoredPosts(category),
 ]);
 
 const localizedPosts = await Promise.all(posts.map((p) => getLocalizedPost(p, locale)));

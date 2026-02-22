@@ -1,11 +1,13 @@
 ---
-/** 포스트 상세 레이아웃. Left sidebar + Main content 2-column 구조. */
+/** 포스트 상세 레이아웃. 메인 피드와 동일한 3-column 구조. */
 
 import Layout from "@/layouts/Layout.astro";
 import LeftSidebar from "@/shared/components/layout/LeftSidebar.astro";
-import Breadcrumb from "@/shared/components/navigation/Breadcrumb.astro";
+import RightSidebar from "@/shared/components/layout/RightSidebar.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import BlogPostingJsonLd from "@/shared/components/seo/BlogPostingJsonLd.astro";
+import { getSponsoredPosts } from "@/features/post-feed/api/posts";
+import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import type { LocalizedPost } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import type { BreadcrumbItem } from "@/shared/types/seo";
@@ -22,6 +24,11 @@ interface Props {
 }
 
 const { post, locale, breadcrumbs, canonical, path, categoryLabel, subCategoryLabel } = Astro.props;
+
+const sponsoredRaw = await getSponsoredPosts(post.category, post.sub_category);
+const sponsoredLocalized = await Promise.all(
+  sponsoredRaw.map((p) => getLocalizedPost(p, locale)),
+);
 
 const fullStars = Math.min(5, Math.max(0, Math.round(post.rating)));
 const emptyStars = 5 - fullStars;
@@ -59,7 +66,7 @@ const publishDate = new Date(post.created_at).toLocaleDateString(locale, {
   day: "numeric",
 });
 
-const AD_PLACEHOLDER = `\n\n<div class="not-prose w-full max-w-[728px] h-[90px] bg-gray-100 rounded-xl mx-auto my-8 flex items-center justify-center" role="complementary" aria-label="Advertisement"><span class="text-body2 text-gray-400 select-none">In-Article Adsense</span></div>\n\n`;
+const AD_PLACEHOLDER = `\n\n<div class="not-prose w-full h-[300px] bg-gray-100 rounded-xl mx-auto my-8 flex items-center justify-center" role="complementary" aria-label="Advertisement"><span class="text-body2 text-gray-400 select-none">In-Article Adsense</span></div>\n\n`;
 
 function insertInArticleAds(markdown: string): string {
   const parts = markdown.split(/(?=^## )/m);
@@ -96,23 +103,21 @@ const contentWithAds = insertInArticleAds(post.content);
   </Fragment>
 
   <div class="max-w-screen-xl mx-auto px-4 lg:px-6">
-    <div class="grid grid-cols-1 lg:grid-cols-[180px_1fr] gap-0 lg:gap-8 min-h-screen">
+    <div class="grid grid-cols-1 lg:grid-cols-[180px_1fr_300px] gap-0 lg:gap-8 min-h-screen">
 
       <LeftSidebar locale={locale} />
 
-      <div class="max-w-3xl py-6">
-
-        <Breadcrumb items={breadcrumbs} locale={locale} />
+      <main class="min-w-0 py-6">
 
         <div
-          class="w-full max-w-[728px] h-[90px] bg-gray-100 rounded-xl mx-auto mt-6 flex items-center justify-center"
+          class="w-full h-[90px] bg-gray-100 rounded-xl flex items-center justify-center mb-6"
           role="complementary"
           aria-label="Advertisement"
         >
           <span class="text-body2 text-gray-400 select-none">Adsense</span>
         </div>
 
-        <article class="mt-6" itemscope itemtype="https://schema.org/BlogPosting">
+        <article itemscope itemtype="https://schema.org/BlogPosting">
 
           {(post.is_sponsored || post.is_recommended) && (
             <div class="flex gap-2 mb-3">
@@ -232,7 +237,13 @@ const contentWithAds = insertInArticleAds(post.content);
           />
 
         </article>
-      </div>
+      </main>
+
+      <RightSidebar
+        locale={locale}
+        sponsoredPosts={sponsoredLocalized}
+      />
+
     </div>
   </div>
 </Layout>

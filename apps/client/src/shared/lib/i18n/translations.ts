@@ -15,6 +15,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': '사이트맵',
     'sidebar.sponsored': '추천',
     'sidebar.editorsPick': '추천',
+    'sidebar.empty': '아직 이 카테고리에 해당하는 추천글이 없습니다.',
   },
   en: {
     'nav.home': 'Home',
@@ -30,6 +31,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': 'Sitemap',
     'sidebar.sponsored': 'Recommended',
     'sidebar.editorsPick': "Editor's Pick",
+    'sidebar.empty': 'No recommendations for this category yet.',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -45,6 +47,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': 'サイトマップ',
     'sidebar.sponsored': 'おすすめ',
     'sidebar.editorsPick': '編集者おすすめ',
+    'sidebar.empty': 'このカテゴリにはまだおすすめ記事がありません。',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -60,6 +63,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': '站点地图',
     'sidebar.sponsored': '推荐',
     'sidebar.editorsPick': '编辑推荐',
+    'sidebar.empty': '该分类暂无推荐文章。',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -75,6 +79,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': '網站地圖',
     'sidebar.sponsored': '推薦',
     'sidebar.editorsPick': '編輯推薦',
+    'sidebar.empty': '該分類尚無推薦文章。',
   },
   id: {
     'nav.home': 'Beranda',
@@ -90,6 +95,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': 'Peta Situs',
     'sidebar.sponsored': 'Rekomendasi',
     'sidebar.editorsPick': 'Pilihan Editor',
+    'sidebar.empty': 'Belum ada rekomendasi untuk kategori ini.',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -105,6 +111,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': 'Sơ đồ trang',
     'sidebar.sponsored': 'Đề xuất',
     'sidebar.editorsPick': 'Lựa chọn biên tập',
+    'sidebar.empty': 'Chưa có bài viết đề xuất cho danh mục này.',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -120,6 +127,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'footer.sitemap': 'แผนผังเว็บไซต์',
     'sidebar.sponsored': 'แนะนำ',
     'sidebar.editorsPick': 'ตัวเลือกบรรณาธิการ',
+    'sidebar.empty': 'ยังไม่มีบทความแนะนำสำหรับหมวดหมู่นี้',
   },
 };
 

@@ -120,7 +120,7 @@ const { locale, sponsoredPosts = [] } = Astro.props;
             )}
           </div>
         ) : (
-          <p class="text-caption1 text-gray-400 italic" />
+          <p class="text-caption1 text-gray-400 text-center py-6">{t("sidebar.empty", locale)}</p>
         )
       }
     </section>

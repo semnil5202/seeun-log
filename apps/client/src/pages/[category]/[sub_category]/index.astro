@@ -40,7 +40,7 @@ const locale = DEFAULT_LOCALE;
 
 const [{ posts, totalPages }, sponsored] = await Promise.all([
   getPaginatedPostsBySubCategory(category, sub_category, 1),
-  getSponsoredPosts(),
+  getSponsoredPosts(category, sub_category),
 ]);
 
 const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, locale }));

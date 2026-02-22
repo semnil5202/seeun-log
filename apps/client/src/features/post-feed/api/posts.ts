@@ -41,9 +41,19 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   return MOCK_POSTS.find((p) => p.slug === slug);
 }
 
-/** Returns sponsored posts sorted newest-first (Right Sidebar / In-Feed Ad). */
-export async function getSponsoredPosts(): Promise<Post[]> {
-  const filtered = MOCK_POSTS.filter((p) => p.is_sponsored);
+/**
+ * Returns sponsored posts sorted newest-first (Right Sidebar / In-Feed Ad).
+ *
+ * @param category     Optional top-level category filter.
+ * @param subCategory  Optional sub-category filter (requires category).
+ */
+export async function getSponsoredPosts(
+  category?: CategorySlug,
+  subCategory?: string,
+): Promise<Post[]> {
+  let filtered = MOCK_POSTS.filter((p) => p.is_sponsored);
+  if (category) filtered = filtered.filter((p) => p.category === category);
+  if (category && subCategory) filtered = filtered.filter((p) => p.sub_category === subCategory);
   return sortByDateDesc(filtered);
 }
 
