@@ -10,6 +10,7 @@ import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
+import { CATEGORY_SLUGS } from "@/shared/types/category";
 
 export async function getStaticPaths() {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
@@ -55,6 +56,10 @@ const searchData = localizedPosts.map((p) => ({
   }),
 }));
 
+const placeNames = [...new Set(localizedPosts.map((p) => p.place_name).filter(Boolean))];
+const categoryLabels = CATEGORY_SLUGS.map((slug) => getCategoryLabel(slug, locale));
+const suggestedKeywords = [...placeNames, ...categoryLabels];
+
 const canonical = `/${locale}/search/`;
 const path = "/search/";
 
@@ -63,6 +68,7 @@ const placeholderText = t("search.placeholder", locale);
 const noResultsText = t("search.noResults", locale);
 const noResultsHint = t("search.noResultsHint", locale);
 const resultsText = t("search.results", locale);
+const suggestedText = t("search.suggested", locale);
 const navSearch = t("nav.search", locale);
 const pageTitle = `${navSearch} - seeun log`;
 ---
@@ -105,6 +111,21 @@ const pageTitle = `${navSearch} - seeun log`;
       />
     </form>
 
+    <div id="search-suggestions" class="mt-8">
+      <p class="text-sm font-semibold text-gray-500 mb-3">{suggestedText}</p>
+      <div class="flex flex-wrap gap-2">
+        {suggestedKeywords.map((keyword) => (
+          <button
+            type="button"
+            class="search-chip px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors cursor-pointer"
+            data-keyword={keyword}
+          >
+            {keyword}
+          </button>
+        ))}
+      </div>
+    </div>
+
     <p id="search-count" class="mt-5 text-body2 text-gray-500 hidden"></p>
 
     <div id="search-results" class="mt-6 flex flex-col gap-10"></div>
@@ -142,6 +163,7 @@ const pageTitle = `${navSearch} - seeun log`;
     const resultsContainer = document.getElementById('search-results');
     const countEl = document.getElementById('search-count');
     const emptyEl = document.getElementById('search-empty');
+    const suggestions = document.getElementById('search-suggestions');
 
     const posts = JSON.parse(dataEl?.textContent || '[]');
 
@@ -211,8 +233,11 @@ const pageTitle = `${navSearch} - seeun log`;
       if (!q) {
         countEl.classList.add('hidden');
         emptyEl.classList.add('hidden');
+        suggestions?.classList.remove('hidden');
         return;
       }
+
+      suggestions?.classList.add('hidden');
 
       const filtered = posts.filter((p) =>
         p.title.toLowerCase().includes(q) ||
@@ -240,6 +265,18 @@ const pageTitle = `${navSearch} - seeun log`;
       }
     }
 
+    function doSearch(query) {
+      if (input) input.value = query;
+      renderResults(query);
+      const url = new URL(window.location.href);
+      if (query.trim()) {
+        url.searchParams.set('q', query.trim());
+      } else {
+        url.searchParams.delete('q');
+      }
+      history.replaceState(null, '', url.toString());
+    }
+
     const params = new URLSearchParams(window.location.search);
     const initialQuery = params.get('q') || '';
     if (input) input.value = initialQuery;
@@ -247,15 +284,13 @@ const pageTitle = `${navSearch} - seeun log`;
 
     form?.addEventListener('submit', (e) => {
       e.preventDefault();
-      const q = input?.value || '';
-      renderResults(q);
-      const url = new URL(window.location.href);
-      if (q.trim()) {
-        url.searchParams.set('q', q.trim());
-      } else {
-        url.searchParams.delete('q');
-      }
-      history.replaceState(null, '', url.toString());
+      doSearch(input?.value || '');
+    });
+
+    document.querySelectorAll('.search-chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        doSearch(chip.dataset.keyword || '');
+      });
     });
   </script>
 </ListLayout>

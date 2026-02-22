@@ -21,6 +21,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': '검색 결과가 없습니다',
     'search.noResultsHint': '다른 검색어를 입력해 보세요',
     'search.results': '개의 글',
+    'search.suggested': '추천 검색어',
   },
   en: {
     'nav.home': 'Home',
@@ -42,6 +43,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': 'No results found',
     'search.noResultsHint': 'Try a different search term',
     'search.results': 'posts found',
+    'search.suggested': 'Suggested',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -63,6 +65,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': '検索結果がありません',
     'search.noResultsHint': '別のキーワードをお試しください',
     'search.results': '件の記事',
+    'search.suggested': 'おすすめキーワード',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -84,6 +87,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': '未找到结果',
     'search.noResultsHint': '请尝试其他搜索词',
     'search.results': '篇文章',
+    'search.suggested': '推荐搜索',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -105,6 +109,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': '未找到結果',
     'search.noResultsHint': '請嘗試其他搜尋詞',
     'search.results': '篇文章',
+    'search.suggested': '推薦搜尋',
   },
   id: {
     'nav.home': 'Beranda',
@@ -126,6 +131,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': 'Tidak ada hasil',
     'search.noResultsHint': 'Coba kata kunci lain',
     'search.results': 'artikel',
+    'search.suggested': 'Rekomendasi',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -147,6 +153,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': 'Không có kết quả',
     'search.noResultsHint': 'Thử từ khóa khác',
     'search.results': 'bài viết',
+    'search.suggested': 'Gợi ý',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -168,6 +175,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResults': 'ไม่พบผลลัพธ์',
     'search.noResultsHint': 'ลองใช้คำค้นหาอื่น',
     'search.results': 'บทความ',
+    'search.suggested': 'แนะนำ',
   },
 };
 
