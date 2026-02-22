@@ -17,6 +17,7 @@ const { locale, path } = Astro.props;
 
 const categories = getCategoryTree(locale);
 const homeHref = getLocalePath("/", locale);
+const searchHref = getLocalePath("/search/", locale);
 
 const segments = Astro.url.pathname.split("/").filter(Boolean);
 if (locale !== DEFAULT_LOCALE && segments[0] === locale) segments.shift();
@@ -25,24 +26,24 @@ const activeCategory: CategorySlug | null =
 ---
 
 <header class="w-full bg-white border-b border-gray-200">
-  <div class="flex items-center h-14 px-4 gap-4">
+  <div class="relative flex items-center h-14 px-4 gap-4">
 
     <a
       href={homeHref}
-      class="shrink-0 text-title2 font-bold text-primary-600 tracking-tight hover:text-primary-700 transition-colors duration-150"
+      class="shrink-0 text-title2 font-bold text-primary-600 tracking-tight hover:text-primary-700 transition-colors duration-150 z-10"
       aria-label="세은로그 홈으로 이동"
     >
       세은로그
     </a>
 
-    <nav aria-label="Main navigation" class="flex items-center gap-1">
+    <nav id="mobile-header-nav" aria-label="Main navigation" class="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap min-w-0" style="mask-image:linear-gradient(to right,black calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to right,black calc(100% - 24px),transparent)">
       {
         categories.map((category, index) => (
           <>
             <a
               href={getLocalePath(`/${category.slug}/`, locale)}
               class:list={[
-                "px-2.5 py-1.5 text-body2 font-semibold transition-colors duration-150 rounded-md hover:bg-primary-50",
+                "shrink-0 px-2.5 py-1.5 text-body2 font-semibold transition-colors duration-150 rounded-md hover:bg-primary-50",
                 activeCategory === category.slug
                   ? "text-primary-600"
                   : "text-gray-700 hover:text-primary-500",
@@ -59,7 +60,7 @@ const activeCategory: CategorySlug | null =
       }
     </nav>
 
-    <div class="ml-auto shrink-0 flex items-center gap-2">
+    <div id="mobile-header-actions" class="ml-auto shrink-0 flex items-center gap-2">
 
       <details class="relative group">
         <summary
@@ -103,8 +104,9 @@ const activeCategory: CategorySlug | null =
         </div>
       </details>
 
-      <a
-        href={getLocalePath("/search/", locale)}
+      <button
+        type="button"
+        id="mobile-search-toggle"
         class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md"
         aria-label={t("nav.search", locale)}
       >
@@ -122,8 +124,72 @@ const activeCategory: CategorySlug | null =
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-      </a>
+      </button>
 
     </div>
+
+    <form
+      id="mobile-search-form"
+      action={searchHref}
+      method="get"
+      class="hidden ml-auto items-center w-0 opacity-0 overflow-hidden transition-all duration-300"
+    >
+      <input
+        type="search"
+        name="q"
+        placeholder={t("nav.search", locale)}
+        autocomplete="off"
+        class="w-full h-9 px-3 text-sm text-gray-900 bg-gray-100 rounded-lg border border-gray-200 outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-colors"
+      />
+      <button
+        type="button"
+        id="mobile-search-close"
+        class="shrink-0 flex items-center justify-center w-8 h-8 ml-1 text-gray-400 hover:text-gray-600 transition-colors duration-150"
+        aria-label="검색 닫기"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </form>
+
   </div>
 </header>
+
+<script>
+  const toggle = document.getElementById('mobile-search-toggle');
+  const form = document.getElementById('mobile-search-form');
+  const close = document.getElementById('mobile-search-close');
+  const nav = document.getElementById('mobile-header-nav');
+  const actions = document.getElementById('mobile-header-actions');
+  const input = form?.querySelector('input');
+
+  toggle?.addEventListener('click', () => {
+    nav?.classList.add('hidden');
+    actions?.classList.add('hidden');
+    form?.classList.remove('hidden');
+    form?.classList.add('flex');
+    requestAnimationFrame(() => {
+      form?.classList.remove('w-0', 'opacity-0');
+      form?.classList.add('w-[250px]', 'opacity-100');
+    });
+    input?.focus();
+  });
+
+  close?.addEventListener('click', () => {
+    form?.classList.add('w-0', 'opacity-0');
+    form?.classList.remove('w-[250px]', 'opacity-100');
+    if (input) input.value = '';
+    setTimeout(() => {
+      form?.classList.add('hidden');
+      form?.classList.remove('flex');
+      nav?.classList.remove('hidden');
+      actions?.classList.remove('hidden');
+    }, 300);
+  });
+
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close?.click();
+  });
+</script>

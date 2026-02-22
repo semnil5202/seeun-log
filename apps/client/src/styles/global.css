@@ -1,2 +1,10 @@
 @import 'tailwindcss';
 @import '@seeun-log/config/theme.css';
+
+@utility scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
