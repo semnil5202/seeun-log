@@ -250,11 +250,11 @@ const contentWithAds = insertInArticleAds(post.content);
 
         </article>
 
-        {nearbyLocalized.length > 1 && (
+        {nearbyLocalized.length > 0 && (
           <section class="mt-12">
             <div class="flex items-center justify-between pb-3 border-b border-gray-200">
               <h2 class="text-[16px] lg:text-[18px] font-semibold text-gray-900">
-                {categoryLabel} › {subCategoryLabel} 글
+                {categoryLabel} › {subCategoryLabel} {t("post.nearby", locale)}
               </h2>
               <a
                 href={subCategoryHref}

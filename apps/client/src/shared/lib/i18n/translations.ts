@@ -20,6 +20,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '다른 검색어를 입력해 보세요',
     'search.results': '개의 글',
     'search.suggested': '추천 검색어',
+    'post.nearby': '글',
   },
   en: {
     'nav.home': 'Home',
@@ -40,6 +41,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'Try a different search term',
     'search.results': 'posts found',
     'search.suggested': 'Suggested',
+    'post.nearby': 'Posts',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -60,6 +62,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '別のキーワードをお試しください',
     'search.results': '件の記事',
     'search.suggested': 'おすすめキーワード',
+    'post.nearby': '記事',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -80,6 +83,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '请尝试其他搜索词',
     'search.results': '篇文章',
     'search.suggested': '推荐搜索',
+    'post.nearby': '文章',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -100,6 +104,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '請嘗試其他搜尋詞',
     'search.results': '篇文章',
     'search.suggested': '推薦搜尋',
+    'post.nearby': '文章',
   },
   id: {
     'nav.home': 'Beranda',
@@ -120,6 +125,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'Coba kata kunci lain',
     'search.results': 'artikel',
     'search.suggested': 'Rekomendasi',
+    'post.nearby': 'Artikel',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -140,6 +146,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'Thử từ khóa khác',
     'search.results': 'bài viết',
     'search.suggested': 'Gợi ý',
+    'post.nearby': 'Bài viết',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -160,6 +167,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'ลองใช้คำค้นหาอื่น',
     'search.results': 'บทความ',
     'search.suggested': 'แนะนำ',
+    'post.nearby': 'บทความ',
   },
 };
 
