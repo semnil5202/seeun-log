@@ -1,0 +1,226 @@
+---
+/** 다국어 검색 페이지 (/{locale}/search/) */
+
+import ListLayout from "@/layouts/ListLayout.astro";
+import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import { getAllPosts, getSponsoredPosts } from "@/features/post-feed/api/posts";
+import { getLocalizedPost } from "@/features/post-feed/api/translations";
+import { getCategoryLabel } from "@/shared/lib/i18n/categories";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import { t } from "@/shared/lib/i18n/translations";
+
+export async function getStaticPaths() {
+  const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
+
+  return nonDefaultLocales.map((locale) => ({
+    params: { locale },
+    props: { locale },
+  }));
+}
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const [allPosts, sponsored] = await Promise.all([
+  getAllPosts(),
+  getSponsoredPosts(),
+]);
+
+const localizedPosts = await Promise.all(allPosts.map((p) => getLocalizedPost(p, locale)));
+const sponsoredLocalized: LocalizedPost[] = await Promise.all(
+  sponsored.map((p) => getLocalizedPost(p, locale))
+);
+
+const searchData = localizedPosts.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  description: p.description,
+  category: p.category,
+  subCategory: p.sub_category,
+  thumbnail: p.thumbnail,
+  placeName: p.place_name,
+  isSponsored: p.is_sponsored,
+  createdAt: p.created_at,
+  href: getLocalePath(`/${p.category}/${p.sub_category}/${p.slug}/`, locale),
+  categoryLabel: getCategoryLabel(p.category, locale),
+  dateStr: new Date(p.created_at).toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }),
+}));
+
+const canonical = `/${locale}/search/`;
+const path = "/search/";
+
+const sponsoredLabel = t("post.sponsored", locale);
+const placeholderText = t("search.placeholder", locale);
+const noResultsText = t("search.noResults", locale);
+const resultsText = t("search.results", locale);
+const navSearch = t("nav.search", locale);
+const pageTitle = `${navSearch} - seeun log`;
+---
+
+<ListLayout
+  title={pageTitle}
+  description="세은로그 검색 — 맛집, 카페, 여행 게시글을 검색합니다."
+  canonical={canonical}
+  path={path}
+  locale={locale}
+  sponsoredPosts={sponsoredLocalized}
+>
+  <Fragment slot="head">
+    <meta name="robots" content="noindex, follow" />
+  </Fragment>
+
+  <div>
+    <input
+      type="search"
+      id="search-input"
+      placeholder={placeholderText}
+      autocomplete="off"
+      class="w-full h-12 px-4 text-base text-gray-900 bg-gray-100 rounded-xl border border-gray-200 outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-colors"
+    />
+
+    <p id="search-count" class="mt-4 text-body2 text-gray-500 hidden"></p>
+
+    <div id="search-results" class="mt-6 flex flex-col gap-10"></div>
+
+    <p id="search-empty" class="mt-10 text-center text-body2 text-gray-400 hidden">
+      {noResultsText}
+    </p>
+  </div>
+
+  <script
+    type="application/json"
+    id="search-data"
+    set:html={JSON.stringify(searchData)}
+  />
+
+  <script define:vars={{ sponsoredLabel, resultsText }}>
+    const dataEl = document.getElementById('search-data');
+    const input = document.getElementById('search-input');
+    const resultsContainer = document.getElementById('search-results');
+    const countEl = document.getElementById('search-count');
+    const emptyEl = document.getElementById('search-empty');
+
+    const posts = JSON.parse(dataEl?.textContent || '[]');
+
+    function createAdSlot() {
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('role', 'complementary');
+      wrapper.setAttribute('aria-label', 'Advertisement');
+      const inner = document.createElement('div');
+      inner.className = 'w-full h-[250px] bg-gray-100 rounded-xl flex items-center justify-center';
+      const span = document.createElement('span');
+      span.className = 'text-body2 text-gray-400 select-none';
+      span.textContent = 'In-feed Adsense';
+      inner.appendChild(span);
+      wrapper.appendChild(inner);
+      return wrapper;
+    }
+
+    function createPostCard(post) {
+      const article = document.createElement('article');
+      article.className = 'group';
+
+      let badgeHtml = '';
+      if (post.isSponsored) {
+        badgeHtml = `<span class="absolute top-3 left-3 inline-flex items-center text-xs font-semibold bg-primary-100 text-primary-800 rounded-md px-2.5 py-0.5">${sponsoredLabel}</span>`;
+      }
+
+      const placeHtml = post.placeName
+        ? `<span aria-hidden="true">&middot;</span><span>${post.placeName}</span>`
+        : '';
+
+      article.innerHTML = `
+        <a href="${post.href}" class="block">
+          <div class="${post.isSponsored ? 'relative ' : ''}w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
+            <img
+              src="${post.thumbnail}"
+              alt="${post.title}"
+              width="640"
+              height="180"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              decoding="async"
+            />
+            ${badgeHtml}
+          </div>
+          <div class="mt-4 flex flex-col gap-2">
+            <h2 class="text-title2 font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
+              ${post.title}
+            </h2>
+            <p class="text-body2 text-gray-500 line-clamp-2">${post.description}</p>
+            <div class="flex items-center gap-1.5 text-caption1 text-gray-400">
+              <time>${post.dateStr}</time>
+              ${placeHtml}
+              <span aria-hidden="true">&middot;</span>
+              <span>${post.categoryLabel}</span>
+            </div>
+          </div>
+        </a>
+      `;
+
+      return article;
+    }
+
+    function renderResults(query) {
+      resultsContainer.innerHTML = '';
+      const q = query.trim().toLowerCase();
+
+      if (!q) {
+        countEl.classList.add('hidden');
+        emptyEl.classList.add('hidden');
+        return;
+      }
+
+      const filtered = posts.filter((p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        (p.placeName && p.placeName.toLowerCase().includes(q))
+      );
+
+      if (filtered.length === 0) {
+        countEl.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      countEl.textContent = `${filtered.length}${resultsText}`;
+      countEl.classList.remove('hidden');
+
+      let cardIndex = 0;
+      for (const post of filtered) {
+        if (cardIndex === 1 || cardIndex === 5) {
+          resultsContainer.appendChild(createAdSlot());
+        }
+        resultsContainer.appendChild(createPostCard(post));
+        cardIndex++;
+      }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get('q') || '';
+    if (input) input.value = initialQuery;
+    if (initialQuery) renderResults(initialQuery);
+
+    input?.addEventListener('input', (e) => {
+      const q = e.target.value;
+      renderResults(q);
+      const url = new URL(window.location.href);
+      if (q.trim()) {
+        url.searchParams.set('q', q.trim());
+      } else {
+        url.searchParams.delete('q');
+      }
+      history.replaceState(null, '', url.toString());
+    });
+  </script>
+</ListLayout>

@@ -17,6 +17,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': '추천',
     'sidebar.empty': '아직 이 카테고리에 해당하는 추천글이 없습니다.',
     'post.more': '더보기',
+    'search.placeholder': '검색어를 입력하세요',
+    'search.noResults': '검색 결과가 없습니다',
+    'search.results': '개의 글',
   },
   en: {
     'nav.home': 'Home',
@@ -34,6 +37,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': "Editor's Pick",
     'sidebar.empty': 'No recommendations for this category yet.',
     'post.more': 'See more',
+    'search.placeholder': 'Enter search term',
+    'search.noResults': 'No results found',
+    'search.results': 'posts found',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -51,6 +57,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': '編集者おすすめ',
     'sidebar.empty': 'このカテゴリにはまだおすすめ記事がありません。',
     'post.more': 'もっと見る',
+    'search.placeholder': '検索キーワードを入力',
+    'search.noResults': '検索結果がありません',
+    'search.results': '件の記事',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -68,6 +77,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': '编辑推荐',
     'sidebar.empty': '该分类暂无推荐文章。',
     'post.more': '查看更多',
+    'search.placeholder': '请输入搜索词',
+    'search.noResults': '未找到结果',
+    'search.results': '篇文章',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -85,6 +97,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': '編輯推薦',
     'sidebar.empty': '該分類尚無推薦文章。',
     'post.more': '查看更多',
+    'search.placeholder': '請輸入搜尋詞',
+    'search.noResults': '未找到結果',
+    'search.results': '篇文章',
   },
   id: {
     'nav.home': 'Beranda',
@@ -102,6 +117,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': 'Pilihan Editor',
     'sidebar.empty': 'Belum ada rekomendasi untuk kategori ini.',
     'post.more': 'Lihat lebih',
+    'search.placeholder': 'Masukkan kata kunci',
+    'search.noResults': 'Tidak ada hasil',
+    'search.results': 'artikel',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -119,6 +137,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': 'Lựa chọn biên tập',
     'sidebar.empty': 'Chưa có bài viết đề xuất cho danh mục này.',
     'post.more': 'Xem thêm',
+    'search.placeholder': 'Nhập từ khóa',
+    'search.noResults': 'Không có kết quả',
+    'search.results': 'bài viết',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -136,6 +157,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.editorsPick': 'ตัวเลือกบรรณาธิการ',
     'sidebar.empty': 'ยังไม่มีบทความแนะนำสำหรับหมวดหมู่นี้',
     'post.more': 'ดูเพิ่มเติม',
+    'search.placeholder': 'ป้อนคำค้นหา',
+    'search.noResults': 'ไม่พบผลลัพธ์',
+    'search.results': 'บทความ',
   },
 };
 
