@@ -19,6 +19,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': '더보기',
     'search.placeholder': '검색어를 입력하세요',
     'search.noResults': '검색 결과가 없습니다',
+    'search.noResultsHint': '다른 검색어를 입력해 보세요',
     'search.results': '개의 글',
   },
   en: {
@@ -39,6 +40,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': 'See more',
     'search.placeholder': 'Enter search term',
     'search.noResults': 'No results found',
+    'search.noResultsHint': 'Try a different search term',
     'search.results': 'posts found',
   },
   ja: {
@@ -59,6 +61,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': 'もっと見る',
     'search.placeholder': '検索キーワードを入力',
     'search.noResults': '検索結果がありません',
+    'search.noResultsHint': '別のキーワードをお試しください',
     'search.results': '件の記事',
   },
   'zh-CN': {
@@ -79,6 +82,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': '查看更多',
     'search.placeholder': '请输入搜索词',
     'search.noResults': '未找到结果',
+    'search.noResultsHint': '请尝试其他搜索词',
     'search.results': '篇文章',
   },
   'zh-TW': {
@@ -99,6 +103,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': '查看更多',
     'search.placeholder': '請輸入搜尋詞',
     'search.noResults': '未找到結果',
+    'search.noResultsHint': '請嘗試其他搜尋詞',
     'search.results': '篇文章',
   },
   id: {
@@ -119,6 +124,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': 'Lihat lebih',
     'search.placeholder': 'Masukkan kata kunci',
     'search.noResults': 'Tidak ada hasil',
+    'search.noResultsHint': 'Coba kata kunci lain',
     'search.results': 'artikel',
   },
   vi: {
@@ -139,6 +145,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': 'Xem thêm',
     'search.placeholder': 'Nhập từ khóa',
     'search.noResults': 'Không có kết quả',
+    'search.noResultsHint': 'Thử từ khóa khác',
     'search.results': 'bài viết',
   },
   th: {
@@ -159,6 +166,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'post.more': 'ดูเพิ่มเติม',
     'search.placeholder': 'ป้อนคำค้นหา',
     'search.noResults': 'ไม่พบผลลัพธ์',
+    'search.noResultsHint': 'ลองใช้คำค้นหาอื่น',
     'search.results': 'บทความ',
   },
 };

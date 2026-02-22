@@ -36,7 +36,7 @@ const activeCategory: CategorySlug | null =
       세은로그
     </a>
 
-    <nav id="mobile-header-nav" aria-label="Main navigation" class="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap min-w-0" style="mask-image:linear-gradient(to right,black calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to right,black calc(100% - 24px),transparent)">
+    <nav aria-label="Main navigation" class="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap min-w-0" style="mask-image:linear-gradient(to right,black calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to right,black calc(100% - 24px),transparent)">
       {
         categories.map((category, index) => (
           <>
@@ -60,7 +60,7 @@ const activeCategory: CategorySlug | null =
       }
     </nav>
 
-    <div id="mobile-header-actions" class="ml-auto shrink-0 flex items-center gap-2">
+    <div class="ml-auto shrink-0 flex items-center gap-2">
 
       <details class="relative group">
         <summary
