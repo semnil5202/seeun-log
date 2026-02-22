@@ -4,7 +4,7 @@
 import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
-import { DEFAULT_LOCALE } from "@/shared/types/common";
+import { LOCALES, LOCALE_LABELS, DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
 import { CATEGORY_SLUGS, type CategorySlug } from "@/shared/types/category";
 
@@ -61,27 +61,47 @@ const activeCategory: CategorySlug | null =
 
     <div class="ml-auto shrink-0 flex items-center gap-2">
 
-      <a
-        href={getLocalePath(path, locale)}
-        class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md"
-        aria-label={t("nav.language", locale)}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-5 h-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
+      <details class="relative group">
+        <summary
+          class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md cursor-pointer list-none select-none"
+          aria-label={t("nav.language", locale)}
         >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" y1="12" x2="22" y2="12" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-      </a>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+        </summary>
+
+        <div class="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+          {
+            LOCALES.map((loc) => (
+              <a
+                href={getLocalePath(path, loc)}
+                class={`block px-4 py-2 text-body2 transition-colors duration-100 ${
+                  loc === locale
+                    ? "text-primary-500 font-semibold bg-primary-50"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-primary-500"
+                }`}
+                hreflang={loc}
+                lang={loc}
+              >
+                {LOCALE_LABELS[loc]}
+              </a>
+            ))
+          }
+        </div>
+      </details>
 
       <a
         href={getLocalePath("/search/", locale)}
