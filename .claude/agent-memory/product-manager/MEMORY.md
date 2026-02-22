@@ -22,9 +22,9 @@
 
 ### Current Status (as of 2026-02-22)
 
-- Phase: Scaffolding + theme + client UI components (headers, sidebars, search page) implemented
-- Implemented: monorepo, apps, shared packages, docs, Tailwind v4 theme, PC/Mobile headers, LeftSidebar, RightSidebar, search page, i18n translations, ListLayout
-- Missing: Supabase connection, editor, blog viewer, auth, CI/CD
+- Phase: Scaffolding + theme + client UI components + full page routing implemented (208 pages built)
+- Implemented: monorepo, apps, shared packages, docs, Tailwind v4 theme, PC/Mobile headers, LeftSidebar, RightSidebar, search page, i18n translations, ListLayout, PostLayout, SubCategoryTabs, PostCardGrid with pagination, AdSense placeholders, all page routes (ko + 7 locales)
+- Missing: Supabase connection (using mock data), editor, auth, CI/CD, real AdSense integration
 
 ### Theme System
 
@@ -41,7 +41,7 @@
 - Content types: normal, sponsored (is_sponsored), editor's pick (is_recommended)
 - Strict UI rules: NO hamburger menu, NO drawer, NO infinite scroll
 - PC: 3-column (left sidebar + main feed + right sidebar)
-- Mobile: snap scroll header nav, in-feed ads at index 1,3, footer with full subcategory links
+- Mobile: snap scroll header nav, SubCategoryTabs on category pages, in-feed ads at index 1,5, footer with full subcategory links
 
 ### Documentation
 
@@ -62,7 +62,13 @@
 - Suggested keywords: place_name + category labels extracted at build time
 - Headers (PC + Mobile): zero JavaScript, search button is simple <a> link to /search/
 
+### AdSense Specifications
+
+- PostLayout Fixed: mobile 300x50, PC 468x60 (centered)
+- RightSidebar Fixed: 300x250 (PC only, sticky)
+- In-Article: fluid h-300px, inserted before 2nd and last ## heading sections
+- In-feed: fluid h-250px, at card index 1 and 5 (feed + search results)
+
 ### Open Design Questions
 
 - No tags/keywords table defined (but "Popular Tags" mentioned in UI specs)
-- ui-specs.md PC layout diagram and rules mention "Infinite Scroll" but CLAUDE.md prohibits it -- pre-existing inconsistency, not yet resolved

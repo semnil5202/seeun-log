@@ -1,0 +1,96 @@
+---
+/** 다국어 서브카테고리 인덱스 (/{locale}/{category}/{sub_category}/) */
+
+import ListLayout from "@/layouts/ListLayout.astro";
+import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
+import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
+import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+import { CATEGORY_SLUGS, SUB_CATEGORY_MAP } from "@/shared/types/category";
+import type { CategorySlug } from "@/shared/types/category";
+import {
+  getPaginatedPostsBySubCategory,
+  getSponsoredPosts,
+} from "@/features/post-feed/api/posts";
+import { getLocalizedPost } from "@/features/post-feed/api/translations";
+import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
+import { t } from "@/shared/lib/i18n/translations";
+import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
+
+export async function getStaticPaths() {
+  const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
+  const paths: {
+    params: { locale: string; category: string; sub_category: string };
+    props: { locale: Locale; category: CategorySlug; sub_category: string };
+  }[] = [];
+
+  for (const locale of nonDefaultLocales) {
+    for (const category of CATEGORY_SLUGS) {
+      for (const sub_category of SUB_CATEGORY_MAP[category]) {
+        paths.push({
+          params: { locale, category, sub_category },
+          props: { locale, category, sub_category },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  locale: Locale;
+  category: CategorySlug;
+  sub_category: string;
+}
+
+const { locale, category, sub_category } = Astro.props;
+
+const [{ posts, totalPages }, sponsored] = await Promise.all([
+  getPaginatedPostsBySubCategory(category, sub_category, 1),
+  getSponsoredPosts(category, sub_category),
+]);
+
+const localizedPosts = await Promise.all(posts.map((p) => getLocalizedPost(p, locale)));
+const sponsoredLocalized: LocalizedPost[] = await Promise.all(
+  sponsored.map((p) => getLocalizedPost(p, locale))
+);
+
+const categoryLabel = getCategoryLabel(category, locale);
+const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
+const homeLabel = t("nav.home", locale);
+
+const canonical = `/${locale}/${category}/${sub_category}/`;
+const path = `/${category}/${sub_category}/`;
+
+const breadcrumbItems = [
+  { name: homeLabel, url: "/" },
+  { name: categoryLabel, url: `/${category}/` },
+  { name: subCategoryLabel, url: `/${category}/${sub_category}/` },
+];
+
+const pageTitle = `${subCategoryLabel} - ${categoryLabel} - seeun log`;
+const pageDescription = `세은로그 ${categoryLabel} > ${subCategoryLabel} — 커플이 직접 다녀온 ${subCategoryLabel} 장소 리뷰 모음.`;
+---
+
+<ListLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical={canonical}
+  path={path}
+  locale={locale}
+  sponsoredPosts={sponsoredLocalized}
+>
+  <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
+
+  <SubCategoryTabs category={category} activeSubCategory={sub_category} locale={locale} />
+
+  <PostCardGrid
+    posts={localizedPosts}
+    locale={locale}
+    feedEndpoint={`/api/feed/${locale}/${category}/${sub_category}/`}
+    hasNextPage={totalPages > 1}
+    sponsoredLabel={t("post.sponsored", locale)}
+  />
+</ListLayout>

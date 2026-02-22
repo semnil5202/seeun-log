@@ -63,8 +63,15 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 ### 다국어 URL 예시
 
 ```
-/delicious/korean/{slug}           # 한국어 (기본)
-/en/delicious/korean/{slug}        # 영어
+# 한국어 (기본 — locale prefix 없음)
+/delicious/                        # 카테고리 인덱스
+/delicious/korean/                 # 서브카테고리 인덱스
+/delicious/korean/{slug}           # 포스트 상세
+
+# 다국어 (/{locale}/ prefix)
+/en/delicious/                     # 영어 카테고리 인덱스
+/en/delicious/korean/              # 영어 서브카테고리 인덱스
+/en/delicious/korean/{slug}        # 영어 포스트 상세
 /ja/delicious/korean/{slug}        # 일본어
 /zh-CN/delicious/korean/{slug}     # 중국어 간체
 /zh-TW/delicious/korean/{slug}     # 대만어
@@ -88,12 +95,17 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 ## URL Structure
 
 ```
-/                           # 메인 (Hub)
-/delicious/                 # 맛집 카테고리
-/delicious/korean/          # 맛집 > 한식
-/delicious/korean/{slug}    # 개별 포스트
-/cafe/                      # 카페 카테고리
-/travel/                    # 여행 카테고리
-/search/                    # 검색 (noindex)
-/{locale}/...               # 다국어 (위 i18n 섹션 참조)
+# 한국어 (기본)
+/                                  # 메인 (Hub)
+/{category}/                       # 카테고리 인덱스
+/{category}/{sub_category}/        # 서브카테고리 인덱스
+/{category}/{sub_category}/{slug}  # 포스트 상세
+/search/                           # 검색 (noindex)
+
+# 다국어
+/{locale}/                                        # 메인 (Hub)
+/{locale}/{category}/                              # 카테고리 인덱스
+/{locale}/{category}/{sub_category}/               # 서브카테고리 인덱스
+/{locale}/{category}/{sub_category}/{slug}         # 포스트 상세
+/{locale}/search/                                  # 검색 (noindex)
 ```

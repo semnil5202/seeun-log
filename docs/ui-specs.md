@@ -53,7 +53,7 @@
 | (모두 펼침)           |  [Post Card 3]                                |  [Sponsored Ad 1]     |
 |                       |  ...                                          |  [Editor's Pick 1]    |
 | ▾ 맛집               |                                               |                       |
-|   한식 / 양식 / ...   |  [Infinite Scroll: 스크롤 시 추가 로드]        |                       |
+|   한식 / 양식 / ...   |  [Pagination: Static JSON 페이지 자동 로드]    |                       |
 | ▾ 카페               |                                               |                       |
 |   핫플 / 카공         |                                               |                       |
 | ▾ 여행               |                                               |                       |
@@ -69,7 +69,7 @@
 ### PC 핵심 규칙
 
 - Left Sidebar: Category Tree 항상 전체 펼침
-- Main: Card 형태 피드, 무한스크롤 (SSG 첫 페이지 + Static JSON fetch)
+- Main: Card 형태 피드, IntersectionObserver 페이지네이션 (SSG 첫 페이지 + Static JSON fetch로 추가 로드)
 - Right Sidebar: 협찬/광고 + Editor's Pick
 
 ---
@@ -94,18 +94,20 @@
 
    ```
    [Post Card 1]
-   [Sponsored Ad 1]  ← index 1
+   [In-feed Adsense 1]  ← index 1
    [Post Card 2]
-   [Sponsored Ad 2]  ← index 3
    [Post Card 3]
    [Post Card 4]
+   [Post Card 5]
+   [In-feed Adsense 2]  ← index 5
+   [Post Card 6]
    ...
    ```
 
-   - SSG 빌드 시 index 1, 3에 광고 삽입
+   - SSG 빌드 시 index 1, 5에 광고 삽입 (추가 페이지 로드 시에도 동일 패턴)
    - CSS `lg:hidden` / `hidden lg:block`으로 visibility 토글 (별도 HTML 구조 금지)
 
-3. **피드 로딩**: 무한스크롤 (SSG 첫 페이지 + Static JSON fetch로 추가 로드)
+3. **피드 로딩**: IntersectionObserver 페이지네이션 (SSG 첫 페이지 + Static JSON fetch로 추가 로드)
 
 4. **Footer (SEO Enhanced)**: Left Sidebar 대체 — 전체 서브카테고리 텍스트 링크 필수
 
@@ -130,11 +132,50 @@
 }
 ```
 
+### `SubCategoryTabs.astro`
+
+- **위치**: `shared/components/navigation/SubCategoryTabs.astro`
+- **모바일 전용** (`block lg:hidden`) — PC에서는 LeftSidebar가 서브카테고리 역할을 담당
+- 카테고리/서브카테고리 인덱스 페이지 상단에 수평 서브카테고리 탭을 표시
+- MobileHeader와 동일한 UI 패턴: 텍스트 링크 + `|` 구분선 + `mask-image` 우측 페이드 아웃
+- Active 서브카테고리는 `text-primary-600`으로 하이라이트, 나머지는 `text-gray-700`
+- 적용 페이지: `[category]/index`, `[category]/[sub_category]/index`, `[locale]/[category]/index`, `[locale]/[category]/[sub_category]/index`
+
+```css
+.sub-category-tabs {
+  overflow-x: auto;
+  mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+}
+```
+
 ### Header Search Button
 
 - PC/Mobile 공통: 검색 버튼은 `/search/` 페이지로 이동하는 `<a>` 링크
 - JavaScript 없음 — 슬라이딩 애니메이션, JS ID 등 미사용
 - PC/Mobile 헤더 모두 순수 HTML/CSS로 동작
+
+### `ThreeColumnLayout.astro`
+
+- 3-column 그리드: 모바일 1컬럼, PC `[180px][1fr][300px]`
+- Main 영역 패딩: 모바일 `pt-3 pb-6`, PC `py-6`
+- 최대 너비: `max-w-screen-xl`, 수평 패딩: `px-4 lg:px-6`
+
+---
+
+## AdSense Specifications
+
+| 배치 | 사이즈 (Mobile) | 사이즈 (PC) | 위치 |
+| --- | --- | --- | --- |
+| PostLayout Fixed Adsense | 300x50 | 468x60 (중앙 정렬) | 게시글 상세 본문 상단 |
+| RightSidebar Fixed Adsense | -- | 300x250 | PC 우측 사이드바 상단 (sticky) |
+| In-Article Adsense | fluid (h-300px) | fluid (h-300px) | 게시글 본문 중간 (## 헤딩 앞에 삽입) |
+| In-feed Adsense | fluid (h-250px) | fluid (h-250px) | 카드 피드 index 1, 5 / 검색 결과 index 1, 5 |
+
+### In-Article Adsense 삽입 규칙
+
+- Markdown `## ` 헤딩 기준으로 섹션 분할
+- 2번째 섹션 앞과 마지막 섹션 앞에 각각 1개씩 삽입
+- 섹션이 2개 이하인 경우 삽입하지 않음
 
 ---
 
@@ -166,5 +207,5 @@
 | Left Sidebar  | `hidden lg:block` | 숨김 (Footer로 대체) |
 | Right Sidebar | `hidden lg:block` | In-Feed Ad로 전환    |
 | Header Nav    | 텍스트 메뉴       | Snap Scroll          |
-| Ad 배치       | Right Sidebar     | In-Feed (index 1, 3) |
+| Ad 배치       | Right Sidebar     | In-Feed (index 1, 5) |
 | Footer Links  | 기본              | Full Sitemap (SEO)   |
