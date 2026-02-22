@@ -1,0 +1,136 @@
+---
+/** 추천 포스트 리스트. RightSidebar(PC)와 게시글 하단(모바일) 공용. */
+
+import { t } from "@/shared/lib/i18n/translations";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import type { Locale } from "@/shared/types/common";
+import type { LocalizedPost } from "@/shared/types/post";
+
+interface Props {
+  locale: Locale;
+  posts: LocalizedPost[];
+  currentSlug?: string;
+}
+
+const { locale, posts, currentSlug } = Astro.props;
+const sponsoredLabel = t("sidebar.sponsored", locale);
+const emptyLabel = t("sidebar.empty", locale);
+---
+
+<section>
+  <h2 class="text-[16px] font-bold text-gray-900 pb-2 border-b border-gray-200">
+    {sponsoredLabel}
+  </h2>
+
+  {posts.length > 0 ? (
+    <>
+      <ul role="list">
+        {posts.slice(0, 2).map((item) => {
+          const isCurrent = currentSlug === item.slug;
+          const href = getLocalePath(
+            `/${item.category}/${item.sub_category}/${item.slug}/`,
+            locale,
+          );
+          return (
+            <li class:list={[
+              "border-b border-gray-100",
+              isCurrent && "border-l-2 border-l-primary-500",
+            ]}>
+              <a
+                href={href}
+                class:list={[
+                  "flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150",
+                  isCurrent ? "pl-3" : "pl-0",
+                ]}
+                aria-current={isCurrent ? "page" : undefined}
+              >
+                <div class="flex-1 min-w-0">
+                  <span class:list={[
+                    "block text-base font-semibold leading-snug mb-1 truncate",
+                    isCurrent ? "text-primary-600" : "text-gray-900",
+                  ]}>
+                    {item.title}
+                  </span>
+                  <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+                <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                  <img
+                    src={item.thumbnail}
+                    alt={item.title}
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div
+        class="w-full h-[100px] bg-gray-100 rounded-xl flex items-center justify-center my-4"
+        role="complementary"
+        aria-label="In-feed advertisement"
+      >
+        <span class="text-body2 text-gray-400 select-none">In-feed Adsense</span>
+      </div>
+
+      {posts.length > 2 && (
+        <ul role="list" class="border-t border-gray-100">
+          {posts.slice(2, 4).map((item) => {
+            const isCurrent = currentSlug === item.slug;
+            const href = getLocalePath(
+              `/${item.category}/${item.sub_category}/${item.slug}/`,
+              locale,
+            );
+            return (
+              <li class:list={[
+                "border-b border-gray-100",
+                isCurrent && "border-l-2 border-l-primary-500",
+              ]}>
+                <a
+                  href={href}
+                  class:list={[
+                    "flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150",
+                    isCurrent ? "pl-3" : "pl-0",
+                  ]}
+                  aria-current={isCurrent ? "page" : undefined}
+                >
+                  <div class="flex-1 min-w-0">
+                    <span class:list={[
+                      "block text-base font-semibold leading-snug mb-1 truncate",
+                      isCurrent ? "text-primary-600" : "text-gray-900",
+                    ]}>
+                      {item.title}
+                    </span>
+                    <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+                  <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      width={80}
+                      height={80}
+                      loading="lazy"
+                      decoding="async"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </>
+  ) : (
+    <p class="text-caption1 text-gray-400 text-center py-6">{emptyLabel}</p>
+  )}
+</section>

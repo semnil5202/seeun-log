@@ -7,17 +7,18 @@ import type { Locale } from "@/shared/types/common";
 
 interface Props {
   locale: Locale;
+  path: string;
 }
 
-const { locale } = Astro.props;
+const { locale, path } = Astro.props;
 ---
 
 <div class="sticky top-0 z-40 bg-white">
   <div class="hidden lg:block">
-    <PCHeader locale={locale} />
+    <PCHeader locale={locale} path={path} />
   </div>
 
   <div class="block lg:hidden">
-    <MobileHeader locale={locale} />
+    <MobileHeader locale={locale} path={path} />
   </div>
 </div>

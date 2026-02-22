@@ -10,9 +10,10 @@ import { CATEGORY_SLUGS, type CategorySlug } from "@/shared/types/category";
 
 interface Props {
   locale: Locale;
+  path: string;
 }
 
-const { locale } = Astro.props;
+const { locale, path } = Astro.props;
 
 const categories = getCategoryTree(locale);
 const homeHref = getLocalePath("/", locale);
@@ -61,7 +62,7 @@ const activeCategory: CategorySlug | null =
     <div class="ml-auto shrink-0 flex items-center gap-2">
 
       <a
-        href={getLocalePath("/", locale)}
+        href={getLocalePath(path, locale)}
         class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md"
         aria-label={t("nav.language", locale)}
       >

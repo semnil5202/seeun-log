@@ -10,9 +10,10 @@ import { CATEGORY_SLUGS, type CategorySlug } from "@/shared/types/category";
 
 interface Props {
   locale: Locale;
+  path: string;
 }
 
-const { locale } = Astro.props;
+const { locale, path } = Astro.props;
 
 const categories = getCategoryTree(locale);
 const homeHref = getLocalePath("/", locale);
@@ -100,7 +101,7 @@ const activeCategory: CategorySlug | null =
           {
             LOCALES.map((loc) => (
               <a
-                href={getLocalePath("/", loc)}
+                href={getLocalePath(path, loc)}
                 class={`block px-4 py-2 text-body2 transition-colors duration-100 ${
                   loc === locale
                     ? "text-primary-500 font-semibold bg-primary-50"
