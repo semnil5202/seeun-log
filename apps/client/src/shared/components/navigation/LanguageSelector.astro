@@ -80,3 +80,11 @@ const { locale, path, showLabel = false } = Astro.props;
     }
   </div>
 </details>
+
+<script>
+  import { onClickOutside } from "@/shared/lib/click-outside";
+
+  document.querySelectorAll<HTMLDetailsElement>("details.group").forEach((el) => {
+    onClickOutside(el, () => el.removeAttribute("open"));
+  });
+</script>

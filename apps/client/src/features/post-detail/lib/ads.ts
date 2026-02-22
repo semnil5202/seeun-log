@@ -1,4 +1,4 @@
-const AD_PLACEHOLDER = `\n\n<div class="not-prose w-full h-[300px] bg-gray-100 rounded-xl mx-auto my-8 flex items-center justify-center" role="complementary" aria-label="Advertisement"><span class="text-body2 text-gray-400 select-none">In-Article Adsense</span></div>\n\n`;
+const AD_PLACEHOLDER = `\n\n<div class="not-prose w-full h-[300px] bg-gray-100 rounded-none mx-auto my-8 flex items-center justify-center" role="complementary" aria-label="Advertisement"><span class="text-body2 text-gray-400 select-none">In-Article Adsense</span></div>\n\n`;
 
 /**
  * 마크다운 본문의 H2 섹션 경계에 In-Article 광고를 삽입한다.

@@ -147,7 +147,7 @@ const {
     wrapper.setAttribute('role', 'complementary');
     wrapper.setAttribute('aria-label', 'Advertisement');
     const inner = document.createElement('div');
-    inner.className = 'w-full h-[250px] bg-gray-100 rounded-xl flex items-center justify-center';
+    inner.className = 'w-full h-[250px] bg-gray-100 rounded-none flex items-center justify-center';
     const span = document.createElement('span');
     span.className = 'text-body2 text-gray-400 select-none';
     span.textContent = 'In-feed Adsense';
@@ -171,7 +171,7 @@ const {
 
     article.innerHTML = `
       <a href="${post.href}" class="block">
-        <div class="${post.isSponsored ? 'relative ' : ''}w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
+        <div class="${post.isSponsored ? 'relative ' : ''}w-full aspect-7/3 overflow-hidden bg-gray-100">
           <img
             src="${post.thumbnail}"
             alt="${post.title}"

@@ -14,7 +14,7 @@ const { variant } = Astro.props;
 
 {variant === 'post-top' && (
   <div
-    class="bg-gray-100 rounded-xl flex items-center justify-center mb-6 mx-auto w-[300px] h-[50px] lg:w-[468px] lg:h-[60px]"
+    class="bg-gray-100 rounded-none flex items-center justify-center mb-6 mx-auto w-[300px] h-[50px] lg:w-[468px] lg:h-[60px]"
     role="complementary"
     aria-label="Advertisement"
   >
@@ -24,7 +24,7 @@ const { variant } = Astro.props;
 
 {variant === 'sidebar' && (
   <div
-    class="w-[300px] h-[250px] bg-gray-100 rounded-xl flex items-center justify-center"
+    class="w-[300px] h-[250px] bg-gray-100 rounded-none flex items-center justify-center"
     role="complementary"
     aria-label="Advertisement"
   >

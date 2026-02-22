@@ -15,6 +15,12 @@
 
 테마 토큰 정의: `packages/config/theme.css` | 상세 가이드: [`docs/theme.md`](theme.md)
 
+### Image Style
+
+- 이미지/썸네일에 `border-radius` 적용하지 않는다 (sharp corners).
+- 빠르고 간결한 인상을 위한 의도적 선택.
+- 애드센스 플레이스홀더도 동일하게 `rounded-none` 적용.
+
 ## Categories
 
 ```
