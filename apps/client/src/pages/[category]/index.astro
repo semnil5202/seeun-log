@@ -16,12 +16,12 @@ import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
 
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
   return CATEGORY_SLUGS.map((category) => ({
     params: { category },
     props: { category },
   }));
-}
+};
 
 interface Props {
   category: CategorySlug;

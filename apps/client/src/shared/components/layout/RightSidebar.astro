@@ -2,6 +2,7 @@
 /** PC 전용 우측 사이드바. 애드센스 영역과 협찬 포스트를 표시한다. */
 
 import SponsoredPostList from "@/shared/components/layout/SponsoredPostList.astro";
+import FixedAdsense from "@/shared/components/ad/FixedAdsense.astro";
 import type { Locale } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
 
@@ -20,13 +21,7 @@ const { locale, sponsoredPosts = [], currentSlug } = Astro.props;
 >
   <div class="sticky top-20 pt-2 pb-6 space-y-8">
 
-    <div
-      class="w-[300px] h-[250px] bg-gray-100 rounded-xl flex items-center justify-center"
-      role="complementary"
-      aria-label="Advertisement"
-    >
-      <span class="text-body2 text-gray-400 select-none">Fixed Adsense</span>
-    </div>
+    <FixedAdsense variant="sidebar" />
 
     <SponsoredPostList
       locale={locale}

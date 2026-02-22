@@ -16,7 +16,7 @@ import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categor
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
 
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
   const paths: { params: { category: string; sub_category: string }; props: { category: CategorySlug; sub_category: string } }[] = [];
 
   for (const category of CATEGORY_SLUGS) {
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
   }
 
   return paths;
-}
+};
 
 interface Props {
   category: CategorySlug;

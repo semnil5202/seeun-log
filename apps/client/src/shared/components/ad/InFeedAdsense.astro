@@ -1,0 +1,20 @@
+---
+/** 인피드 광고 플레이스홀더. class prop으로 높이·grid span 등을 오버라이드한다. */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "w-full h-[250px] bg-gray-100 rounded-xl flex items-center justify-center",
+    className,
+  ]}
+  role="complementary"
+  aria-label="Advertisement"
+>
+  <span class="text-body2 text-gray-400 select-none">In-feed Adsense</span>
+</div>

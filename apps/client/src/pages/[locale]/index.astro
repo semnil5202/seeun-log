@@ -11,14 +11,14 @@ import { getPaginatedPosts, getSponsoredPosts } from "@/features/post-feed/api/p
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { t } from "@/shared/lib/i18n/translations";
 
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 
   return nonDefaultLocales.map((locale) => ({
     params: { locale },
     props: { locale },
   }));
-}
+};
 
 interface Props {
   locale: Locale;

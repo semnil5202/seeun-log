@@ -4,9 +4,9 @@
 import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
-import { LOCALES, LOCALE_LABELS, DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
-import { CATEGORY_SLUGS, type CategorySlug } from "@/shared/types/category";
+import LanguageSelector from "@/shared/components/navigation/LanguageSelector.astro";
+import { getActiveSegments } from "@/shared/lib/navigation";
 
 interface Props {
   locale: Locale;
@@ -19,10 +19,7 @@ const categories = getCategoryTree(locale);
 const homeHref = getLocalePath("/", locale);
 const searchHref = getLocalePath("/search/", locale);
 
-const segments = Astro.url.pathname.split("/").filter(Boolean);
-if (locale !== DEFAULT_LOCALE && segments[0] === locale) segments.shift();
-const activeCategory: CategorySlug | null =
-  CATEGORY_SLUGS.includes(segments[0] as CategorySlug) ? (segments[0] as CategorySlug) : null;
+const { activeCategory } = getActiveSegments(Astro.url.pathname, locale);
 ---
 
 <header class="w-full bg-white border-b border-gray-200">
@@ -62,61 +59,7 @@ const activeCategory: CategorySlug | null =
 
     <div class="ml-auto flex items-center gap-4">
 
-      <details class="relative group">
-        <summary
-          class="flex items-center gap-1.5 text-body2 text-gray-600 hover:text-primary-500 transition-colors duration-150 cursor-pointer list-none select-none"
-          aria-label={t("nav.language", locale)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="2" y1="12" x2="22" y2="12" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-          </svg>
-          <span>{LOCALE_LABELS[locale]}</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-3 h-3 transition-transform duration-150 group-open:rotate-180"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </summary>
-
-        <div class="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-          {
-            LOCALES.map((loc) => (
-              <a
-                href={getLocalePath(path, loc)}
-                class={`block px-4 py-2 text-body2 transition-colors duration-100 ${
-                  loc === locale
-                    ? "text-primary-500 font-semibold bg-primary-50"
-                    : "text-gray-700 hover:bg-gray-50 hover:text-primary-500"
-                }`}
-                hreflang={loc}
-                lang={loc}
-              >
-                {LOCALE_LABELS[loc]}
-              </a>
-            ))
-          }
-        </div>
-      </details>
+      <LanguageSelector locale={locale} path={path} showLabel={true} />
 
       <a
         href={searchHref}

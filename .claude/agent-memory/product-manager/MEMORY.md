@@ -22,8 +22,11 @@
 
 ### Current Status (as of 2026-02-22)
 
-- Phase: Scaffolding + theme + client UI components + full page routing implemented (208 pages built)
-- Implemented: monorepo, apps, shared packages, docs, Tailwind v4 theme, PC/Mobile headers, LeftSidebar, RightSidebar, search page, i18n translations, ListLayout, PostLayout, SubCategoryTabs, PostCardGrid with pagination, AdSense placeholders, all page routes (ko + 7 locales)
+- Phase: Scaffolding + theme + client UI components + full page routing + major refactoring complete (208 pages built)
+- Implemented: monorepo, apps, shared packages, docs, Tailwind v4 theme, all UI components, all page routes (ko + 7 locales)
+- Refactoring completed: PostLayout 336->179 lines, search.astro 272->52 lines, feature-based component extraction, shared utility dedup, arrow function convention
+- Client features: post-feed, post-detail (PlaceInfoCard, NearbyPostList, PostBadges, ads.ts, schema.ts), search (SearchUI, search-data.ts)
+- Client shared: ad/ (FixedAdsense, InFeedAdsense), ui/ (StarRating, SponsoredBadge), navigation/ (LanguageSelector, CategoryTree, Breadcrumb, SubCategoryTabs), layout/ (SponsoredPostItem, etc.), lib/ (date.ts, navigation.ts)
 - Missing: Supabase connection (using mock data), editor, auth, CI/CD, real AdSense integration
 
 ### Theme System

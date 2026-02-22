@@ -108,16 +108,14 @@ const SUB_CATEGORY_LABELS: Record<Locale, Record<string, string>> = {
   },
 };
 
-export function getCategoryLabel(category: CategorySlug, locale: Locale): string {
-  return CATEGORY_LABELS[locale][category];
-}
+export const getCategoryLabel = (category: CategorySlug, locale: Locale): string =>
+  CATEGORY_LABELS[locale][category];
 
-export function getSubCategoryLabel(subCategory: string, locale: Locale): string {
-  return SUB_CATEGORY_LABELS[locale][subCategory] ?? subCategory;
-}
+export const getSubCategoryLabel = (subCategory: string, locale: Locale): string =>
+  SUB_CATEGORY_LABELS[locale][subCategory] ?? subCategory;
 
-export function getCategoryTree(locale: Locale): CategoryNode[] {
-  return CATEGORY_SLUGS.map((slug) => ({
+export const getCategoryTree = (locale: Locale): CategoryNode[] =>
+  CATEGORY_SLUGS.map((slug) => ({
     slug,
     label: CATEGORY_LABELS[locale][slug],
     subCategories: SUB_CATEGORY_MAP[slug].map((sub) => ({
@@ -125,4 +123,3 @@ export function getCategoryTree(locale: Locale): CategoryNode[] {
       label: SUB_CATEGORY_LABELS[locale][sub],
     })),
   }));
-}

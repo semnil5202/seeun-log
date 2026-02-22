@@ -8,7 +8,7 @@ import type { CategorySlug } from "@/shared/types/category";
 import { getAllPosts, getPostBySlug } from "@/features/post-feed/api/posts";
 import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
   const posts = await getAllPosts();
 
   return posts.map((post) => ({
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
       sub_category: post.sub_category,
     },
   }));
-}
+};
 
 interface Props {
   slug: string;

@@ -171,6 +171,5 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
   },
 };
 
-export function t(key: string, locale: Locale): string {
-  return UI_STRINGS[locale]?.[key] ?? UI_STRINGS.ko[key] ?? key;
-}
+export const t = (key: string, locale: Locale): string =>
+  UI_STRINGS[locale]?.[key] ?? UI_STRINGS.ko[key] ?? key;

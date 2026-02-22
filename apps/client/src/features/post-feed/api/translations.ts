@@ -8,20 +8,18 @@ import { MOCK_TRANSLATIONS } from '@/features/post-feed/mock/translations';
  * Returns the translation for a specific post and locale, or `undefined`
  * when no translation has been created yet.
  */
-export async function getTranslation(
+export const getTranslation = async (
   postId: string,
   locale: Locale,
-): Promise<PostTranslation | undefined> {
-  return MOCK_TRANSLATIONS.find((t) => t.post_id === postId && t.locale === locale);
-}
+): Promise<PostTranslation | undefined> =>
+  MOCK_TRANSLATIONS.find((t) => t.post_id === postId && t.locale === locale);
 
 /**
  * Returns all available translations for a given post, in insertion order.
  * Useful for building hreflang entries on detail pages.
  */
-export async function getTranslationsForPost(postId: string): Promise<PostTranslation[]> {
-  return MOCK_TRANSLATIONS.filter((t) => t.post_id === postId);
-}
+export const getTranslationsForPost = async (postId: string): Promise<PostTranslation[]> =>
+  MOCK_TRANSLATIONS.filter((t) => t.post_id === postId);
 
 /**
  * Returns a LocalizedPost — the original Post record enriched with translated
@@ -34,7 +32,7 @@ export async function getTranslationsForPost(postId: string): Promise<PostTransl
  * @param post   The source Post object fetched from the posts API.
  * @param locale The target locale requested by the page or user.
  */
-export async function getLocalizedPost(post: Post, locale: Locale): Promise<LocalizedPost> {
+export const getLocalizedPost = async (post: Post, locale: Locale): Promise<LocalizedPost> => {
   const translation = await getTranslation(post.id, locale);
 
   if (translation) {
@@ -51,4 +49,4 @@ export async function getLocalizedPost(post: Post, locale: Locale): Promise<Loca
     ...post,
     locale,
   };
-}
+};

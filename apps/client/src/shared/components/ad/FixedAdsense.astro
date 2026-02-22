@@ -1,0 +1,33 @@
+---
+/**
+ * 고정 위치 애드센스 플레이스홀더.
+ * post-top: 포스트 상단 (모바일 300×50 / PC 468×60)
+ * sidebar: 우측 사이드바 (300×250)
+ */
+
+interface Props {
+  variant: 'post-top' | 'sidebar';
+}
+
+const { variant } = Astro.props;
+---
+
+{variant === 'post-top' && (
+  <div
+    class="bg-gray-100 rounded-xl flex items-center justify-center mb-6 mx-auto w-[300px] h-[50px] lg:w-[468px] lg:h-[60px]"
+    role="complementary"
+    aria-label="Advertisement"
+  >
+    <span class="text-body2 text-gray-400 select-none">Fixed Adsense</span>
+  </div>
+)}
+
+{variant === 'sidebar' && (
+  <div
+    class="w-[300px] h-[250px] bg-gray-100 rounded-xl flex items-center justify-center"
+    role="complementary"
+    aria-label="Advertisement"
+  >
+    <span class="text-body2 text-gray-400 select-none">Fixed Adsense</span>
+  </div>
+)}

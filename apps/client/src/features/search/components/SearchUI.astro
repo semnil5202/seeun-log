@@ -1,0 +1,236 @@
+---
+/** 검색 폼, 추천 키워드, 결과 목록, 빈 결과 UI, 클라이언트 검색 스크립트를 포함한 검색 UI. */
+
+import type { SearchItem } from "@/features/search/api/search-data";
+
+interface Props {
+  searchData: SearchItem[];
+  suggestedKeywords: string[];
+  placeholderText: string;
+  noResultsText: string;
+  noResultsHintText: string;
+  resultsText: string;
+  suggestedText: string;
+  sponsoredLabel: string;
+}
+
+const {
+  searchData,
+  suggestedKeywords,
+  placeholderText,
+  noResultsText,
+  noResultsHintText,
+  resultsText,
+  suggestedText,
+  sponsoredLabel,
+} = Astro.props;
+---
+
+<div>
+  <form id="search-form" class="relative" action="" method="get">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <input
+      type="search"
+      id="search-input"
+      name="q"
+      placeholder={placeholderText}
+      autocomplete="off"
+      class="w-full h-12 pl-12 pr-4 text-base text-gray-900 bg-gray-50 rounded-xl border border-gray-200 outline-none focus:bg-white focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all"
+    />
+  </form>
+
+  <div id="search-suggestions" class="mt-8">
+    <p class="text-sm font-semibold text-gray-500 mb-3">{suggestedText}</p>
+    <div class="flex flex-wrap gap-2">
+      {suggestedKeywords.map((keyword) => (
+        <button
+          type="button"
+          class="search-chip px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors cursor-pointer"
+          data-keyword={keyword}
+        >
+          {keyword}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <p id="search-count" class="mt-5 text-body2 text-gray-500 hidden"></p>
+
+  <div id="search-results" class="mt-6 flex flex-col gap-10"></div>
+
+  <div id="search-empty" class="mt-16 flex flex-col items-center gap-3 hidden">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-12 h-12 text-gray-300"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <p class="text-base font-semibold text-gray-700">{noResultsText}</p>
+    <p class="text-sm text-gray-400">{noResultsHintText}</p>
+  </div>
+</div>
+
+<script
+  type="application/json"
+  id="search-data"
+  set:html={JSON.stringify(searchData)}
+/>
+
+<script define:vars={{ sponsoredLabel, resultsText }}>
+  const dataEl = document.getElementById('search-data');
+  const form = document.getElementById('search-form');
+  const input = document.getElementById('search-input');
+  const resultsContainer = document.getElementById('search-results');
+  const countEl = document.getElementById('search-count');
+  const emptyEl = document.getElementById('search-empty');
+  const suggestions = document.getElementById('search-suggestions');
+
+  const posts = JSON.parse(dataEl?.textContent || '[]');
+
+  const createAdSlot = () => {
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute('role', 'complementary');
+    wrapper.setAttribute('aria-label', 'Advertisement');
+    const inner = document.createElement('div');
+    inner.className = 'w-full h-[250px] bg-gray-100 rounded-xl flex items-center justify-center';
+    const span = document.createElement('span');
+    span.className = 'text-body2 text-gray-400 select-none';
+    span.textContent = 'In-feed Adsense';
+    inner.appendChild(span);
+    wrapper.appendChild(inner);
+    return wrapper;
+  };
+
+  const createPostCard = (post) => {
+    const article = document.createElement('article');
+    article.className = 'group';
+
+    let badgeHtml = '';
+    if (post.isSponsored) {
+      badgeHtml = `<span class="absolute top-3 left-3 inline-flex items-center text-xs font-semibold bg-primary-100 text-primary-800 rounded-md px-2.5 py-0.5">${sponsoredLabel}</span>`;
+    }
+
+    const placeHtml = post.placeName
+      ? `<span aria-hidden="true">&middot;</span><span>${post.placeName}</span>`
+      : '';
+
+    article.innerHTML = `
+      <a href="${post.href}" class="block">
+        <div class="${post.isSponsored ? 'relative ' : ''}w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
+          <img
+            src="${post.thumbnail}"
+            alt="${post.title}"
+            width="640"
+            height="180"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            decoding="async"
+          />
+          ${badgeHtml}
+        </div>
+        <div class="mt-4 flex flex-col gap-2">
+          <h2 class="text-title2 font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
+            ${post.title}
+          </h2>
+          <p class="text-body2 text-gray-500 line-clamp-2">${post.description}</p>
+          <div class="flex items-center gap-1.5 text-caption1 text-gray-400">
+            <time>${post.dateStr}</time>
+            ${placeHtml}
+            <span aria-hidden="true">&middot;</span>
+            <span>${post.categoryLabel}</span>
+          </div>
+        </div>
+      </a>
+    `;
+
+    return article;
+  };
+
+  const renderResults = (query) => {
+    resultsContainer.innerHTML = '';
+    const q = query.trim().toLowerCase();
+
+    if (!q) {
+      countEl.classList.add('hidden');
+      emptyEl.classList.add('hidden');
+      suggestions?.classList.remove('hidden');
+      return;
+    }
+
+    suggestions?.classList.add('hidden');
+
+    const filtered = posts.filter((p) =>
+      p.title.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      (p.placeName && p.placeName.toLowerCase().includes(q))
+    );
+
+    if (filtered.length === 0) {
+      countEl.classList.add('hidden');
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    emptyEl.classList.add('hidden');
+    countEl.textContent = `${filtered.length}${resultsText}`;
+    countEl.classList.remove('hidden');
+
+    let cardIndex = 0;
+    for (const post of filtered) {
+      if (cardIndex === 1 || cardIndex === 5) {
+        resultsContainer.appendChild(createAdSlot());
+      }
+      resultsContainer.appendChild(createPostCard(post));
+      cardIndex++;
+    }
+  };
+
+  const doSearch = (query) => {
+    if (input) input.value = query;
+    renderResults(query);
+    const url = new URL(window.location.href);
+    if (query.trim()) {
+      url.searchParams.set('q', query.trim());
+    } else {
+      url.searchParams.delete('q');
+    }
+    history.replaceState(null, '', url.toString());
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const initialQuery = params.get('q') || '';
+  if (input) input.value = initialQuery;
+  if (initialQuery) renderResults(initialQuery);
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    doSearch(input?.value || '');
+  });
+
+  document.querySelectorAll('.search-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      doSearch(chip.dataset.keyword || '');
+    });
+  });
+</script>

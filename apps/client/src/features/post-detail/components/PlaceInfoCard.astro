@@ -1,0 +1,59 @@
+---
+/** 장소 정보 카드. Schema.org LocalBusiness 마크업을 포함한다. */
+
+import StarRating from "@/shared/components/ui/StarRating.astro";
+import type { Locale } from "@/shared/types/common";
+import { t } from "@/shared/lib/i18n/translations";
+
+interface Props {
+  categoryLabel: string;
+  subCategoryLabel: string;
+  placeName: string;
+  address?: string;
+  priceLevel?: string;
+  rating?: number;
+  locale: Locale;
+}
+
+const { categoryLabel, subCategoryLabel, placeName, address, priceLevel, rating, locale } =
+  Astro.props;
+
+const ratingLabel = t("post.rating", locale);
+---
+
+<div
+  class="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-6"
+  itemscope
+  itemtype="https://schema.org/LocalBusiness"
+>
+  <dl class="space-y-3 text-sm">
+    <div class="flex items-baseline gap-3">
+      <dt class="shrink-0 w-16 text-gray-500 font-medium">카테고리</dt>
+      <dd class="text-gray-900">{categoryLabel} › {subCategoryLabel}</dd>
+    </div>
+    <div class="flex items-baseline gap-3">
+      <dt class="shrink-0 w-16 text-gray-500 font-medium">장소</dt>
+      <dd class="text-gray-900 font-semibold" itemprop="name">{placeName}</dd>
+    </div>
+    {address && (
+      <div class="flex items-baseline gap-3">
+        <dt class="shrink-0 w-16 text-gray-500 font-medium">주소</dt>
+        <dd class="text-gray-900" itemprop="address">{address}</dd>
+      </div>
+    )}
+    {priceLevel && (
+      <div class="flex items-baseline gap-3">
+        <dt class="shrink-0 w-16 text-gray-500 font-medium">가격대</dt>
+        <dd class="text-gray-900">{priceLevel}</dd>
+      </div>
+    )}
+    {rating !== undefined && rating > 0 && (
+      <div class="flex items-center gap-3">
+        <dt class="shrink-0 w-16 text-gray-500 font-medium">{ratingLabel}</dt>
+        <dd>
+          <StarRating rating={rating} />
+        </dd>
+      </div>
+    )}
+  </dl>
+</div>

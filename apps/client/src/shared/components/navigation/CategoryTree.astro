@@ -1,23 +1,10 @@
 ---
-/**
- * CategoryTree.astro
- *
- * Shared navigation component used by:
- *   - LeftSidebar (PC): always visible as LNB
- *   - Footer (Mobile): full sitemap for SEO crawlers
- *
- * The tree is always fully expanded — no accordion, no JS collapse.
- * Each category and subcategory is an <a> tag for crawler visibility.
- *
- * PERF: Pure static HTML — zero JavaScript, no hydration cost.
- * SEO:  Semantic <nav> with <ul>/<li> gives crawlers a clear link graph.
- */
+/** 카테고리/서브카테고리 트리 네비게이션. LeftSidebar(PC LNB)와 Footer(모바일 SEO sitemap)에서 공유한다. */
 
 import { getCategoryTree } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
-import { DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
-import { CATEGORY_SLUGS, type CategorySlug } from "@/shared/types/category";
+import { getActiveSegments } from "@/shared/lib/navigation";
 
 interface Props {
   locale: Locale;
@@ -28,17 +15,9 @@ const { locale, class: className } = Astro.props;
 
 const categories = getCategoryTree(locale);
 
-const segments = Astro.url.pathname.split("/").filter(Boolean);
-if (locale !== DEFAULT_LOCALE && segments[0] === locale) segments.shift();
-const activeCategory: CategorySlug | null =
-  CATEGORY_SLUGS.includes(segments[0] as CategorySlug) ? (segments[0] as CategorySlug) : null;
-const activeSubCategory: string | null = activeCategory && segments[1] ? segments[1] : null;
+const { activeCategory, activeSubCategory } = getActiveSegments(Astro.url.pathname, locale);
 ---
 
-<!--
-  Semantic <nav> with aria-label distinguishes this from other nav regions
-  on the same page (header nav vs sidebar nav vs footer nav).
--->
 <nav aria-label="Category navigation" class={className}>
   <ul class="space-y-4" role="list">
     {

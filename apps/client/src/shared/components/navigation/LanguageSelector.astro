@@ -1,0 +1,82 @@
+---
+/** details/summary 기반 언어 선택 드롭다운. PC/Mobile 헤더에서 공유한다. */
+
+import { LOCALES, LOCALE_LABELS } from "@/shared/types/common";
+import type { Locale } from "@/shared/types/common";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import { t } from "@/shared/lib/i18n/translations";
+
+interface Props {
+  locale: Locale;
+  path: string;
+  /** true이면 현재 locale 텍스트와 화살표 아이콘을 summary에 표시한다 (PC 헤더 variant). */
+  showLabel?: boolean;
+}
+
+const { locale, path, showLabel = false } = Astro.props;
+---
+
+<details class="relative group">
+  <summary
+    class:list={[
+      showLabel
+        ? "flex items-center gap-1.5 text-body2 text-gray-600 hover:text-primary-500 transition-colors duration-150 cursor-pointer list-none select-none"
+        : "flex items-center justify-center w-8 h-8 text-gray-600 hover:text-primary-500 transition-colors duration-150 rounded-md cursor-pointer list-none select-none",
+    ]}
+    aria-label={t("nav.language", locale)}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class:list={[showLabel ? "w-4 h-4" : "w-5 h-5"]}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+    {showLabel && (
+      <>
+        <span>{LOCALE_LABELS[locale]}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-3 h-3 transition-transform duration-150 group-open:rotate-180"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </>
+    )}
+  </summary>
+
+  <div class="absolute right-0 top-full mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+    {
+      LOCALES.map((loc) => (
+        <a
+          href={getLocalePath(path, loc)}
+          class:list={[
+            "block px-4 py-2 text-body2 transition-colors duration-100",
+            loc === locale
+              ? "text-primary-500 font-semibold bg-primary-50"
+              : "text-gray-700 hover:bg-gray-50 hover:text-primary-500",
+          ]}
+          hreflang={loc}
+          lang={loc}
+        >
+          {LOCALE_LABELS[loc]}
+        </a>
+      ))
+    }
+  </div>
+</details>

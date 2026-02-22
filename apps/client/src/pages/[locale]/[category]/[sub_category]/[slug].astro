@@ -10,7 +10,7 @@ import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
   const posts = await getAllPosts();
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 
@@ -39,7 +39,7 @@ export async function getStaticPaths() {
   }
 
   return paths;
-}
+};
 
 interface Props {
   locale: Locale;
