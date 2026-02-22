@@ -65,18 +65,17 @@ function insertInArticleAds(markdown: string): string {
   const parts = markdown.split(/(?=^## )/m);
   if (parts.length <= 2) return markdown;
 
-  const result: string[] = [];
-  let adCount = 0;
+  const secondIdx = 1;
+  const lastIdx = parts.length - 1;
 
-  for (let i = 0; i < parts.length; i++) {
-    if (i > 0 && i % 2 === 0 && adCount < 3) {
-      result.push(AD_PLACEHOLDER);
-      adCount++;
-    }
-    result.push(parts[i]);
-  }
-
-  return result.join("");
+  return parts
+    .map((part, i) => {
+      if (i === secondIdx || (i === lastIdx && lastIdx !== secondIdx)) {
+        return AD_PLACEHOLDER + part;
+      }
+      return part;
+    })
+    .join("");
 }
 
 const contentWithAds = insertInArticleAds(post.content);
