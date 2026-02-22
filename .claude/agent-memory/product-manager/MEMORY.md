@@ -20,10 +20,10 @@
 - Shared packages: tsconfig, eslint-config, config (future: types, ui)
 - Styling: Tailwind CSS v4, shared theme via @seeun-log/config/theme.css (@theme inline)
 
-### Current Status (as of 2026-02-21)
+### Current Status (as of 2026-02-22)
 
-- Phase: Initial setup + documentation + theme system complete, NO business logic implemented yet
-- Scaffolding done: monorepo, apps, shared packages, docs, Tailwind v4 theme system
+- Phase: Scaffolding + theme + client UI components (headers, sidebars, search page) implemented
+- Implemented: monorepo, apps, shared packages, docs, Tailwind v4 theme, PC/Mobile headers, LeftSidebar, RightSidebar, search page, i18n translations, ListLayout
 - Missing: Supabase connection, editor, blog viewer, auth, CI/CD
 
 ### Theme System
@@ -51,6 +51,18 @@
 - docs/seo-strategy.md -- SEO, JSON-LD, URL structure, image optimization
 - docs/theme.md -- color palette, semantic tokens, usage guide
 
+### Search Feature Decisions
+
+- Client-side search: all posts embedded as JSON at build time, JS filters by title/description/place_name
+- No server-side search, no DB queries at runtime
+- Search triggered on Enter (form submit), not real-time
+- URL updated via history.replaceState with ?q= param
+- noindex, follow -- search results not crawled
+- In-feed Adsense at result index 1 and 5
+- Suggested keywords: place_name + category labels extracted at build time
+- Headers (PC + Mobile): zero JavaScript, search button is simple <a> link to /search/
+
 ### Open Design Questions
 
 - No tags/keywords table defined (but "Popular Tags" mentioned in UI specs)
+- ui-specs.md PC layout diagram and rules mention "Infinite Scroll" but CLAUDE.md prohibits it -- pre-existing inconsistency, not yet resolved

@@ -130,6 +130,33 @@
 }
 ```
 
+### Header Search Button
+
+- PC/Mobile 공통: 검색 버튼은 `/search/` 페이지로 이동하는 `<a>` 링크
+- JavaScript 없음 — 슬라이딩 애니메이션, JS ID 등 미사용
+- PC/Mobile 헤더 모두 순수 HTML/CSS로 동작
+
+---
+
+## Search Page
+
+**라우팅**: `/search/` (한국어), `/{locale}/search/` (다국어)
+
+**레이아웃**: ListLayout (3-Column — LeftSidebar + Main + RightSidebar)
+
+### 구성 요소
+
+1. **검색 입력**: 돋보기 아이콘(좌측) + `<input type="search">`. Enter(form submit)로 검색 실행, 실시간 필터링 아님.
+2. **추천 키워드**: place_name + 카테고리 라벨을 빌드 타임에 추출. 클릭 가능한 chip 형태.
+3. **검색 결과**: 결과 건수 표시 + PostCard 리스트. In-feed Adsense를 result index 1, 5에 삽입.
+4. **결과 없음**: 아이콘 + 안내 메시지 + 힌트 텍스트
+5. **URL**: `history.replaceState`로 `?q=` 파라미터 반영 (페이지 새로고침 없음)
+
+### 데이터 전략
+
+- 빌드 타임에 전체 포스트를 JSON으로 직렬화하여 `<script type="application/json">`에 삽입
+- 클라이언트 JS가 title, description, place_name 기준으로 필터링
+
 ---
 
 ## Responsive Strategy

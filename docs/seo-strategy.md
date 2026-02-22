@@ -79,6 +79,12 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 - `<link rel="alternate" hreflang="x-default">` → 한국어 페이지
 - Canonical은 각 언어 페이지 자기 자신을 가리킴
 
+## Search Page SEO
+
+- `<meta name="robots" content="noindex, follow">` — 검색 결과 페이지는 인덱싱하지 않음
+- Canonical: `?q=` 파라미터 없이 `/search/` (또는 `/{locale}/search/`)만 지정
+- 검색 결과는 클라이언트 JS로 렌더링되므로 크롤러가 결과를 수집하지 않음
+
 ## URL Structure
 
 ```
@@ -88,5 +94,6 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 /delicious/korean/{slug}    # 개별 포스트
 /cafe/                      # 카페 카테고리
 /travel/                    # 여행 카테고리
+/search/                    # 검색 (noindex)
 /{locale}/...               # 다국어 (위 i18n 섹션 참조)
 ```

@@ -70,6 +70,14 @@ graph LR
 | GitHub Actions        | CI/CD, SSG 빌드   |
 | AWS S3 + CloudFront   | 정적 호스팅 + CDN |
 
+## Search Architecture
+
+- **데이터 전략**: 빌드 타임에 전체 포스트를 JSON으로 직렬화하여 검색 페이지 HTML에 인라인 삽입
+- **검색 실행**: 클라이언트 JavaScript가 JSON을 파싱하여 title, description, place_name 기준으로 필터링
+- **DB 의존성 없음**: 런타임 DB 쿼리 없이 완전한 정적 페이지로 동작
+- **라우팅**: `/search/` (한국어), `/{locale}/search/` (다국어)
+- **Header**: PC/Mobile 헤더 모두 순수 HTML/CSS — JavaScript 없음 (검색 버튼은 `/search/`로의 `<a>` 링크)
+
 ## 공유 패키지
 
 | 패키지                 | 역할                                                          |
