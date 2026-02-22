@@ -6,6 +6,7 @@ import LeftSidebar from "@/shared/components/layout/LeftSidebar.astro";
 import RightSidebar from "@/shared/components/layout/RightSidebar.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import BlogPostingJsonLd from "@/shared/components/seo/BlogPostingJsonLd.astro";
+import SponsoredBadge from "@/shared/components/ui/SponsoredBadge.astro";
 import { getSponsoredPosts, getPostsBySubCategory } from "@/features/post-feed/api/posts";
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
@@ -137,14 +138,10 @@ const contentWithAds = insertInArticleAds(post.content);
           {(post.is_sponsored || post.is_recommended) && (
             <div class="flex gap-2 mb-3">
               {post.is_sponsored && (
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
-                  {sponsoredLabel}
-                </span>
+                <SponsoredBadge label={sponsoredLabel} />
               )}
               {post.is_recommended && (
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-700">
-                  {editorsPickLabel}
-                </span>
+                <SponsoredBadge label={editorsPickLabel} />
               )}
             </div>
           )}
@@ -328,18 +325,29 @@ const contentWithAds = insertInArticleAds(post.content);
 
             <ul role="list">
               {sponsoredLocalized.slice(0, 2).map((item) => {
+                const isCurrent = item.slug === post.slug;
                 const href = getLocalePath(
                   `/${item.category}/${item.sub_category}/${item.slug}/`,
                   locale,
                 );
                 return (
-                  <li class="border-b border-gray-100">
+                  <li class:list={[
+                    "border-b border-gray-100",
+                    isCurrent && "border-l-2 border-l-primary-500",
+                  ]}>
                     <a
                       href={href}
-                      class="flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150"
+                      class:list={[
+                        "flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150",
+                        isCurrent ? "pl-3" : "pl-0",
+                      ]}
+                      aria-current={isCurrent ? "page" : undefined}
                     >
                       <div class="flex-1 min-w-0">
-                        <span class="block text-base font-semibold text-gray-900 leading-snug mb-1 truncate">
+                        <span class:list={[
+                          "block text-base font-semibold leading-snug mb-1 truncate",
+                          isCurrent ? "text-primary-600" : "text-gray-900",
+                        ]}>
                           {item.title}
                         </span>
                         <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
@@ -374,18 +382,29 @@ const contentWithAds = insertInArticleAds(post.content);
             {sponsoredLocalized.length > 2 && (
               <ul role="list">
                 {sponsoredLocalized.slice(2, 4).map((item) => {
+                  const isCurrent = item.slug === post.slug;
                   const href = getLocalePath(
                     `/${item.category}/${item.sub_category}/${item.slug}/`,
                     locale,
                   );
                   return (
-                    <li class="border-b border-gray-100">
+                    <li class:list={[
+                      "border-b border-gray-100",
+                      isCurrent && "border-l-2 border-l-primary-500",
+                    ]}>
                       <a
                         href={href}
-                        class="flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150"
+                        class:list={[
+                          "flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150",
+                          isCurrent ? "pl-3" : "pl-0",
+                        ]}
+                        aria-current={isCurrent ? "page" : undefined}
                       >
                         <div class="flex-1 min-w-0">
-                          <span class="block text-base font-semibold text-gray-900 leading-snug mb-1 truncate">
+                          <span class:list={[
+                            "block text-base font-semibold leading-snug mb-1 truncate",
+                            isCurrent ? "text-primary-600" : "text-gray-900",
+                          ]}>
                             {item.title}
                           </span>
                           <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">

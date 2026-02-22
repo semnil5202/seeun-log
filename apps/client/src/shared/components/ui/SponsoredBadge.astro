@@ -1,0 +1,17 @@
+---
+/** 추천 뱃지. 협찬/추천 포스트에 공통으로 사용한다. */
+
+interface Props {
+  label: string;
+  class?: string;
+}
+
+const { label, class: className = "" } = Astro.props;
+---
+
+<span class:list={[
+  "inline-flex items-center text-xs font-semibold bg-primary-100 text-primary-800 rounded-md px-2.5 py-0.5",
+  className,
+]}>
+  {label}
+</span>
