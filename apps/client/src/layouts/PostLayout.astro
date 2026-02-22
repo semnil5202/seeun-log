@@ -6,8 +6,9 @@ import LeftSidebar from "@/shared/components/layout/LeftSidebar.astro";
 import RightSidebar from "@/shared/components/layout/RightSidebar.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import BlogPostingJsonLd from "@/shared/components/seo/BlogPostingJsonLd.astro";
-import { getSponsoredPosts } from "@/features/post-feed/api/posts";
+import { getSponsoredPosts, getPostsBySubCategory } from "@/features/post-feed/api/posts";
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
 import type { LocalizedPost } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import type { BreadcrumbItem } from "@/shared/types/seo";
@@ -25,10 +26,24 @@ interface Props {
 
 const { post, locale, breadcrumbs, canonical, path, categoryLabel, subCategoryLabel } = Astro.props;
 
-const sponsoredRaw = await getSponsoredPosts(post.category, post.sub_category);
+const [sponsoredRaw, subCategoryPosts] = await Promise.all([
+  getSponsoredPosts(post.category, post.sub_category),
+  getPostsBySubCategory(post.category, post.sub_category),
+]);
 const sponsoredLocalized = await Promise.all(
   sponsoredRaw.map((p) => getLocalizedPost(p, locale)),
 );
+
+const currentIdx = subCategoryPosts.findIndex((p) => p.slug === post.slug);
+const sliceStart = Math.max(0, currentIdx - 2);
+const sliceEnd = Math.min(subCategoryPosts.length, currentIdx + 3);
+const nearbyPosts = subCategoryPosts.slice(sliceStart, sliceEnd);
+const nearbyLocalized = await Promise.all(
+  nearbyPosts.map((p) => getLocalizedPost(p, locale)),
+);
+
+const moreLabel = t("post.more", locale);
+const subCategoryHref = getLocalePath(`/${post.category}/${post.sub_category}/`, locale);
 
 const fullStars = Math.min(5, Math.max(0, Math.round(post.rating)));
 const emptyStars = 5 - fullStars;
@@ -237,6 +252,173 @@ const contentWithAds = insertInArticleAds(post.content);
           />
 
         </article>
+
+        {nearbyLocalized.length > 1 && (
+          <section class="mt-12">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-200">
+              <h2 class="text-[16px] lg:text-[18px] font-semibold text-gray-900">
+                {categoryLabel} › {subCategoryLabel} 글
+              </h2>
+              <a
+                href={subCategoryHref}
+                class="text-sm text-gray-500 hover:text-primary-500 transition-colors duration-150"
+              >
+                {moreLabel} &gt;
+              </a>
+            </div>
+
+            <ul role="list">
+              {nearbyLocalized.map((item) => {
+                const isCurrent = item.slug === post.slug;
+                const href = getLocalePath(
+                  `/${item.category}/${item.sub_category}/${item.slug}/`,
+                  locale,
+                );
+                return (
+                  <li class:list={[
+                    "border-b border-gray-100",
+                    isCurrent && "border-l-2 border-l-primary-500",
+                  ]}>
+                    <a
+                      href={href}
+                      class:list={[
+                        "flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150",
+                        isCurrent ? "pl-3" : "pl-0",
+                      ]}
+                      aria-current={isCurrent ? "page" : undefined}
+                    >
+                      <div class="flex-1 min-w-0">
+                        <span class:list={[
+                          "block text-base font-semibold leading-snug mb-1 truncate",
+                          isCurrent ? "text-primary-600" : "text-gray-900",
+                        ]}>
+                          {item.title}
+                        </span>
+                        <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                        <img
+                          src={item.thumbnail}
+                          alt={item.title}
+                          width={80}
+                          height={80}
+                          loading="lazy"
+                          decoding="async"
+                          class="w-full h-full object-cover"
+                        />
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {sponsoredLocalized.length > 0 ? (
+          <section class="block lg:hidden mt-12" aria-labelledby="mobile-sponsored-heading">
+            <h2
+              id="mobile-sponsored-heading"
+              class="text-[16px] font-bold text-gray-900 pb-2 border-b border-gray-200"
+            >
+              {sponsoredLabel}
+            </h2>
+
+            <ul role="list">
+              {sponsoredLocalized.slice(0, 2).map((item) => {
+                const href = getLocalePath(
+                  `/${item.category}/${item.sub_category}/${item.slug}/`,
+                  locale,
+                );
+                return (
+                  <li class="border-b border-gray-100">
+                    <a
+                      href={href}
+                      class="flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <div class="flex-1 min-w-0">
+                        <span class="block text-base font-semibold text-gray-900 leading-snug mb-1 truncate">
+                          {item.title}
+                        </span>
+                        <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                        <img
+                          src={item.thumbnail}
+                          alt={item.title}
+                          width={80}
+                          height={80}
+                          loading="lazy"
+                          decoding="async"
+                          class="w-full h-full object-cover"
+                        />
+                      </div>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div
+              class="w-full h-[100px] bg-gray-100 rounded-xl flex items-center justify-center my-4"
+              role="complementary"
+              aria-label="In-feed advertisement"
+            >
+              <span class="text-body2 text-gray-400 select-none">In-feed Adsense</span>
+            </div>
+
+            {sponsoredLocalized.length > 2 && (
+              <ul role="list">
+                {sponsoredLocalized.slice(2, 4).map((item) => {
+                  const href = getLocalePath(
+                    `/${item.category}/${item.sub_category}/${item.slug}/`,
+                    locale,
+                  );
+                  return (
+                    <li class="border-b border-gray-100">
+                      <a
+                        href={href}
+                        class="flex items-center gap-4 py-4 hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <div class="flex-1 min-w-0">
+                          <span class="block text-base font-semibold text-gray-900 leading-snug mb-1 truncate">
+                            {item.title}
+                          </span>
+                          <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                            {item.description}
+                          </p>
+                        </div>
+                        <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
+                          <img
+                            src={item.thumbnail}
+                            alt={item.title}
+                            width={80}
+                            height={80}
+                            loading="lazy"
+                            decoding="async"
+                            class="w-full h-full object-cover"
+                          />
+                        </div>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        ) : (
+          <div class="block lg:hidden mt-12">
+            <h2 class="text-[16px] font-bold text-gray-900 mb-3 pb-2 border-b border-gray-200">
+              {sponsoredLabel}
+            </h2>
+            <p class="text-caption1 text-gray-400 text-center py-6">{t("sidebar.empty", locale)}</p>
+          </div>
+        )}
+
       </main>
 
       <RightSidebar

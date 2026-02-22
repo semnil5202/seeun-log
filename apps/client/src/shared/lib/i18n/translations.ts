@@ -16,6 +16,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': '추천',
     'sidebar.editorsPick': '추천',
     'sidebar.empty': '아직 이 카테고리에 해당하는 추천글이 없습니다.',
+    'post.more': '더보기',
   },
   en: {
     'nav.home': 'Home',
@@ -32,6 +33,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': 'Recommended',
     'sidebar.editorsPick': "Editor's Pick",
     'sidebar.empty': 'No recommendations for this category yet.',
+    'post.more': 'See more',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -48,6 +50,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': 'おすすめ',
     'sidebar.editorsPick': '編集者おすすめ',
     'sidebar.empty': 'このカテゴリにはまだおすすめ記事がありません。',
+    'post.more': 'もっと見る',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -64,6 +67,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': '推荐',
     'sidebar.editorsPick': '编辑推荐',
     'sidebar.empty': '该分类暂无推荐文章。',
+    'post.more': '查看更多',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -80,6 +84,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': '推薦',
     'sidebar.editorsPick': '編輯推薦',
     'sidebar.empty': '該分類尚無推薦文章。',
+    'post.more': '查看更多',
   },
   id: {
     'nav.home': 'Beranda',
@@ -96,6 +101,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': 'Rekomendasi',
     'sidebar.editorsPick': 'Pilihan Editor',
     'sidebar.empty': 'Belum ada rekomendasi untuk kategori ini.',
+    'post.more': 'Lihat lebih',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -112,6 +118,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': 'Đề xuất',
     'sidebar.editorsPick': 'Lựa chọn biên tập',
     'sidebar.empty': 'Chưa có bài viết đề xuất cho danh mục này.',
+    'post.more': 'Xem thêm',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -128,6 +135,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'sidebar.sponsored': 'แนะนำ',
     'sidebar.editorsPick': 'ตัวเลือกบรรณาธิการ',
     'sidebar.empty': 'ยังไม่มีบทความแนะนำสำหรับหมวดหมู่นี้',
+    'post.more': 'ดูเพิ่มเติม',
   },
 };
 
