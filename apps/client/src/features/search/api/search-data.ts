@@ -6,7 +6,7 @@ import { CATEGORY_SLUGS } from '@/shared/types/category';
 import { getCategoryLabel } from '@/shared/lib/i18n/categories';
 import { getLocalePath } from '@/shared/lib/i18n/locales';
 
-export interface SearchItem {
+export type SearchItem = {
   slug: string;
   title: string;
   description: string;
@@ -19,12 +19,12 @@ export interface SearchItem {
   href: string;
   categoryLabel: string;
   dateStr: string;
-}
+};
 
-export interface SearchBuildResult {
+export type SearchBuildResult = {
   searchData: SearchItem[];
   suggestedKeywords: string[];
-}
+};
 
 /**
  * LocalizedPost 배열을 검색용 JSON 데이터와 추천 키워드 목록으로 변환한다.
