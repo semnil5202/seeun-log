@@ -18,8 +18,8 @@ const { category, activeSubCategory, locale } = Astro.props;
 const subCategories = SUB_CATEGORY_MAP[category];
 ---
 
-<nav aria-label="Sub-category navigation" class="block lg:hidden -mx-4 mb-4">
-  <div class="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-4 pb-3 border-b border-gray-200" style="mask-image:linear-gradient(to right,black calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to right,black calc(100% - 24px),transparent)">
+<nav aria-label="Sub-category navigation" class="block lg:hidden -mx-4 mb-4 border-b border-gray-200">
+  <div class="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-4 pb-3" style="mask-image:linear-gradient(to right,black calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to right,black calc(100% - 24px),transparent)">
     {subCategories.map((sub, index) => {
       const isActive = activeSubCategory === sub;
       const href = getLocalePath(`/${category}/${sub}/`, locale);
