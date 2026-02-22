@@ -75,7 +75,6 @@ const reviewSchema =
 
 const ratingLabel = t("post.rating", locale);
 const sponsoredLabel = t("post.sponsored", locale);
-const editorsPickLabel = t("post.editorsPick", locale);
 
 const publishDate = new Date(post.created_at).toLocaleDateString(locale, {
   year: "numeric",
@@ -142,7 +141,7 @@ const contentWithAds = insertInArticleAds(post.content);
                 <SponsoredBadge label={sponsoredLabel} />
               )}
               {post.is_recommended && (
-                <SponsoredBadge label={editorsPickLabel} />
+                <SponsoredBadge label={sponsoredLabel} />
               )}
             </div>
           )}
