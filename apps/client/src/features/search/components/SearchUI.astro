@@ -48,8 +48,28 @@ const {
       name="q"
       placeholder={placeholderText}
       autocomplete="off"
-      class="w-full h-12 pl-12 pr-4 text-base text-gray-900 bg-gray-50 rounded-xl border border-gray-200 outline-none focus:bg-white focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all"
+      class="w-full h-12 pl-12 pr-10 text-base text-gray-900 bg-gray-50 rounded-xl border border-gray-200 outline-none focus:bg-white focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all [&::-webkit-search-cancel-button]:hidden"
     />
+    <button
+      type="button"
+      id="search-clear"
+      class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer hidden"
+      aria-label="Clear search"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
   </form>
 
   <div id="search-suggestions" class="mt-8">
@@ -106,7 +126,21 @@ const {
   const emptyEl = document.getElementById('search-empty');
   const suggestions = document.getElementById('search-suggestions');
 
+  const clearBtn = document.getElementById('search-clear');
   const posts = JSON.parse(dataEl?.textContent || '[]');
+
+  const toggleClearBtn = () => {
+    if (!clearBtn) return;
+    clearBtn.classList.toggle('hidden', !input?.value);
+  };
+
+  input?.addEventListener('input', toggleClearBtn);
+  clearBtn?.addEventListener('click', () => {
+    if (input) input.value = '';
+    toggleClearBtn();
+    renderResults('');
+    input?.focus();
+  });
 
   const createAdSlot = () => {
     const wrapper = document.createElement('div');
@@ -222,6 +256,7 @@ const {
   const initialQuery = params.get('q') || '';
   if (input) input.value = initialQuery;
   if (initialQuery) renderResults(initialQuery);
+  toggleClearBtn();
 
   form?.addEventListener('submit', (e) => {
     e.preventDefault();

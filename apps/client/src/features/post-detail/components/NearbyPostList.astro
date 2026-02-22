@@ -10,7 +10,6 @@ interface Props {
   currentSlug: string;
   categoryLabel: string;
   subCategoryLabel: string;
-  nearbyLabel: string;
   moreLabel: string;
   subCategoryHref: string;
   locale: Locale;
@@ -21,7 +20,6 @@ const {
   currentSlug,
   categoryLabel,
   subCategoryLabel,
-  nearbyLabel,
   moreLabel,
   subCategoryHref,
   locale,
@@ -32,7 +30,7 @@ const {
   <section class="mt-12">
     <div class="flex items-center justify-between pb-3 border-b border-gray-200">
       <h2 class="text-[16px] lg:text-[18px] font-semibold text-gray-900">
-        {categoryLabel} › {subCategoryLabel} {nearbyLabel}
+        {categoryLabel} › {subCategoryLabel}
       </h2>
       <a
         href={subCategoryHref}
