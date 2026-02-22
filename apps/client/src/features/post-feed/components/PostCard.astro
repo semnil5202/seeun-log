@@ -4,15 +4,18 @@ import type { Post } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
+import SponsoredBadge from "@/shared/components/ui/SponsoredBadge.astro";
 
 interface Props {
   post: Post;
   locale: Locale;
   index: number;
+  sponsoredLabel?: string;
   class?: string;
 }
 
-const { post, locale, index, class: className } = Astro.props;
+const { post, locale, index, sponsoredLabel, class: className } = Astro.props;
+const showBadge = sponsoredLabel && (post.is_sponsored || post.is_recommended);
 
 const isLcp = index === 0;
 const postPath = `/${post.category}/${post.sub_category}/${post.slug}/`;
@@ -28,7 +31,7 @@ const dateStr = new Date(post.created_at).toLocaleDateString(locale, {
 
 <article class:list={["group", className]}>
   <a href={localizedHref} class="block">
-    <div class="w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
+    <div class="relative w-full aspect-7/3 overflow-hidden rounded-xl bg-gray-100">
       <img
         src={post.thumbnail}
         alt={post.title}
@@ -39,6 +42,7 @@ const dateStr = new Date(post.created_at).toLocaleDateString(locale, {
         fetchpriority={isLcp ? "high" : "auto"}
         decoding={isLcp ? "sync" : "async"}
       />
+      {showBadge && <SponsoredBadge label={sponsoredLabel} class="absolute top-3 left-3" />}
     </div>
 
     <div class="mt-4 flex flex-col gap-2">

@@ -23,6 +23,7 @@ type FeedPostData = {
   dateStr: string;
   placeName: string | null;
   isSponsored: boolean;
+  isRecommended: boolean;
   sponsoredLabel: string;
 };
 
@@ -34,7 +35,7 @@ type PathProps = {
   [key: string]: unknown;
 };
 
-async function buildFeedPostData(post: Post, locale: Locale): Promise<FeedPostData> {
+const buildFeedPostData = async (post: Post, locale: Locale): Promise<FeedPostData> => {
   const localized = await getLocalizedPost(post, locale);
   const postPath = `/${post.category}/${post.sub_category}/${post.slug}/`;
 
@@ -51,11 +52,12 @@ async function buildFeedPostData(post: Post, locale: Locale): Promise<FeedPostDa
     }),
     placeName: post.place_name || null,
     isSponsored: post.is_sponsored,
+    isRecommended: post.is_recommended,
     sponsoredLabel: t('post.sponsored', locale),
   };
-}
+};
 
-async function fetchPage(category: CategorySlug | null, subCategory: string | null, page: number) {
+const fetchPage = async (category: CategorySlug | null, subCategory: string | null, page: number) => {
   if (category && subCategory) {
     return getPaginatedPostsBySubCategory(category, subCategory, page);
   }
@@ -63,7 +65,7 @@ async function fetchPage(category: CategorySlug | null, subCategory: string | nu
     return getPaginatedPostsByCategory(category, page);
   }
   return getPaginatedPosts(page);
-}
+};
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths: { params: { path: string }; props: PathProps }[] = [];
