@@ -1,0 +1,79 @@
+---
+/** 블로그 주인 프로필 카드. LeftSidebar 상단에 표시한다. */
+
+import { t } from "@/shared/lib/i18n/translations";
+import type { Locale } from "@/shared/types/common";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const email = "test@test.com";
+---
+
+<section class="border border-gray-200 p-4" aria-label="Blogger profile">
+  <div class="flex flex-col items-center gap-4">
+    <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-100 shrink-0">
+      <img
+        src="/images/profile.webp"
+        alt="seeun log"
+        width={80}
+        height={80}
+        loading="eager"
+        decoding="async"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <p class="text-sm text-gray-600 text-center leading-snug line-clamp-2">
+      {t("profile.bio", locale)}
+    </p>
+
+    <div class="flex items-center justify-center gap-1.5">
+      <a
+        href={`mailto:${email}`}
+        class="text-xs text-gray-500 hover:text-primary-500 transition-colors truncate"
+      >
+        {email}
+      </a>
+      <button
+        type="button"
+        class="copy-email shrink-0 w-4 h-4 text-gray-400 hover:text-primary-500 transition-colors cursor-pointer"
+        data-email={email}
+        aria-label="Copy email"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".copy-email").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const email = btn.dataset.email;
+      if (!email) return;
+      await navigator.clipboard.writeText(email);
+
+      const svg = btn.querySelector("svg")!;
+      svg.innerHTML = '<polyline points="20 6 9 17 4 12" />';
+      setTimeout(() => {
+        svg.innerHTML =
+          '<rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />';
+      }, 1500);
+    });
+  });
+</script>

@@ -20,7 +20,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '다른 검색어를 입력해 보세요',
     'search.results': '개의 글',
     'search.suggested': '추천 검색어',
-
+    'profile.bio': '거친 세상을 헤쳐나가는 커플 생존 기록',
   },
   en: {
     'nav.home': 'Home',
@@ -41,7 +41,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'Try a different search term',
     'search.results': 'posts found',
     'search.suggested': 'Suggested',
-
+    'profile.bio': 'A couple\u2019s survival log in this wild world.',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -62,7 +62,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '別のキーワードをお試しください',
     'search.results': '件の記事',
     'search.suggested': 'おすすめキーワード',
-
+    'profile.bio': '荒い世界を生き抜くカップルのサバイバル記録',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -83,7 +83,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '请尝试其他搜索词',
     'search.results': '篇文章',
     'search.suggested': '推荐搜索',
-
+    'profile.bio': '在这个残酷世界中生存的情侣记录',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -104,7 +104,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': '請嘗試其他搜尋詞',
     'search.results': '篇文章',
     'search.suggested': '推薦搜尋',
-
+    'profile.bio': '在這個殘酷世界中生存的情侶記錄',
   },
   id: {
     'nav.home': 'Beranda',
@@ -125,7 +125,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'Coba kata kunci lain',
     'search.results': 'artikel',
     'search.suggested': 'Rekomendasi',
-
+    'profile.bio': 'Catatan bertahan hidup pasangan di dunia yang keras.',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -146,7 +146,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'Thử từ khóa khác',
     'search.results': 'bài viết',
     'search.suggested': 'Gợi ý',
-
+    'profile.bio': 'Nhật ký sinh tồn của cặp đôi trong thế giới khắc nghiệt.',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -167,7 +167,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.noResultsHint': 'ลองใช้คำค้นหาอื่น',
     'search.results': 'บทความ',
     'search.suggested': 'แนะนำ',
-
+    'profile.bio': 'บันทึกการเอาชีวิตรอดของคู่รักในโลกอันโหดร้าย',
   },
 };
 
