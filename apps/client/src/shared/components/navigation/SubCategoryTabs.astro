@@ -1,0 +1,47 @@
+---
+/** 모바일 전용 서브카테고리 수평 탭. 카테고리 페이지 상단에 하위카테고리를 나열한다. */
+
+import { SUB_CATEGORY_MAP } from "@/shared/types/category";
+import type { CategorySlug } from "@/shared/types/category";
+import { getSubCategoryLabel } from "@/shared/lib/i18n/categories";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import type { Locale } from "@/shared/types/common";
+
+interface Props {
+  category: CategorySlug;
+  activeSubCategory?: string;
+  locale: Locale;
+}
+
+const { category, activeSubCategory, locale } = Astro.props;
+
+const subCategories = SUB_CATEGORY_MAP[category];
+---
+
+<nav aria-label="Sub-category navigation" class="block lg:hidden -mx-4 mb-4">
+  <div class="flex items-center gap-1 overflow-x-auto scrollbar-none whitespace-nowrap px-4 pb-3 border-b border-gray-200">
+    {subCategories.map((sub, index) => {
+      const isActive = activeSubCategory === sub;
+      const href = getLocalePath(`/${category}/${sub}/`, locale);
+      return (
+        <>
+          <a
+            href={href}
+            class:list={[
+              "shrink-0 px-2.5 py-1.5 text-body2 font-semibold transition-colors duration-150 rounded-md hover:bg-primary-50",
+              isActive
+                ? "text-primary-600"
+                : "text-gray-700 hover:text-primary-500",
+            ]}
+            aria-current={isActive ? "true" : undefined}
+          >
+            {getSubCategoryLabel(sub, locale)}
+          </a>
+          {index < subCategories.length - 1 && (
+            <span class="text-gray-300 select-none" aria-hidden="true">|</span>
+          )}
+        </>
+      );
+    })}
+  </div>
+</nav>

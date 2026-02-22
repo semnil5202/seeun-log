@@ -16,6 +16,7 @@ import {
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
+import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
 
 export async function getStaticPaths() {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
@@ -77,6 +78,8 @@ const pageDescription = `세은로그 ${categoryLabel} 카테고리 — 커플�
   sponsoredPosts={sponsoredLocalized}
 >
   <BreadcrumbJsonLd slot="head" items={breadcrumbItems} />
+
+  <SubCategoryTabs category={category} locale={locale} />
 
   <PostCardGrid
     posts={localizedPosts}
