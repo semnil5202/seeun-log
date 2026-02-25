@@ -98,7 +98,7 @@ docs/
 └── theme.md          # 컬러 팔레트, 시맨틱 토큰, 테마 사용 가이드
 ```
 
-Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변경이 docs와 불일치하면 quality-reviewer가 REJECT.
+Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변경이 docs와 불일치하면 qa가 REJECT.
 
 ## Comment Policy
 
@@ -179,9 +179,9 @@ src/
 
 ### PM-First 원칙
 
-새 기능 구현, 아키텍처 변경, 요구사항이 모호한 작업은 **반드시 product-manager 에이전트를 먼저 실행**하여 요구사항을 정리한 후 구현에 착수한다.
+새 기능 구현, 아키텍처 변경, 요구사항이 모호한 작업은 **반드시 pm 에이전트를 먼저 실행**하여 요구사항을 정리한 후 구현에 착수한다.
 
-- PM이 요구사항/스펙을 docs/에 정리하거나 명확한 지시를 내린 후 fullstack-engineer가 구현.
+- PM이 요구사항/스펙을 docs/에 정리하거나 명확한 지시를 내린 후 se가 구현.
 - 단순 버그 수정, 린트 에러 해결, 설정 변경 등 명확한 작업은 PM 단계를 생략 가능.
 - 판단 기준: "이 작업의 범위와 요구사항이 명확한가?" — 명확하지 않으면 PM부터.
 
@@ -189,8 +189,8 @@ src/
 
 `.claude/agents/`에 3개 전문 에이전트 구성:
 
-- **product-manager** (opus) — 요구사항 정리, 전략 기획, 문서 관리. 코드 파일 수정 불가, .md 파일만 편집 가능. **새 기능/아키텍처 변경 시 항상 첫 번째로 실행.**
-- **fullstack-engineer** (sonnet) — 기능 구현, 리팩토링. Security → Correctness → Performance → Cost → Maintainability 순서로 판단.
-- **quality-reviewer** (sonnet) — 코드 품질 감사. 공유 자산 일관성, Performance/SEO, 문서-코드 동기화, 보안, 건설적 피드백 5개 차원.
+- **pm** (opus) — 요구사항 정리, 전략 기획, 문서 관리. 코드 파일 수정 불가, .md 파일만 편집 가능. **새 기능/아키텍처 변경 시 항상 첫 번째로 실행.**
+- **se** (sonnet) — 기능 구현, 리팩토링. Security → Correctness → Performance → Cost → Maintainability 순서로 판단.
+- **qa** (sonnet) — 코드 품질 감사. 공유 자산 일관성, Performance/SEO, 문서-코드 동기화, 보안, 건설적 피드백 5개 차원.
 
 에이전트 메모리: `.claude/agent-memory/{agent-name}/` — 프로젝트 스코프, 세션 간 지식 축적.

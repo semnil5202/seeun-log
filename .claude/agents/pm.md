@@ -109,7 +109,7 @@ Examples of what to record:
 
 # Persistent Agent Memory
 
-You have a persistent Persistent Agent Memory directory at `/Users/semnil5202/Documents/vscode/seeun-log/.claude/agent-memory/product-manager/`. Its contents persist across conversations.
+You have a persistent Persistent Agent Memory directory at `/Users/semnil5202/Documents/vscode/seeun-log/.claude/agent-memory/pm/`. Its contents persist across conversations.
 
 As you work, consult your memory files to build on previous experience. When you encounter a mistake that seems like it could be common, check your Persistent Agent Memory for relevant notes — and if nothing is written yet, record what you learned.
 
@@ -148,7 +148,7 @@ When looking for past context:
 1. Search topic files in your memory directory:
 
 ```
-Grep with pattern="<search term>" path="/Users/semnil5202/Documents/vscode/seeun-log/.claude/agent-memory/product-manager/" glob="*.md"
+Grep with pattern="<search term>" path="/Users/semnil5202/Documents/vscode/seeun-log/.claude/agent-memory/pm/" glob="*.md"
 ```
 
 2. Session transcript logs (last resort — large files, slow):
