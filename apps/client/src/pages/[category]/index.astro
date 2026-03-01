@@ -15,6 +15,7 @@ import {
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
 
 export const getStaticPaths = async () => {
   return CATEGORY_SLUGS.map((category) => ({
@@ -46,8 +47,8 @@ const breadcrumbItems = [
   { name: categoryLabel, url: `/${category}/` },
 ];
 
-const pageTitle = `${categoryLabel} - 세은로그`;
-const pageDescription = `세은로그 ${categoryLabel} 카테고리 — 커플이 직접 다녀온 ${categoryLabel} 장소 리뷰 모음.`;
+const pageTitle = `${categoryLabel} - ${SITE_NAME_KO}`;
+const pageDescription = `${SITE_NAME_KO} ${categoryLabel} 카테고리 — 커플이 직접 다녀온 ${categoryLabel} 장소 리뷰 모음.`;
 ---
 
 <ListLayout

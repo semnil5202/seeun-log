@@ -3,6 +3,7 @@
 
 import { t } from "@/shared/lib/i18n/translations";
 import type { Locale } from "@/shared/types/common";
+import { SITE_NAME_EN } from "@eunmin-log/config/site";
 
 interface Props {
   locale: Locale;
@@ -17,7 +18,7 @@ const email = "test@test.com";
     <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-100 shrink-0">
       <img
         src="/images/profile.webp"
-        alt="seeun log"
+        alt={SITE_NAME_EN}
         width={80}
         height={80}
         loading="eager"

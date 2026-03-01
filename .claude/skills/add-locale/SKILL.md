@@ -40,7 +40,7 @@ user_invocable: true
 1. **인자 확인**: locale 코드와 label이 제공되었는지 확인한다.
 2. **중복 확인**: `LOCALES` 배열에 이미 해당 코드가 있으면 중단한다.
 3. **4개 파일 순차 수정**: 위 순서대로 각 파일을 Read → Edit한다.
-4. **빌드 검증**: `pnpm --filter @seeun-log/client build`를 실행하여 새 locale 페이지가 정상 생성되는지 확인한다.
+4. **빌드 검증**: `pnpm --filter @eunmin-log/client build`를 실행하여 새 locale 페이지가 정상 생성되는지 확인한다.
 5. **결과 보고**: 추가된 locale 코드, 생성된 페이지 수를 출력한다.
 
 ## 주의사항

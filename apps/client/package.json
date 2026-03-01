@@ -1,5 +1,5 @@
 {
-  "name": "@seeun-log/client",
+  "name": "@eunmin-log/client",
   "type": "module",
   "version": "0.0.1",
   "private": true,
@@ -10,14 +10,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@seeun-log/config": "workspace:*",
+    "@eunmin-log/config": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@seeun-log/eslint-config": "workspace:*",
-    "@seeun-log/tsconfig": "workspace:*",
+    "@eunmin-log/eslint-config": "workspace:*",
+    "@eunmin-log/tsconfig": "workspace:*",
     "eslint": "^9",
     "typescript": "^5"
   }

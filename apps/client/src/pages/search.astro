@@ -8,6 +8,7 @@ import { DEFAULT_LOCALE } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
 import { getAllPosts, getSponsoredPosts } from "@/features/post-feed/api/posts";
 import { t } from "@/shared/lib/i18n/translations";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
 
 const locale = DEFAULT_LOCALE;
 
@@ -30,8 +31,8 @@ const sponsoredLabel = t("post.sponsored", locale);
 ---
 
 <ListLayout
-  title="검색 - 세은로그"
-  description="세은로그 검색 — 맛집, 카페, 여행 게시글을 검색합니다."
+  title={`검색 - ${SITE_NAME_KO}`}
+  description={`${SITE_NAME_KO} 검색 — 맛집, 카페, 여행 게시글을 검색합니다.`}
   canonical="/search/"
   path="/search/"
   locale={locale}

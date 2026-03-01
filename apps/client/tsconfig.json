@@ -1,5 +1,5 @@
 {
-  "extends": "@seeun-log/tsconfig/astro.json",
+  "extends": "@eunmin-log/tsconfig/astro.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import './globals.css';
+import { SITE_NAME_EN } from '@eunmin-log/config/site';
 
 export const metadata: Metadata = {
-  title: 'seeun-log admin',
-  description: 'seeun-log 관리자 페이지',
+  title: `${SITE_NAME_EN} admin`,
+  description: `${SITE_NAME_EN} 관리자 페이지`,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

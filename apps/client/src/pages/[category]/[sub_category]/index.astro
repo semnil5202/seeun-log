@@ -15,6 +15,7 @@ import {
 import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
 
 export const getStaticPaths = async () => {
   const paths: { params: { category: string; sub_category: string }; props: { category: CategorySlug; sub_category: string } }[] = [];
@@ -57,8 +58,8 @@ const breadcrumbItems = [
   { name: subCategoryLabel, url: `/${category}/${sub_category}/` },
 ];
 
-const pageTitle = `${subCategoryLabel} - ${categoryLabel} - 세은로그`;
-const pageDescription = `세은로그 ${categoryLabel} > ${subCategoryLabel} — 커플이 직접 다녀온 ${subCategoryLabel} 장소 리뷰 모음.`;
+const pageTitle = `${subCategoryLabel} - ${categoryLabel} - ${SITE_NAME_KO}`;
+const pageDescription = `${SITE_NAME_KO} ${categoryLabel} > ${subCategoryLabel} — 커플이 직접 다녀온 ${subCategoryLabel} 장소 리뷰 모음.`;
 ---
 
 <ListLayout

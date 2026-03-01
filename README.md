@@ -1,4 +1,4 @@
-# 세은로그 (seeun log)
+# 은민로그 (eunmin log)
 
 커플 블로그 — 맛집, 카페, 여행 콘텐츠 플랫폼
 
@@ -46,8 +46,8 @@ pnpm install
 pnpm dev
 
 # 개별 앱 실행
-pnpm --filter @seeun-log/admin dev    # localhost:3001
-pnpm --filter @seeun-log/client dev   # localhost:4321
+pnpm --filter @eunmin-log/admin dev    # localhost:3001
+pnpm --filter @eunmin-log/client dev   # localhost:4321
 ```
 
 ## Scripts

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**세은로그 (seeun log)** — 커플 블로그 플랫폼. 맛집, 카페, 여행 콘텐츠 중심. SEO 최적화와 협찬/광고 수익화가 핵심 목표.
+**은민로그 (eunmin log)** — 커플 블로그 플랫폼. 맛집, 카페, 여행 콘텐츠 중심. SEO 최적화와 협찬/광고 수익화가 핵심 목표.
 
 - **apps/admin** — Next.js 15 (React 19, App Router, port 3001). 글 작성/편집, 빌드 트리거 담당. CSR 기반, 서버 로직은 Server Action/API Route로만 처리.
 - **apps/client** — Astro 5 (SSG). 공개 블로그 뷰어. React는 interactive island에만 사용.
@@ -22,8 +22,8 @@ pnpm build                         # 전체 빌드 (topological)
 pnpm lint                          # 전체 린트
 pnpm format                        # Prettier 포맷팅
 pnpm format:check                  # 포맷 검사
-pnpm --filter @seeun-log/admin dev # admin만 실행
-pnpm --filter @seeun-log/client dev # client만 실행
+pnpm --filter @eunmin-log/admin dev # admin만 실행
+pnpm --filter @eunmin-log/client dev # client만 실행
 ```
 
 ## Architecture
@@ -34,7 +34,7 @@ pnpm --filter @seeun-log/client dev # client만 실행
 - **AI 번역**: OpenAI GPT-4o로 다국어 번역 처리
 - **TypeScript**: Strict mode. ES2022, bundler resolution. Path alias `@/*` → `./src/*` (admin).
 - **ESLint**: Flat config (v9). `_` prefix 변수 unused 허용.
-- **Styling**: Tailwind CSS v4 utility classes. 공통 테마는 `@seeun-log/config/theme.css`에서 `@theme inline`으로 정의하며, 양 앱(`apps/client`, `apps/admin`)에서 import. Canonical class 사용 필수 (`flex-shrink-0` → `shrink-0`, `flex-grow` → `grow`, `overflow-ellipsis` → `text-ellipsis` 등). Primary: Sage Green, Secondary: Soft Coral (협찬, Pick, CTA). 상세 컬러 시스템: [`docs/theme.md`](docs/theme.md)
+- **Styling**: Tailwind CSS v4 utility classes. 공통 테마는 `@eunmin-log/config/theme.css`에서 `@theme inline`으로 정의하며, 양 앱(`apps/client`, `apps/admin`)에서 import. Canonical class 사용 필수 (`flex-shrink-0` → `shrink-0`, `flex-grow` → `grow`, `overflow-ellipsis` → `text-ellipsis` 등). Primary: Sage Green, Secondary: Soft Coral (협찬, Pick, CTA). 상세 컬러 시스템: [`docs/theme.md`](docs/theme.md)
 
 상세 아키텍처: [`docs/architecture.md`](docs/architecture.md)
 

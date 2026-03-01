@@ -1,6 +1,7 @@
 ---
 import JsonLd from "./JsonLd.astro";
 import type { BlogPostingSchema, ReviewSchema } from "@/shared/types/seo";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
 
 interface Props {
   posting: BlogPostingSchema;
@@ -25,7 +26,7 @@ const schema: Record<string, unknown> = {
   },
   publisher: {
     "@type": "Organization",
-    name: "세은로그",
+    name: SITE_NAME_KO,
   },
 };
 

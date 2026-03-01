@@ -2,8 +2,8 @@
 
 ## Brand
 
-- **Project Name**: SEEUN-LOG
-- **Brand Name**: 세은로그 (seeun log)
+- **Project Name**: EUNMIN-LOG
+- **Brand Name**: 은민로그 (eunmin log)
 - **Language**: 한국어 기본, 다국어 지원 (GPT-4o 번역): en, ja, zh-CN, zh-TW, id, vi, th
 
 ### Color System
@@ -47,7 +47,7 @@
 ```
 [Header: Sticky Top]
 +-----------------------------------------------------------------------------------------------+
-|  [Logo: 세은로그]        맛집  |  카페  |  여행               [🌐 Language]  [🔍 Search]       |
+|  [Logo: 은민로그]        맛집  |  카페  |  여행               [🌐 Language]  [🔍 Search]       |
 +-----------------------------------------------------------------------------------------------+
 
 [Body: 3-Column]
@@ -68,7 +68,7 @@
 
 [Footer]
 +-----------------------------------------------------------------------------------------------+
-| Copyright © seeun log | Privacy Policy | Sitemap | Instagram                                  |
+| Copyright © eunmin log | Privacy Policy | Sitemap | Instagram                                  |
 +-----------------------------------------------------------------------------------------------+
 ```
 

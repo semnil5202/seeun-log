@@ -7,6 +7,7 @@ import { t } from "@/shared/lib/i18n/translations";
 import type { Locale } from "@/shared/types/common";
 import LanguageSelector from "@/shared/components/navigation/LanguageSelector.astro";
 import { getActiveSegments } from "@/shared/lib/navigation";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
 
 interface Props {
   locale: Locale;
@@ -28,9 +29,9 @@ const { activeCategory } = getActiveSegments(Astro.url.pathname, locale);
     <a
       href={homeHref}
       class="shrink-0 text-title1 font-bold text-primary-600 tracking-tight hover:text-primary-700 transition-colors duration-150"
-      aria-label="세은로그 홈으로 이동"
+      aria-label={`${SITE_NAME_KO} 홈으로 이동`}
     >
-      세은로그
+      {SITE_NAME_KO}
     </a>
 
     <nav aria-label="Main navigation" class="flex items-center gap-1">

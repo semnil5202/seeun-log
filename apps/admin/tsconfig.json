@@ -1,5 +1,5 @@
 {
-  "extends": "@seeun-log/tsconfig/nextjs.json",
+  "extends": "@eunmin-log/tsconfig/nextjs.json",
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"]

@@ -1,7 +1,9 @@
+import { SITE_NAME_EN } from '@eunmin-log/config/site';
+
 export default function Home() {
   return (
     <main>
-      <h1>seeun-log admin</h1>
+      <h1>{SITE_NAME_EN} admin</h1>
     </main>
   );
 }

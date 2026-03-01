@@ -1,5 +1,10 @@
 {
-  "name": "@seeun-log/config",
+  "name": "@eunmin-log/config",
   "version": "0.0.1",
-  "private": true
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./theme.css": "./theme.css",
+    "./site": "./site.ts"
+  }
 }

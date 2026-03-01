@@ -1,8 +1,9 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import { SITE_URL } from '@eunmin-log/config/site';
 
 export default defineConfig({
-  site: 'https://seeun-log.com',
+  site: SITE_URL,
   trailingSlash: 'always',
   i18n: {
     defaultLocale: 'ko',

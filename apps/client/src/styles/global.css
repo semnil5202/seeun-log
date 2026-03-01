@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@seeun-log/config/theme.css';
+@import '@eunmin-log/config/theme.css';
 
 @utility scrollbar-none {
   -ms-overflow-style: none;

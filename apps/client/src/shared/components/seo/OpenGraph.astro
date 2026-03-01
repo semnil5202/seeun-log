@@ -1,6 +1,6 @@
 ---
 import type { Locale } from "@/shared/types/common";
-import { LOCALE_LABELS } from "@/shared/types/common";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
 
 interface Props {
   title: string;
@@ -29,6 +29,6 @@ const ogLocaleMap: Record<Locale, string> = {
 <meta property="og:description" content={description} />
 <meta property="og:url" content={url} />
 <meta property="og:type" content={type} />
-<meta property="og:site_name" content="세은로그" />
+<meta property="og:site_name" content={SITE_NAME_KO} />
 <meta property="og:locale" content={ogLocaleMap[locale]} />
 {image && <meta property="og:image" content={image} />}

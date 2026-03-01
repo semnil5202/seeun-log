@@ -1,6 +1,6 @@
 # Fullstack Engineer Agent Memory
 
-## Project: 세은로그 (seeun-log)
+## Project: 은민로그 (eunmin-log)
 
 Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 
