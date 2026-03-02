@@ -51,7 +51,7 @@ graph LR
 2. **AI 번역**: 저장 시 OpenAI GPT-4o를 통해 다국어 번역 처리
 3. **빌드 트리거**: Node.js Logic이 GitHub Actions에 빌드 트리거 API 호출
 4. **SSG 빌드**: Astro가 빌드 타임에 Supabase에서 전체 포스트 Fetch → 정적 HTML 생성
-5. **배포**: 생성된 HTML을 AWS S3에 업로드, CloudFront CDN으로 서빙
+5. **배포**: 생성된 HTML을 AWS S3에 업로드, CloudFront CDN으로 서빙. CloudFront Function(Viewer Request)이 `/path/` → `/path/index.html` 매핑을 처리.
 6. **사용자 접근**: 브라우저에서 정적 HTML 로드 (JS 최소화)
 
 ## App별 역할

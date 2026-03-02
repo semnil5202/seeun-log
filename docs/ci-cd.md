@@ -5,7 +5,7 @@
 
 ## 1. Overview
 
-Astro SSG 클라이언트 앱(`apps/client`)을 GitHub Actions로 자동 빌드하여 AWS S3에 배포하고, CloudFront 캐시를 무효화하는 파이프라인.
+Astro SSG 클라이언트 앱(`apps/client`)을 GitHub Actions로 자동 빌드하여 AWS S3에 배포하고, CloudFront 캐시를 무효화하는 파이프라인. CloudFront Function(Viewer Request)이 하위 경로를 `index.html`로 매핑하여 S3 REST API의 경로 해석 제약을 보완한다.
 
 ```
 Push to main/develop
@@ -321,6 +321,7 @@ SSG 특성상 rollback은 단순하다:
 - [ ] GitHub Secrets 등록: `PROD_CLOUDFRONT_DISTRIBUTION_ID`, `DEV_CLOUDFRONT_DISTRIBUTION_ID`
 - [ ] S3 버킷 존재 확인: `prod-eunminlog-static`, `dev-eunminlog-static`
 - [ ] CloudFront OAC 설정 확인 (S3 퍼블릭 액세스 차단 상태에서 CF가 접근 가능한지)
+- [ ] CloudFront Function 연결 확인 (Viewer Request — URI를 index.html로 매핑)
 - [ ] `develop` 브랜치 생성 (현재 `main`만 존재하는 경우)
 - [ ] se 에이전트: `astro.config.mjs` SITE_URL 환경변수 대응 코드 변경
 - [ ] se 에이전트: `.github/workflows/deploy-client.yml` 파일 생성
