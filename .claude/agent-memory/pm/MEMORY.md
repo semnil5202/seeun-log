@@ -20,7 +20,7 @@
 - Shared packages: tsconfig, eslint-config, config (future: types, ui)
 - Styling: Tailwind CSS v4, shared theme via @eunmin-log/config/theme.css (@theme inline)
 
-### Current Status (as of 2026-02-22)
+### Current Status (as of 2026-03-01)
 
 - Phase: Scaffolding + theme + client UI components + full page routing + major refactoring complete (208 pages built)
 - Implemented: monorepo, apps, shared packages, docs, Tailwind v4 theme, all UI components, all page routes (ko + 7 locales)
@@ -28,6 +28,7 @@
 - Client features: post-feed, post-detail (PlaceInfoCard, NearbyPostList, PostBadges, ads.ts, schema.ts), search (SearchUI, search-data.ts)
 - Client shared: ad/ (FixedAdsense, InFeedAdsense), ui/ (StarRating, SponsoredBadge), navigation/ (LanguageSelector, CategoryTree, Breadcrumb, SubCategoryTabs), layout/ (SponsoredPostItem, etc.), lib/ (date.ts, navigation.ts)
 - Missing: Supabase connection (using mock data), editor, auth, CI/CD, real AdSense integration
+- GA4 tracking strategy designed (docs/ga4-tracking.md) -- pending implementation
 
 ### Theme System
 
@@ -53,6 +54,7 @@
 - docs/database.md -- DB schema, index recommendations
 - docs/seo-strategy.md -- SEO, JSON-LD, URL structure, image optimization
 - docs/theme.md -- color palette, semantic tokens, usage guide
+- docs/ga4-tracking.md -- GA4 event tracking strategy, event schema, implementation guide
 
 ### Search Feature Decisions
 
@@ -70,7 +72,17 @@
 - PostLayout Fixed: mobile 300x50, PC 468x60 (centered)
 - RightSidebar Fixed: 300x250 (PC only, sticky)
 - In-Article: fluid h-300px, inserted before 2nd and last ## heading sections
-- In-feed: fluid h-250px, at card index 1 and 5 (feed + search results)
+- In-feed: fluid h-250px, at card index 1 and 3 (feed + search results)
+
+### GA4 Analytics
+
+- Measurement ID: G-QX8XPFX6YK (packages/config/site.ts)
+- gtag.js installed in Layout.astro -- basic page_view auto-collected
+- Strategy: gtag API direct calls (no React-based libraries)
+- Events: Enhanced page_view (custom params), select_content (card click), ad_impression/ad_view/ad_click
+- Implementation pattern: event delegation for clicks, IntersectionObserver for ad tracking
+- Analytics code goes in shared/lib/analytics/ (gtag.ts, post-tracker.ts, ad-tracker.ts)
+- 14 custom dimensions to register in GA4 console
 
 ### Open Design Questions
 

@@ -1,4 +1,5 @@
 ---
+import { GA_MEASUREMENT_ID } from "@eunmin-log/config/site";
 import BaseHead from "@/shared/components/layout/BaseHead.astro";
 import Header from "@/shared/components/layout/Header.astro";
 import Footer from "@/shared/components/layout/Footer.astro";
@@ -39,6 +40,13 @@ const {
       type={type}
     />
     <slot name="head" />
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+    <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', GA_MEASUREMENT_ID);
+    </script>
   </head>
   <body class="min-h-screen bg-white text-gray-900 antialiased font-pretendard">
     <Header locale={locale} path={path} />
