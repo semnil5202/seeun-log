@@ -23,6 +23,14 @@
     - `ACL` 설정 무시, 오직 정책(Policy) 기반으로 동작
   - 미디어 서버(`media.eunminlog.site`)는 Root Object 미설정 — 개별 파일 경로로 직접 접근
 
+## i18n (다국어 조건부 처리)
+
+- [ ] Admin: 포스트 작성/편집 폼에 "다국어 콘텐츠 제공" 토글 UI 추가 (기본값 `true`)
+- [ ] Admin: `is_multilingual === false` 저장 시 GPT-4o 번역 API 호출 스킵 로직
+- [ ] DB: `posts` 테이블에 `is_multilingual` 컬럼 추가 (boolean, default `true`) — Supabase 마이그레이션
+- [ ] DB: 기존 포스트 `is_multilingual = true` 일괄 설정 (데이터 마이그레이션)
+- Client 빌드 로직 (`is_multilingual` 기반 필터링)은 mock 데이터 기반으로 선행 구현 완료 예정
+
 ## Ads
 
 - [ ] 애드센스 광고 호출 스크립트 추가 (플레이스홀더 → 실제 광고 코드 교체)

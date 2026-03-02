@@ -95,6 +95,16 @@
 - Supabase env vars: not needed yet (mock data), add when Supabase integration is done
 - Secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PROD/DEV_CLOUDFRONT_DISTRIBUTION_ID
 
+### Multilingual Conditional Processing (is_multilingual)
+
+- Decision date: 2026-03-03
+- `posts.is_multilingual` (boolean, default true): controls per-post multilingual support
+- false = Korean-only: no locale routes, no hreflang, no translation, no card in locale lists
+- List/index pages always generate all locale routes regardless of is_multilingual
+- LanguageSelector on non-multilingual post detail -> locale-specific fallback page ("not available in this language")
+- Non-multilingual posts excluded from locale feed JSON and locale search data
+- Implementation order: Client mock first -> DB migration + Admin UI later (tracked in docs/TODO.md)
+
 ### Open Design Questions
 
 - No tags/keywords table defined (but "Popular Tags" mentioned in UI specs)

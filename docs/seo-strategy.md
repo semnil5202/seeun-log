@@ -86,6 +86,29 @@ OpenAI GPT-4o로 자동 번역. 한국어가 기본 언어.
 - `<link rel="alternate" hreflang="x-default">` → 한국어 페이지
 - Canonical은 각 언어 페이지 자기 자신을 가리킴
 
+### 다국어 조건부 처리 (`is_multilingual`)
+
+포스트별로 다국어 콘텐츠 제공 여부를 `is_multilingual` 필드로 제어한다.
+
+**`is_multilingual === false`인 포스트**:
+
+- 다국어 경로(`/{locale}/{category}/{sub_category}/{slug}/`) 미생성 — 한국어 경로만 존재
+- hreflang 태그 미출력 (포스트 상세 페이지에서만 적용. 리스트/인덱스 페이지의 hreflang은 항상 유지)
+- 다국어 리스트 페이지(`/{locale}/{category}/` 등)에서 카드 미노출 — 피드, 검색 데이터에서도 제외
+- 다국어 피드 JSON(`/api/feed/{locale}/...`)에서 제외
+- 다국어 검색 페이지(`/{locale}/search/`)의 검색 데이터에서 제외
+- AI 번역(GPT-4o) 호출 스킵 — `post_translations` 레코드 미생성
+
+**다국어 미지원 포스트 접근 시 fallback**:
+
+- LanguageSelector에서 언어를 전환하면 locale별 fallback 페이지로 이동
+- Fallback 페이지는 "해당 글은 다국어를 지원하지 않습니다." 메시지를 해당 locale로 표시
+
+**리스트/인덱스 페이지**:
+
+- 홈, 카테고리, 서브카테고리 인덱스의 다국어 경로는 `is_multilingual`과 무관하게 항상 생성
+- 해당 페이지의 hreflang도 항상 출력
+
 ## Search Page SEO
 
 - `<meta name="robots" content="noindex, follow">` — 검색 결과 페이지는 인덱싱하지 않음
