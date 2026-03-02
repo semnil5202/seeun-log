@@ -1,0 +1,32 @@
+---
+/** 한국어 개인정보처리방침 (/privacy/) */
+
+import Layout from "@/layouts/Layout.astro";
+import { SITE_NAME_KO } from "@eunmin-log/config/site";
+import { DEFAULT_LOCALE } from "@/shared/types/common";
+import { getPrivacyContent } from "@/features/privacy/content";
+
+const locale = DEFAULT_LOCALE;
+const privacy = getPrivacyContent(locale);
+---
+
+<Layout
+  title={`${privacy.title} - ${SITE_NAME_KO}`}
+  description={privacy.intro}
+  canonical="/privacy/"
+  path="/privacy/"
+  locale={locale}
+>
+  <main class="mx-auto max-w-screen-xl grow px-4 lg:px-6 pt-10 pb-12">
+    <h1 class="text-2xl font-bold text-gray-900">{privacy.title}</h1>
+    <p class="mt-2 text-sm text-gray-400">{privacy.lastUpdated}</p>
+    <p class="mt-6 text-gray-700 leading-relaxed">{privacy.intro}</p>
+
+    {privacy.sections.map((section) => (
+      <section class="mt-8">
+        <h2 class="text-lg font-semibold text-gray-900">{section.heading}</h2>
+        <p class="mt-2 text-gray-700 leading-relaxed whitespace-pre-line">{section.body}</p>
+      </section>
+    ))}
+  </main>
+</Layout>
