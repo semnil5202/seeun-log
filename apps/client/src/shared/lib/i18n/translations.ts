@@ -22,6 +22,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': '개의 글',
     'search.suggested': '추천 검색어',
     'profile.bio': '거친 세상을 헤쳐나가는 커플 생존 기록',
+    'error.title': '페이지를 찾을 수 없습니다.',
+    'error.description': '요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.',
+    'error.goHome': '메인페이지로 이동하기',
   },
   en: {
     'nav.home': 'Home',
@@ -43,6 +46,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': 'posts found',
     'search.suggested': 'Suggested',
     'profile.bio': 'A couple\u2019s survival log in this wild world.',
+    'error.title': 'Page not found.',
+    'error.description': 'The page you requested does not exist or may have been moved.',
+    'error.goHome': 'Go to Home',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -64,6 +70,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': '件の記事',
     'search.suggested': 'おすすめキーワード',
     'profile.bio': '荒い世界を生き抜くカップルのサバイバル記録',
+    'error.title': 'ページが見つかりません。',
+    'error.description': 'リクエストされたページは存在しないか、移動された可能性があります。',
+    'error.goHome': 'ホームへ戻る',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -85,6 +94,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': '篇文章',
     'search.suggested': '推荐搜索',
     'profile.bio': '在这个残酷世界中生存的情侣记录',
+    'error.title': '页面未找到。',
+    'error.description': '您请求的页面不存在或已被移动。',
+    'error.goHome': '返回首页',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -106,6 +118,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': '篇文章',
     'search.suggested': '推薦搜尋',
     'profile.bio': '在這個殘酷世界中生存的情侶記錄',
+    'error.title': '找不到頁面。',
+    'error.description': '您請求的頁面不存在或已被移動。',
+    'error.goHome': '返回首頁',
   },
   id: {
     'nav.home': 'Beranda',
@@ -127,6 +142,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': 'artikel',
     'search.suggested': 'Rekomendasi',
     'profile.bio': 'Catatan bertahan hidup pasangan di dunia yang keras.',
+    'error.title': 'Halaman tidak ditemukan.',
+    'error.description': 'Halaman yang Anda minta tidak ada atau telah dipindahkan.',
+    'error.goHome': 'Ke Beranda',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -148,6 +166,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': 'bài viết',
     'search.suggested': 'Gợi ý',
     'profile.bio': 'Nhật ký sinh tồn của cặp đôi trong thế giới khắc nghiệt.',
+    'error.title': 'Không tìm thấy trang.',
+    'error.description': 'Trang bạn yêu cầu không tồn tại hoặc đã được di chuyển.',
+    'error.goHome': 'Về trang chủ',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -169,6 +190,9 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'search.results': 'บทความ',
     'search.suggested': 'แนะนำ',
     'profile.bio': 'บันทึกการเอาชีวิตรอดของคู่รักในโลกอันโหดร้าย',
+    'error.title': 'ไม่พบหน้าเว็บ.',
+    'error.description': 'หน้าเว็บที่คุณร้องขอไม่มีอยู่หรืออาจถูกย้าย',
+    'error.goHome': 'กลับหน้าแรก',
   },
 };
 

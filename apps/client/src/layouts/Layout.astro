@@ -53,7 +53,7 @@ const isDev = import.meta.env.PUBLIC_STAGE === "development";
       gtag('config', GA_MEASUREMENT_ID, gaPageParams);
     </script>
   </head>
-  <body class="min-h-screen bg-white text-gray-900 antialiased font-pretendard">
+  <body class="flex min-h-screen flex-col bg-white text-gray-900 antialiased font-pretendard">
     <Header locale={locale} path={path} />
     <slot />
     <Footer locale={locale} />
