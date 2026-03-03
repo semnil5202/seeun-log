@@ -31,7 +31,8 @@ const {
   isMultilingual = true,
 } = Astro.props;
 
-const isDev = import.meta.env.PUBLIC_STAGE === "development";
+// TODO: 실제 콘텐츠 준비 완료 후 noindex 제거 → "index, follow" 복원
+const TEMP_NOINDEX = true;
 ---
 
 <!doctype html>
@@ -47,7 +48,7 @@ const isDev = import.meta.env.PUBLIC_STAGE === "development";
       type={type}
       isMultilingual={isMultilingual}
     />
-    <meta name="robots" content={isDev ? "noindex, nofollow" : "index, follow"} />
+    <meta name="robots" content={TEMP_NOINDEX ? "noindex, nofollow" : "index, follow"} />
     <slot name="head" />
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
     <script is:inline define:vars={{ GA_MEASUREMENT_ID, gaPageParams }}>

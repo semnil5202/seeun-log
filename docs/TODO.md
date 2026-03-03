@@ -1,5 +1,10 @@
 # TODO
 
+## SEO
+
+- [ ] `Layout.astro`의 `TEMP_NOINDEX = true` → `false`로 변경하여 `index, follow` 복원 (실제 콘텐츠 준비 완료 후)
+- [ ] GSC URL 검사 도구로 주요 페이지 재색인 요청 (noindex 해제 후 색인 가속)
+
 ## Media
 
 - [ ] 이미지 여러 개일 때 가로 스크롤 (이미지 갤러리/캐러셀)
