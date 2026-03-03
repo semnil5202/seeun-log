@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import { getSiteUrlFromEnv } from '@eunmin-log/config/site';
+import { getSiteUrlFromEnv } from '@eunminlog/config/site';
 
 export default defineConfig({
   site: getSiteUrlFromEnv(process.env.PUBLIC_STAGE),

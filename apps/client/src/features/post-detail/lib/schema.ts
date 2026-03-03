@@ -1,6 +1,6 @@
 import type { BlogPostingSchema, ReviewSchema } from "@/shared/types/seo";
 import type { LocalizedPost } from "@/shared/types/post";
-import { SITE_NAME_KO } from "@eunmin-log/config/site";
+import { SITE_NAME_KO } from "@eunminlog/config/site";
 
 /**
  * BlogPosting JSON-LD 스키마 객체를 생성한다.

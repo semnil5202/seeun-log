@@ -1,4 +1,4 @@
-import { SITE_NAME_EN } from '@eunmin-log/config/site';
+import { SITE_NAME_EN } from '@eunminlog/config/site';
 
 export default function Home() {
   return (

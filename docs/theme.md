@@ -6,7 +6,7 @@
 
 ### 패키지 정보
 
-- **패키지명**: `@eunmin-log/config`
+- **패키지명**: `@eunminlog/config`
 - **파일 위치**: `packages/config/theme.css`
 - **방식**: Tailwind CSS v4 `@theme inline` (CSS custom property 기반)
 
@@ -15,8 +15,8 @@
 ```
 packages/config/theme.css          <- 단일 소스 (Single Source of Truth)
   |
-  +-- apps/client/src/styles/global.css    @import '@eunmin-log/config/theme.css'
-  +-- apps/admin/src/app/globals.css       @import '@eunmin-log/config/theme.css'
+  +-- apps/client/src/styles/global.css    @import '@eunminlog/config/theme.css'
+  +-- apps/admin/src/app/globals.css       @import '@eunminlog/config/theme.css'
 ```
 
 ---

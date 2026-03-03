@@ -36,7 +36,7 @@ jobs:
           fi
 
       - name: Build client
-        run: pnpm --filter @eunmin-log/client build
+        run: pnpm --filter @eunminlog/client build
         env:
           PUBLIC_STAGE: ${{ env.PUBLIC_STAGE }}
 

@@ -46,8 +46,8 @@ pnpm install
 pnpm dev
 
 # 개별 앱 실행
-pnpm --filter @eunmin-log/admin dev    # localhost:3001
-pnpm --filter @eunmin-log/client dev   # localhost:4321
+pnpm --filter @eunminlog/admin dev    # localhost:3001
+pnpm --filter @eunminlog/client dev   # localhost:4321
 ```
 
 ## Scripts

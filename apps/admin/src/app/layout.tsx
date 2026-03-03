@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import './globals.css';
-import { SITE_NAME_EN } from '@eunmin-log/config/site';
+import { SITE_NAME_EN } from '@eunminlog/config/site';
 
 export const metadata: Metadata = {
   title: `${SITE_NAME_EN} admin`,

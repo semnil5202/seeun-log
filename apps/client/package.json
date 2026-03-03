@@ -1,5 +1,5 @@
 {
-  "name": "@eunmin-log/client",
+  "name": "@eunminlog/client",
   "type": "module",
   "version": "0.0.1",
   "private": true,
@@ -10,14 +10,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@eunmin-log/config": "workspace:*",
+    "@eunminlog/config": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@eunmin-log/eslint-config": "workspace:*",
-    "@eunmin-log/tsconfig": "workspace:*",
+    "@eunminlog/eslint-config": "workspace:*",
+    "@eunminlog/tsconfig": "workspace:*",
     "eslint": "^9",
     "typescript": "^5"
   }

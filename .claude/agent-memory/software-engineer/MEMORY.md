@@ -1,6 +1,6 @@
 # SE Agent Memory
 
-## Project: eunmin-log (은민로그)
+## Project: eunminlog (은민로그)
 
 ### Stack
 - Client: Astro 5 (SSG), `apps/client/`
@@ -34,7 +34,7 @@
 
 ### Build Command
 ```bash
-pnpm --filter @eunmin-log/client build
+pnpm --filter @eunminlog/client build
 ```
 
 ### Comment Policy

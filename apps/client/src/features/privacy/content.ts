@@ -1,5 +1,5 @@
 import type { Locale } from '@/shared/types/common';
-import { SITE_NAME_KO, SITE_NAME_EN, SITE_URL } from '@eunmin-log/config/site';
+import { SITE_NAME_KO, SITE_NAME_EN, SITE_URL } from '@eunminlog/config/site';
 
 interface PrivacySection {
   heading: string;

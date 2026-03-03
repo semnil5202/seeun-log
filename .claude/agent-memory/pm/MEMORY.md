@@ -1,6 +1,6 @@
 # Product Manager Agent Memory
 
-## Project: eunmin-log (은민로그)
+## Project: eunminlog (은민로그)
 
 ### Key Facts
 
@@ -18,7 +18,7 @@
 - AI: OpenAI GPT-4o for multilingual translation
 - Deploy: GitHub Actions -> Astro SSG build -> AWS S3 + CloudFront
 - Shared packages: tsconfig, eslint-config, config (future: types, ui)
-- Styling: Tailwind CSS v4, shared theme via @eunmin-log/config/theme.css (@theme inline)
+- Styling: Tailwind CSS v4, shared theme via @eunminlog/config/theme.css (@theme inline)
 
 ### Current Status (as of 2026-03-01)
 

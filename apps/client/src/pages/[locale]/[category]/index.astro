@@ -18,7 +18,7 @@ import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
-import { SITE_NAME_KO, SITE_NAME_EN } from "@eunmin-log/config/site";
+import { SITE_NAME_KO, SITE_NAME_EN } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);

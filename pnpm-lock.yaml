@@ -17,7 +17,7 @@ importers:
 
   apps/admin:
     dependencies:
-      '@eunmin-log/config':
+      '@eunminlog/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@tailwindcss/postcss':
@@ -36,10 +36,10 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
-      '@eunmin-log/eslint-config':
+      '@eunminlog/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@eunmin-log/tsconfig':
+      '@eunminlog/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       '@types/node':
@@ -60,7 +60,7 @@ importers:
 
   apps/client:
     dependencies:
-      '@eunmin-log/config':
+      '@eunminlog/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@tailwindcss/vite':
@@ -73,10 +73,10 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
     devDependencies:
-      '@eunmin-log/eslint-config':
+      '@eunminlog/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@eunmin-log/tsconfig':
+      '@eunminlog/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
       eslint:

@@ -1,5 +1,5 @@
 {
-  "name": "@eunmin-log/admin",
+  "name": "@eunminlog/admin",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@eunmin-log/config": "workspace:*",
+    "@eunminlog/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "next": "^15",
     "react": "^19",
@@ -18,8 +18,8 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@eunmin-log/eslint-config": "workspace:*",
-    "@eunmin-log/tsconfig": "workspace:*",
+    "@eunminlog/eslint-config": "workspace:*",
+    "@eunminlog/tsconfig": "workspace:*",
     "@types/node": "25.2.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",

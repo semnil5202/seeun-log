@@ -16,7 +16,7 @@ import {
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
-import { SITE_NAME_KO } from "@eunmin-log/config/site";
+import { SITE_NAME_KO } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
   return CATEGORY_SLUGS.map((category) => ({
