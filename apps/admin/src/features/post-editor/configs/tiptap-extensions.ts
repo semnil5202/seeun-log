@@ -5,6 +5,8 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { textblockTypeInputRule } from '@tiptap/core';
 
+import { CustomResizableImage } from './image';
+
 const HEADING_STYLES: Record<Level, string> = {
   1: '',
   2: 'font-size: 22px; line-height: 30px; font-weight: 600; color: #111827; margin: 1rem 0 0.5rem 0;',
@@ -109,4 +111,5 @@ export const tiptapExtensions = [
   CustomHeading,
   CustomLink,
   CustomUnderline,
+  CustomResizableImage,
 ];

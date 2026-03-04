@@ -6,3 +6,4 @@ export { UnorderIcon } from './UnorderIcon';
 export { OrderIcon } from './OrderIcon';
 export { UndoIcon } from './UndoIcon';
 export { RedoIcon } from './RedoIcon';
+export { ImageIcon } from './ImageIcon';

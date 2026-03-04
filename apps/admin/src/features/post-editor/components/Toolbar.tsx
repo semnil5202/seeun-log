@@ -1,6 +1,13 @@
 import type { Editor } from '@tiptap/react';
 
-import { FontStyles, History, List, TiptapLink, VerticalDivider } from './toolbars';
+import {
+  FontStyles,
+  History,
+  List,
+  TiptapLink,
+  UploadImage,
+  VerticalDivider,
+} from './toolbars';
 
 type ToolbarProps = {
   editor: Editor;
@@ -15,6 +22,8 @@ export function Toolbar({ editor }: ToolbarProps) {
         <TiptapLink editor={editor} />
         <VerticalDivider />
         <List editor={editor} />
+        <VerticalDivider />
+        <UploadImage editor={editor} />
       </div>
       <History editor={editor} />
     </div>
