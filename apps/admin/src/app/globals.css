@@ -154,6 +154,10 @@
 }
 
 /* Image Carousel */
+.image-carousel-container {
+  margin: 16px 0;
+}
+
 .image-carousel-viewport {
   display: flex;
   gap: 8px;

@@ -4,6 +4,7 @@ type ImageItem = { src: string; width: string; height: string };
 
 const DEFAULT_WIDTH = '90%';
 const DEFAULT_HEIGHT = 'auto';
+let pendingScrollIndex = -1;
 
 declare module '@tiptap/core' {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
@@ -180,6 +181,17 @@ export const CustomImageCarousel = Node.create({
         imgElements.push($img);
         imgWrappers.push($wrapper);
       });
+
+      if (pendingScrollIndex >= 0) {
+        const targetIdx = pendingScrollIndex;
+        pendingScrollIndex = -1;
+        requestAnimationFrame(() => {
+          const slide = slides[targetIdx];
+          if (slide) {
+            $viewport.scrollTo({ left: slide.offsetLeft, behavior: 'instant' });
+          }
+        });
+      }
 
       // Navigation arrows (< >)
       if (images.length > 1) {
@@ -374,6 +386,7 @@ export const CustomImageCarousel = Node.create({
                 ? { ...img, width: `${widthPct}%`, height: `${newH}px` }
                 : img,
             );
+            pendingScrollIndex = i;
             updateImages(newImages);
           };
 
