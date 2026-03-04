@@ -23,10 +23,12 @@
 - Admin: Next.js 15, App Router, React 19, HTTPS dev at local-admin.eunminlog.site:4322 (mkcert)
 - Admin UI: shadcn/ui components at src/components/ui/, shared components at src/shared/
 - Admin layout: SidebarLayout (client component) wraps all pages, AppSidebar with 5 nav groups
-- Client: Astro 5 SSG (already implemented)
+- Client: Astro 5 SSG (already implemented), HTTPS dev at local-client.eunminlog.site:4321 (mkcert + Vite)
+- Both apps: `pnpm setup:local` (root) runs setup scripts for both
 - DB: Supabase PostgreSQL (posts + post_translations tables)
 - Media: S3 `media-eunminlog` bucket, CloudFront `media.eunminlog.site`
 - CI/CD: GitHub Actions workflow_dispatch for build trigger
+- Global UI pattern: Layout.astro contains 1x Toast + 1x ImageLightbox (shared/components/ui/)
 
 ## Admin Phase Status (as of 2026-03-04)
 
