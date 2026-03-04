@@ -4,6 +4,7 @@ import {
   FontStyles,
   History,
   List,
+  TextAlign,
   TiptapLink,
   UploadImage,
   VerticalDivider,
@@ -22,6 +23,8 @@ export function Toolbar({ editor }: ToolbarProps) {
         <TiptapLink editor={editor} />
         <VerticalDivider />
         <List editor={editor} />
+        <VerticalDivider />
+        <TextAlign editor={editor} />
         <VerticalDivider />
         <UploadImage editor={editor} />
       </div>

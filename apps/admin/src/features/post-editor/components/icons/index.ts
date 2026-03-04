@@ -7,3 +7,7 @@ export { OrderIcon } from './OrderIcon';
 export { UndoIcon } from './UndoIcon';
 export { RedoIcon } from './RedoIcon';
 export { ImageIcon } from './ImageIcon';
+export { AlignLeftIcon } from './AlignLeftIcon';
+export { AlignCenterIcon } from './AlignCenterIcon';
+export { AlignRightIcon } from './AlignRightIcon';
+export { AlignJustifyIcon } from './AlignJustifyIcon';

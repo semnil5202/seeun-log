@@ -1,6 +1,7 @@
 import BulletList from '@tiptap/extension-bullet-list';
 import Heading, { type Level } from '@tiptap/extension-heading';
 import Link from '@tiptap/extension-link';
+import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { textblockTypeInputRule } from '@tiptap/core';
@@ -105,11 +106,16 @@ const CustomUnderline = Underline.configure({
   },
 });
 
+const CustomTextAlign = TextAlign.configure({
+  types: ['heading', 'paragraph'],
+});
+
 export const tiptapExtensions = [
   CustomStarterKit,
   CustomBulletList,
   CustomHeading,
   CustomLink,
   CustomUnderline,
+  CustomTextAlign,
   CustomResizableImage,
 ];
