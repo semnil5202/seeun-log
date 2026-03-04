@@ -1,9 +1,4 @@
-type GtagEvent =
-  | 'select_content'
-  | 'search'
-  | 'ad_impression'
-  | 'ad_view'
-  | 'ad_click';
+type GtagEvent = 'select_content' | 'search' | 'ad_impression' | 'ad_view' | 'ad_click';
 
 type GtagParams = Record<string, string | number | boolean>;
 

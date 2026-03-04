@@ -32,7 +32,6 @@
   --color-primary-800: #40543d;
   --color-primary-900: #2a3928;
 
-
   /* Gray */
   --color-gray-0: #ffffff;
   --color-gray-50: #f8f9fa;
@@ -88,7 +87,6 @@
   --color-primary-normal: var(--color-primary-400);
   --color-primary-strong: var(--color-primary-500);
   --color-primary-heavy: var(--color-primary-700);
-
 
   /* Semantic — Label */
   --color-label-inverse: var(--color-gray-0);

@@ -150,9 +150,7 @@ function MetricsContent() {
     to: searchParams.get('to') || defaultRange.to,
   });
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [sortBy, setSortBy] = useState<SortKey>(
-    (searchParams.get('sort') as SortKey) || 'views',
-  );
+  const [sortBy, setSortBy] = useState<SortKey>((searchParams.get('sort') as SortKey) || 'views');
 
   const [appliedDateRange, setAppliedDateRange] = useState<DateRange>(dateRange);
   const [appliedQuery, setAppliedQuery] = useState(searchQuery);

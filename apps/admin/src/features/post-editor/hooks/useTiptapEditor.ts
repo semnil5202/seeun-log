@@ -11,7 +11,6 @@ type UseTiptapEditorProps = {
   onChange: (content: string) => void;
 };
 
-
 export function useTiptapEditor({ content, onChange }: UseTiptapEditorProps) {
   const editor = useEditor({
     extensions: tiptapExtensions,

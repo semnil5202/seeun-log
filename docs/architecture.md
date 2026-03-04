@@ -163,9 +163,9 @@ src/
 
 양 앱 모두 mkcert 기반 self-signed 인증서를 사용한 HTTPS 로컬 개발 환경을 제공한다.
 
-| 앱 | 도메인 | 포트 | 셋업 스크립트 |
-|-----|--------|------|---------------|
-| Admin | `https://local-admin.eunminlog.site` | 4322 | `apps/admin/scripts/setup-local-https.sh` |
+| 앱     | 도메인                                | 포트 | 셋업 스크립트                              |
+| ------ | ------------------------------------- | ---- | ------------------------------------------ |
+| Admin  | `https://local-admin.eunminlog.site`  | 4322 | `apps/admin/scripts/setup-local-https.sh`  |
 | Client | `https://local-client.eunminlog.site` | 4321 | `apps/client/scripts/setup-local-https.sh` |
 
 - **일괄 셋업**: `pnpm setup:local` (root) -- client + admin 동시 실행
@@ -174,8 +174,8 @@ src/
 
 ## 공유 패키지
 
-| 패키지                 | 역할                                                          |
-| ---------------------- | ------------------------------------------------------------- |
-| `packages/tsconfig`    | 공유 TypeScript 설정 (base, nextjs, astro)                    |
+| 패키지                   | 역할                                                        |
+| ------------------------ | ----------------------------------------------------------- |
+| `packages/tsconfig`      | 공유 TypeScript 설정 (base, nextjs, astro)                  |
 | `packages/eslint-config` | 공유 ESLint Flat Config                                     |
-| `packages/config`      | 공유 Tailwind 테마 (`theme.css` — 컬러 팔레트, 시맨틱 토큰)  |
+| `packages/config`        | 공유 Tailwind 테마 (`theme.css` — 컬러 팔레트, 시맨틱 토큰) |

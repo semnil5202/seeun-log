@@ -15,7 +15,6 @@ type TiptapEditorContainerProps = {
   className?: string;
 };
 
-
 export function TiptapEditorContainer({
   content,
   onChange,

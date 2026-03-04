@@ -1,6 +1,6 @@
-import type { BlogPostingSchema, ReviewSchema } from "@/shared/types/seo";
-import type { LocalizedPost } from "@/shared/types/post";
-import { SITE_NAME_KO } from "@eunminlog/config/site";
+import type { BlogPostingSchema, ReviewSchema } from '@/shared/types/seo';
+import type { LocalizedPost } from '@/shared/types/post';
+import { SITE_NAME_KO } from '@eunminlog/config/site';
 
 /**
  * BlogPosting JSON-LD 스키마 객체를 생성한다.
@@ -29,9 +29,9 @@ export const buildReviewSchema = (post: LocalizedPost): ReviewSchema | undefined
 
   return {
     itemReviewed: {
-      type: "Restaurant" as const,
+      type: 'Restaurant' as const,
       name: post.place_name,
-      address: post.address ?? "",
+      address: post.address ?? '',
     },
     reviewRating: post.rating,
     authorName: SITE_NAME_KO,

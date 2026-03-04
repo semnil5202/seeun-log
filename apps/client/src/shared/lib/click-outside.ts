@@ -4,10 +4,7 @@
  * @param onClose 외부 클릭 시 실행할 콜백
  * @returns cleanup 함수
  */
-export function onClickOutside(
-  el: HTMLElement,
-  onClose: () => void,
-): () => void {
+export function onClickOutside(el: HTMLElement, onClose: () => void): () => void {
   const handler = (e: MouseEvent) => {
     if (!el.contains(e.target as Node)) {
       onClose();

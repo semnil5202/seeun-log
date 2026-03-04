@@ -318,12 +318,12 @@
 
 ## AdSense Specifications
 
-| 배치 | 사이즈 (Mobile) | 사이즈 (PC) | 위치 | 컴포넌트 |
-| --- | --- | --- | --- | --- |
-| PostLayout Fixed Adsense | 300x50 | 468x60 (중앙 정렬) | 게시글 상세 본문 상단 | `FixedAdsense variant="post-top"` |
-| RightSidebar Fixed Adsense | -- | 300x250 | PC 우측 사이드바 상단 (sticky) | `FixedAdsense variant="sidebar"` |
-| In-Article Adsense | fluid (h-300px) | fluid (h-300px) | 게시글 본문 중간 (## 헤딩 앞에 삽입) | `insertInArticleAds()` |
-| In-feed Adsense | fluid (aspect-7/3) | fluid (aspect-7/3) | 카드 피드 index 1, 3 / 검색 결과 index 1, 3 | `InFeedAdsense` |
+| 배치                       | 사이즈 (Mobile)    | 사이즈 (PC)        | 위치                                        | 컴포넌트                          |
+| -------------------------- | ------------------ | ------------------ | ------------------------------------------- | --------------------------------- |
+| PostLayout Fixed Adsense   | 300x50             | 468x60 (중앙 정렬) | 게시글 상세 본문 상단                       | `FixedAdsense variant="post-top"` |
+| RightSidebar Fixed Adsense | --                 | 300x250            | PC 우측 사이드바 상단 (sticky)              | `FixedAdsense variant="sidebar"`  |
+| In-Article Adsense         | fluid (h-300px)    | fluid (h-300px)    | 게시글 본문 중간 (## 헤딩 앞에 삽입)        | `insertInArticleAds()`            |
+| In-feed Adsense            | fluid (aspect-7/3) | fluid (aspect-7/3) | 카드 피드 index 1, 3 / 검색 결과 index 1, 3 | `InFeedAdsense`                   |
 
 ### AdSense 컴포넌트
 

@@ -6,9 +6,7 @@ import { MOCK_POSTS } from '@/features/post-feed/mock/posts';
 
 /** Stable newest-first sort. Operates on a shallow copy to avoid mutation. */
 const sortByDateDesc = (posts: Post[]): Post[] =>
-  [...posts].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-  );
+  [...posts].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
 /** Returns all posts sorted newest-first. */
 export const getAllPosts = async (): Promise<Post[]> => sortByDateDesc(MOCK_POSTS);

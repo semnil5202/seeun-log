@@ -18,5 +18,5 @@ export const insertInArticleAds = (markdown: string): string => {
       }
       return part;
     })
-    .join("");
+    .join('');
 };

@@ -9,7 +9,6 @@ type TiptapEditorProps = {
   placeholder?: string;
 };
 
-
 export function TiptapEditor({ editor, placeholder }: TiptapEditorProps) {
   const [isEmpty, setIsEmpty] = useState(true);
 

@@ -75,10 +75,7 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
               {NAV_ITEMS.map((group) => (
-                <Collapsible
-                  key={group.label}
-                  defaultOpen
-                >
+                <Collapsible key={group.label} defaultOpen>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton className="cursor-pointer">

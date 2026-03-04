@@ -264,5 +264,4 @@ const PRIVACY: Record<Locale, PrivacyContent> = {
   },
 };
 
-export const getPrivacyContent = (locale: Locale): PrivacyContent =>
-  PRIVACY[locale] ?? PRIVACY.ko;
+export const getPrivacyContent = (locale: Locale): PrivacyContent => PRIVACY[locale] ?? PRIVACY.ko;

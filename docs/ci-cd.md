@@ -18,40 +18,40 @@ Push to main/develop
 
 ## 2. Environment Strategy
 
-| 항목 | Production | Development |
-|------|------------|-------------|
-| 브랜치 | `main` | `develop` |
-| S3 버킷 | `prod-eunminlog-static` | `dev-eunminlog-static` |
-| 도메인 | `https://www.eunminlog.site` | `https://dev.eunminlog.site` |
-| CloudFront | prod Distribution ID | dev Distribution ID |
-| SITE_URL | `https://www.eunminlog.site` | `https://dev.eunminlog.site` |
+| 항목       | Production                   | Development                  |
+| ---------- | ---------------------------- | ---------------------------- |
+| 브랜치     | `main`                       | `develop`                    |
+| S3 버킷    | `prod-eunminlog-static`      | `dev-eunminlog-static`       |
+| 도메인     | `https://www.eunminlog.site` | `https://dev.eunminlog.site` |
+| CloudFront | prod Distribution ID         | dev Distribution ID          |
+| SITE_URL   | `https://www.eunminlog.site` | `https://dev.eunminlog.site` |
 
 ## 3. GitHub Secrets 목록
 
 ### 3-1. AWS Credentials (공통)
 
-| Secret Name | 설명 | 비고 |
-|-------------|------|------|
-| `AWS_ACCESS_KEY_ID` | IAM 사용자 Access Key | S3 + CloudFront 권한 필요 |
-| `AWS_SECRET_ACCESS_KEY` | IAM 사용자 Secret Key | |
+| Secret Name             | 설명                  | 비고                      |
+| ----------------------- | --------------------- | ------------------------- |
+| `AWS_ACCESS_KEY_ID`     | IAM 사용자 Access Key | S3 + CloudFront 권한 필요 |
+| `AWS_SECRET_ACCESS_KEY` | IAM 사용자 Secret Key |                           |
 
 ### 3-2. CloudFront Distribution ID (환경별)
 
-| Secret Name | 설명 |
-|-------------|------|
-| `PROD_CLOUDFRONT_DISTRIBUTION_ID` | Production CloudFront Distribution ID |
-| `DEV_CLOUDFRONT_DISTRIBUTION_ID` | Development CloudFront Distribution ID |
+| Secret Name                       | 설명                                   |
+| --------------------------------- | -------------------------------------- |
+| `PROD_CLOUDFRONT_DISTRIBUTION_ID` | Production CloudFront Distribution ID  |
+| `DEV_CLOUDFRONT_DISTRIBUTION_ID`  | Development CloudFront Distribution ID |
 
 ### 3-3. Supabase (환경별, 빌드 타임 필요)
 
 > 현재는 mock 데이터로 빌드 중이므로 당장은 불필요. Supabase 연동 시 추가.
 
-| Secret Name | 설명 |
-|-------------|------|
-| `PROD_SUPABASE_URL` | Production Supabase Project URL |
-| `PROD_SUPABASE_ANON_KEY` | Production Supabase Anonymous Key |
-| `DEV_SUPABASE_URL` | Development Supabase Project URL |
-| `DEV_SUPABASE_ANON_KEY` | Development Supabase Anonymous Key |
+| Secret Name              | 설명                               |
+| ------------------------ | ---------------------------------- |
+| `PROD_SUPABASE_URL`      | Production Supabase Project URL    |
+| `PROD_SUPABASE_ANON_KEY` | Production Supabase Anonymous Key  |
+| `DEV_SUPABASE_URL`       | Development Supabase Project URL   |
+| `DEV_SUPABASE_ANON_KEY`  | Development Supabase Anonymous Key |
 
 ### 3-4. 필요한 IAM 정책
 
@@ -64,12 +64,7 @@ Push to main/develop
     {
       "Sid": "S3Deploy",
       "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket",
-        "s3:GetObject"
-      ],
+      "Action": ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket", "s3:GetObject"],
       "Resource": [
         "arn:aws:s3:::prod-eunminlog-static",
         "arn:aws:s3:::prod-eunminlog-static/*",
@@ -187,6 +182,7 @@ Job: deploy
 ```
 
 `pnpm --filter @eunminlog/client build`를 사용하는 이유:
+
 - `pnpm build` (turbo build)는 admin 포함 전체 빌드. admin은 배포 대상이 아니므로 불필요.
 - filter 빌드는 turbo의 `dependsOn: ["^build"]`에 의해 의존 패키지(config, tsconfig)는 자동 빌드됨.
 - 빌드 시간 절약 + 불필요한 admin 빌드 에러 방지.
@@ -257,6 +253,7 @@ export default defineConfig({
 ```
 
 이렇게 하면:
+
 - 로컬 개발: 환경변수 없으면 기본값 `https://www.eunminlog.site` 사용
 - CI/CD prod: `SITE_URL=https://www.eunminlog.site` (기본값과 동일)
 - CI/CD dev: `SITE_URL=https://dev.eunminlog.site` 주입
@@ -281,7 +278,7 @@ export default defineConfig({
 on:
   push:
     branches: [main, develop]
-  workflow_dispatch:    # Admin에서 수동 트리거 (향후)
+  workflow_dispatch: # Admin에서 수동 트리거 (향후)
     inputs:
       environment:
         description: 'Target environment'

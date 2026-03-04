@@ -6,7 +6,13 @@ import { cn } from '@/lib/utils';
 import { Collapsible as CollapsiblePrimitive } from 'radix-ui';
 
 function Collapsible({ className, ...props }: ComponentProps<typeof CollapsiblePrimitive.Root>) {
-  return <CollapsiblePrimitive.Root data-slot="collapsible" className={cn('group/collapsible', className)} {...props} />;
+  return (
+    <CollapsiblePrimitive.Root
+      data-slot="collapsible"
+      className={cn('group/collapsible', className)}
+      {...props}
+    />
+  );
 }
 
 function CollapsibleTrigger({

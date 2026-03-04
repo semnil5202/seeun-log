@@ -4,6 +4,7 @@ import type { Post } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
 import PostCard from "./PostCard.astro";
 import SponsoredCard from "./SponsoredCard.astro";
+import PostCardSkeleton from "./PostCardSkeleton.astro";
 import InFeedAdsense from "@/shared/components/ad/InFeedAdsense.astro";
 
 interface Props {
@@ -70,8 +71,8 @@ for (let i = 0; i < posts.length; i++) {
 </div>
 
 {feedEndpoint && (
-  <div id="feed-sentinel" class="flex items-center justify-center py-8">
-    <div id="feed-loader" class="w-8 h-8 border-3 border-gray-200 border-t-primary-400 rounded-full animate-spin" />
+  <div id="feed-sentinel" class="py-4">
+    <PostCardSkeleton />
   </div>
 )}
 
@@ -214,10 +215,36 @@ for (let i = 0; i < posts.length; i++) {
   </script>
 )}
 
+<div id="post-feed-skeleton" class="hidden flex-col gap-10">
+  <PostCardSkeleton />
+  <PostCardSkeleton />
+  <PostCardSkeleton />
+</div>
+
 <script>
   import { initPostClickTracker } from "@/shared/lib/analytics/post-tracker";
   import { initAdTracker, observeNewAdSlot } from "@/shared/lib/analytics/ad-tracker";
   initPostClickTracker("post-feed");
   initAdTracker("list");
   (window as any).__observeNewAdSlot = observeNewAdSlot;
+
+  const feed = document.getElementById("post-feed");
+  const skeleton = document.getElementById("post-feed-skeleton");
+  const sentinel = document.getElementById("feed-sentinel");
+
+  if (feed && skeleton) {
+    document.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>(
+        "nav a[href]"
+      );
+      if (!link || link.getAttribute("aria-current")) return;
+
+      e.preventDefault();
+      feed.classList.add("hidden");
+      if (sentinel) sentinel.classList.add("hidden");
+      skeleton.classList.remove("hidden");
+      skeleton.classList.add("flex");
+      window.location.href = link.href;
+    });
+  }
 </script>

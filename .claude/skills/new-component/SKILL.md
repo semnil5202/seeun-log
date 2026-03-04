@@ -1,6 +1,6 @@
 ---
 name: new-component
-description: "Astro 컴포넌트 scaffolding. 지정 디렉토리에 PascalCase.astro 파일을 프로젝트 컨벤션에 맞게 생성한다."
+description: 'Astro 컴포넌트 scaffolding. 지정 디렉토리에 PascalCase.astro 파일을 프로젝트 컨벤션에 맞게 생성한다.'
 user_invocable: true
 ---
 

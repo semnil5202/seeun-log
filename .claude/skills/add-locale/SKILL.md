@@ -1,6 +1,6 @@
 ---
 name: add-locale
-description: "새 언어(locale)를 프로젝트에 추가한다. 타입, UI 문자열, Astro 설정, 카테고리 번역을 한 번에 업데이트한다."
+description: '새 언어(locale)를 프로젝트에 추가한다. 타입, UI 문자열, Astro 설정, 카테고리 번역을 한 번에 업데이트한다.'
 user_invocable: true
 ---
 
@@ -20,19 +20,23 @@ user_invocable: true
 ## 수정 대상 파일 (순서대로)
 
 ### 1. `apps/client/src/types/common.ts`
+
 - `LOCALES` 배열에 새 locale 코드 추가
 - `LOCALE_LABELS` 객체에 `'<code>': '<label>'` 추가
 
 ### 2. `apps/client/src/lib/i18n/translations.ts`
+
 - `UI_STRINGS` 객체에 새 locale 키 추가
 - 모든 UI 문자열을 해당 언어로 번역하여 채움
 - 키 목록: `nav.home`, `nav.search`, `nav.language`, `pagination.prev`, `pagination.next`, `post.sponsored`, `post.editorsPick`, `post.rating`, `footer.copyright`, `footer.privacy`, `footer.sitemap`, `sidebar.sponsored`, `sidebar.editorsPick`
 
 ### 3. `apps/client/src/lib/i18n/categories.ts`
+
 - `CATEGORY_LABELS` 객체에 새 locale 키 추가
 - 카테고리/서브카테고리 이름을 해당 언어로 번역
 
 ### 4. `apps/client/astro.config.mjs`
+
 - `i18n.locales` 배열에 새 locale 코드 추가
 
 ## 실행 절차

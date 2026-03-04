@@ -34,7 +34,11 @@
   - Metrics page (/ -- mock data, SearchFilter + sort dropdown + Table)
   - Flat route structure (no route groups), placeholder pages for /dashboard, /posts/new, /posts/[id]/edit
   - SearchFilter as shared/global component (date range + search + children extension)
-- Admin remaining: auth, post-editor (Tiptap), post-management, media upload, translation, build trigger
+- Admin Phase 3 (partial): Tiptap editor implemented (extensions, toolbar, page /posts/new, SSR-safe container, ProseMirror CSS)
+  - Post-editor remaining: meta form, Zod validation, image insert, save, edit page, Placeholder extension
+  - HTML output: inline styles on all elements (headings, links, lists, blockquote) -- Client needs CSS adaptation
+  - Critical Client issue: `insertInArticleAds()` uses Markdown `## ` regex, needs migration to `<h2>` pattern
+- Admin remaining: auth, post-editor (meta/save), post-management, media upload, translation, build trigger
 - CI/CD: designed (docs/ci-cd.md) -- pending se implementation
 
 ### Theme System
