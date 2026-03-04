@@ -287,22 +287,20 @@ on:
         options: [production, development]
 ```
 
-### Path Filter (향후)
+### Path Filter (적용 완료)
 
-client 관련 파일만 변경되었을 때만 빌드하도록 path filter 추가 가능:
+client 관련 파일 변경 시에만 배포 워크플로우가 실행되도록 path filter 적용:
 
 ```yaml
-on:
-  push:
-    branches: [main, develop]
-    paths:
-      - 'apps/client/**'
-      - 'packages/config/**'
-      - 'packages/tsconfig/**'
-      - 'pnpm-lock.yaml'
+paths:
+  - 'apps/client/**'
+  - 'packages/config/**'
+  - 'packages/tsconfig/**'
+  - 'pnpm-lock.yaml'
+  - '.github/workflows/deploy-client.yml'
 ```
 
-현재는 빌드 빈도가 낮으므로 path filter 없이 시작. 비용/시간 이슈 발생 시 추가.
+admin 코드만 변경 후 push해도 client 배포가 실행되지 않는다.
 
 ## 8. Rollback 전략
 

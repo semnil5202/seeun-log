@@ -5,6 +5,12 @@ on:
     branches:
       - main
       - develop
+    paths:
+      - 'apps/client/**'
+      - 'packages/config/**'
+      - 'packages/tsconfig/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-client.yml'
 
 jobs:
   deploy:
