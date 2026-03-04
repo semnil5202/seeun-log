@@ -3,13 +3,21 @@
 import { type ChangeEvent, useState } from 'react';
 
 import { Separator } from '@/components/ui/separator';
+import { CategorySelector } from '@/features/post-editor/components/CategorySelector';
+import { ThumbnailUpload } from '@/features/post-editor/components/ThumbnailUpload';
 import { TiptapEditorContainer } from '@/features/post-editor/containers/TiptapEditorContainer';
+
+import type { Category, SubCategory } from '@/shared/types/post';
 
 const TITLE_MAX_LENGTH = 40;
 
 export default function NewPostPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [category, setCategory] = useState<Category | ''>('');
+  const [subCategory, setSubCategory] = useState<SubCategory | ''>('');
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [address, setAddress] = useState('');
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -18,8 +26,44 @@ export default function NewPostPage() {
     }
   };
 
+  const handleCategoryChange = (value: Category) => {
+    setCategory(value);
+    setSubCategory('');
+  };
+
   return (
-    <div className="mx-auto max-w-[688px]">
+    <>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold">게시글 작성</h1>
+        <p className="mt-1 text-sm text-muted-foreground">새로운 게시글을 작성합니다.</p>
+      </div>
+      <div className="mx-auto max-w-[688px]">
+      <div className="space-y-4 pb-8">
+        <div>
+          <label className="mb-1 block text-sm font-bold text-primary-600">카테고리</label>
+          <CategorySelector
+            category={category}
+            subCategory={subCategory}
+            onCategoryChange={handleCategoryChange}
+            onSubCategoryChange={setSubCategory}
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-bold text-primary-600">썸네일</label>
+          <ThumbnailUpload thumbnail={thumbnail} onThumbnailChange={setThumbnail} />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-bold text-primary-600">주소</label>
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="주소를 입력해주세요."
+            className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 placeholder:text-muted-foreground"
+          />
+        </div>
+      </div>
+      <label className="mb-1 block text-sm font-bold text-primary-600">본문</label>
       <TiptapEditorContainer content={content} onChange={setContent}>
         <div className="p-4">
           <div className="flex items-center justify-between">
@@ -37,6 +81,7 @@ export default function NewPostPage() {
         </div>
         <Separator />
       </TiptapEditorContainer>
-    </div>
+      </div>
+    </>
   );
 }
