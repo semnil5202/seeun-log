@@ -23,16 +23,28 @@ export function UploadImage({ editor }: EditorProps) {
     const { $from } = state.selection;
 
     // Case 1: cursor after an imageCarousel block
-    const posBefore = $from.before();
-    if (posBefore > 0) {
-      const resolved = state.doc.resolve(posBefore);
-      const nodeBeforeBlock = resolved.nodeBefore;
-      if (nodeBeforeBlock?.type.name === 'imageCarousel') {
-        const carouselPos = posBefore - nodeBeforeBlock.nodeSize;
-        editor.commands.addImageToCarousel(carouselPos, url);
-        e.target.value = '';
-        return;
+    let carouselPos: number | null = null;
+
+    if ($from.depth >= 1) {
+      const posBefore = $from.before();
+      if (posBefore > 0) {
+        const resolved = state.doc.resolve(posBefore);
+        const node = resolved.nodeBefore;
+        if (node?.type.name === 'imageCarousel') {
+          carouselPos = posBefore - node.nodeSize;
+        }
       }
+    } else if ($from.pos > 0) {
+      const node = $from.nodeBefore;
+      if (node?.type.name === 'imageCarousel') {
+        carouselPos = $from.pos - node.nodeSize;
+      }
+    }
+
+    if (carouselPos !== null) {
+      editor.commands.addImageToCarousel(carouselPos, url);
+      e.target.value = '';
+      return;
     }
 
     // Case 2: cursor right after an inline image
