@@ -4,7 +4,7 @@ import type { ComponentType } from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, ChevronRight, FileEdit, HandCoins, LogOut } from 'lucide-react';
+import { BarChart3, ChevronDown, FileEdit, HandCoins, LogOut } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -46,8 +46,8 @@ const NAV_ITEMS: NavGroup[] = [
     label: '게시글 관리',
     icon: FileEdit,
     children: [
-      { label: '게시글 작성/수정/삭제', href: '/posts/new' },
       { label: '카테고리 생성/수정/삭제', href: null },
+      { label: '게시글 작성/수정/삭제', href: '/posts/new' },
       { label: '댓글 수정/삭제', href: null },
     ],
   },
@@ -80,14 +80,14 @@ export default function AppSidebar() {
               {NAV_ITEMS.map((group) => (
                 <Collapsible
                   key={group.label}
-                  defaultOpen={isGroupActive(group) || group.label === '핵심 지표'}
+                  defaultOpen
                 >
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuButton>
+                      <SidebarMenuButton className="cursor-pointer">
                         <group.icon className="h-4 w-4" />
                         <span className="font-bold">{group.label}</span>
-                        <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
