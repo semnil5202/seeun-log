@@ -48,7 +48,7 @@ for (let i = 0; i < posts.length; i++) {
       return <InFeedAdsense class="h-[250px]" slotId={`in_feed_${item.adIndex}`} position={`feed_index_${item.adIndex}`} />;
     }
 
-    if (item.post.is_sponsored) {
+    if (item.post.is_recommended) {
       return (
         <SponsoredCard
           post={item.post}
@@ -112,7 +112,7 @@ for (let i = 0; i < posts.length; i++) {
         article.dataset.postSubCategory = post.subCategory;
         article.dataset.postSponsored = String(post.isSponsored);
 
-        const showBadge = post.isSponsored || post.isRecommended;
+        const showBadge = post.isRecommended;
 
         let badgeHtml = "";
         if (showBadge) {

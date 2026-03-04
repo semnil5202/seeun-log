@@ -100,7 +100,6 @@ const gaPageParams = {
         <article itemscope itemtype="https://schema.org/BlogPosting">
 
           <PostBadges
-            isSponsored={post.is_sponsored}
             isRecommended={post.is_recommended}
             label={sponsoredLabel}
           />
@@ -123,6 +122,12 @@ const gaPageParams = {
               </svg>
               {publishDate}
             </time>
+            {post.is_sponsored && (
+              <>
+                <span aria-hidden="true" class="text-gray-300">|</span>
+                <span class="text-gray-400">{t("post.sponsoredDisclosure", locale)}</span>
+              </>
+            )}
           </div>
 
           <div class="aspect-video w-full overflow-hidden mb-6 bg-gray-100">

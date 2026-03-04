@@ -171,7 +171,7 @@ const {
     article.dataset.postSponsored = String(post.isSponsored);
 
     let badgeHtml = '';
-    if (post.isSponsored) {
+    if (post.isRecommended) {
       badgeHtml = `<span class="absolute top-3 left-3 inline-flex items-center text-xs font-semibold bg-primary-100 text-primary-800 rounded-md px-2.5 py-0.5">${sponsoredLabel}</span>`;
     }
 
@@ -181,7 +181,7 @@ const {
 
     article.innerHTML = `
       <a href="${post.href}" class="block">
-        <div class="${post.isSponsored ? 'relative ' : ''}w-full aspect-7/3 overflow-hidden bg-gray-100">
+        <div class="${post.isRecommended ? 'relative ' : ''}w-full aspect-7/3 overflow-hidden bg-gray-100">
           <img
             src="${post.thumbnail}"
             alt="${post.title}"

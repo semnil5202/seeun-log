@@ -47,7 +47,7 @@ export const getSponsoredPosts = async (
   category?: CategorySlug,
   subCategory?: string,
 ): Promise<Post[]> => {
-  let filtered = MOCK_POSTS.filter((p) => p.is_sponsored);
+  let filtered = MOCK_POSTS.filter((p) => p.is_recommended);
   if (category) filtered = filtered.filter((p) => p.category === category);
   if (category && subCategory) filtered = filtered.filter((p) => p.sub_category === subCategory);
   return sortByDateDesc(filtered);
@@ -63,15 +63,9 @@ export const getMultilingualSponsoredPosts = async (
   category?: CategorySlug,
   subCategory?: string,
 ): Promise<Post[]> => {
-  let filtered = MOCK_POSTS.filter((p) => p.is_sponsored && p.is_multilingual);
+  let filtered = MOCK_POSTS.filter((p) => p.is_recommended && p.is_multilingual);
   if (category) filtered = filtered.filter((p) => p.category === category);
   if (category && subCategory) filtered = filtered.filter((p) => p.sub_category === subCategory);
-  return sortByDateDesc(filtered);
-};
-
-/** Returns Editor's Pick posts sorted newest-first (Right Sidebar). */
-export const getRecommendedPosts = async (): Promise<Post[]> => {
-  const filtered = MOCK_POSTS.filter((p) => p.is_recommended);
   return sortByDateDesc(filtered);
 };
 

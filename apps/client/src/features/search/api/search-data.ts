@@ -15,6 +15,7 @@ export type SearchItem = {
   thumbnail: string;
   placeName: string | null;
   isSponsored: boolean;
+  isRecommended: boolean;
   createdAt: string;
   href: string;
   categoryLabel: string;
@@ -41,6 +42,7 @@ export const buildSearchData = (posts: LocalizedPost[], locale: Locale): SearchB
     thumbnail: p.thumbnail,
     placeName: p.place_name,
     isSponsored: p.is_sponsored,
+    isRecommended: p.is_recommended,
     createdAt: p.created_at,
     href: getLocalePath(`/${p.category}/${p.sub_category}/${p.slug}/`, locale),
     categoryLabel: getCategoryLabel(p.category, locale),

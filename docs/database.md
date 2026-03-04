@@ -12,8 +12,8 @@
 | `category`       | enum (`delicious`, `cafe`, `travel`) | 대분류                                        |
 | `sub_category`   | text                                 | 소분류 (한식, 양식, 핫플 등)                  |
 | `thumbnail`      | text                                 | 썸네일 이미지 URL                             |
-| `is_sponsored`   | boolean                              | 협찬 콘텐츠 여부 (Right Sidebar / In-Feed Ad) |
-| `is_recommended` | boolean                              | Editor's Pick 여부                            |
+| `is_sponsored`   | boolean                              | 협찬 콘텐츠 여부 (게시글 상세 협찬 고지)      |
+| `is_recommended` | boolean                              | 추천 콘텐츠 여부 (Right Sidebar / In-Feed Ad) |
 | `is_multilingual`| boolean (default `true`)             | 다국어 콘텐츠 제공 여부. `false`이면 한국어 전용 — 다국어 경로/번역/hreflang 미생성 |
 | `rating`         | numeric (1.0 ~ 5.0)                  | 평점                                          |
 | `place_name`     | text                                 | 장소명 (Schema.org `itemReviewed`)            |
@@ -42,8 +42,8 @@
 - `slug` — unique index (URL lookup)
 - `category` — filter/sort 용도
 - `category, sub_category` — compound index (카테고리 필터링)
-- `is_sponsored` — 광고 콘텐츠 조회
-- `is_recommended` — Editor's Pick 조회
+- `is_sponsored` — 협찬 콘텐츠 조회
+- `is_recommended` — 추천 콘텐츠 조회
 - `is_multilingual` — 다국어 지원 포스트 필터링
 - `created_at` — 최신순 정렬
 - `post_translations(post_id, locale)` — unique compound index (번역 조회)

@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { post, locale, index, sponsoredLabel, class: className } = Astro.props;
-const showBadge = sponsoredLabel && (post.is_sponsored || post.is_recommended);
+const showBadge = sponsoredLabel && post.is_recommended;
 
 const isLcp = index === 0;
 const postPath = `/${post.category}/${post.sub_category}/${post.slug}/`;

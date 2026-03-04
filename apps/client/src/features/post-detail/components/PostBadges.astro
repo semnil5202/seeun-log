@@ -1,20 +1,18 @@
 ---
-/** 포스트 상세의 협찬/추천 뱃지 조합. */
+/** 포스트 상세의 추천 뱃지 조합. */
 
 import SponsoredBadge from "@/shared/components/ui/SponsoredBadge.astro";
 
 interface Props {
-  isSponsored: boolean;
   isRecommended: boolean;
   label: string;
 }
 
-const { isSponsored, isRecommended, label } = Astro.props;
+const { isRecommended, label } = Astro.props;
 ---
 
-{(isSponsored || isRecommended) && (
+{isRecommended && (
   <div class="flex gap-2 mb-3">
-    {isSponsored && <SponsoredBadge label={label} />}
-    {isRecommended && <SponsoredBadge label={label} />}
+    <SponsoredBadge label={label} />
   </div>
 )}
