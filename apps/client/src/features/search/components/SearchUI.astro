@@ -48,7 +48,7 @@ const {
       name="q"
       placeholder={placeholderText}
       autocomplete="off"
-      class="w-full h-12 pl-12 pr-10 text-base text-gray-900 bg-gray-50 rounded-xl border border-gray-200 outline-none focus:bg-white focus:border-primary-400 focus:ring-1 focus:ring-primary-400 transition-all [&::-webkit-search-cancel-button]:hidden"
+      class="w-full h-12 pl-12 pr-10 text-base text-gray-900 bg-transparent border-0 border-b border-gray-200 outline-none focus:border-primary-400 transition-all [&::-webkit-search-cancel-button]:hidden"
     />
     <button
       type="button"
@@ -78,7 +78,7 @@ const {
       {suggestedKeywords.map((keyword) => (
         <button
           type="button"
-          class="search-chip px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-primary-50 hover:text-primary-600 transition-colors cursor-pointer"
+          class="search-chip px-3 py-1.5 text-sm text-gray-600 bg-gray-100 hover:bg-primary-50 hover:text-primary-600 transition-colors cursor-pointer"
           data-keyword={keyword}
         >
           {keyword}
