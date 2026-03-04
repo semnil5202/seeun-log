@@ -32,6 +32,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': '한국어로 보기',
     'feed.empty': '이 카테고리는 한국어 콘텐츠만 준비되어 있습니다.',
     'post.aiTranslated': '이 글은 AI를 사용하여 번역되었습니다.',
+    'profile.sponsorInquiry': '협찬 문의',
+    'footer.sponsorInquiry': '협찬 문의',
   },
   en: {
     'nav.home': 'Home',
@@ -63,6 +65,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': 'View in Korean',
     'feed.empty': 'Content for this category is only available in Korean.',
     'post.aiTranslated': 'This article was translated using AI.',
+    'profile.sponsorInquiry': 'Sponsorship',
+    'footer.sponsorInquiry': 'Sponsorship',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -94,6 +98,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': '韓国語で見る',
     'feed.empty': 'このカテゴリのコンテンツは韓国語のみご用意しています。',
     'post.aiTranslated': 'この記事はAIを使用して翻訳されました。',
+    'profile.sponsorInquiry': '協賛お問い合わせ',
+    'footer.sponsorInquiry': '協賛お問い合わせ',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -125,6 +131,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': '查看韩语版',
     'feed.empty': '该分类的内容目前仅提供韩语版本。',
     'post.aiTranslated': '本文使用AI翻译。',
+    'profile.sponsorInquiry': '赞助咨询',
+    'footer.sponsorInquiry': '赞助咨询',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -156,6 +164,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': '查看韓語版',
     'feed.empty': '此分類的內容目前僅提供韓語版本。',
     'post.aiTranslated': '本文使用AI翻譯。',
+    'profile.sponsorInquiry': '贊助諮詢',
+    'footer.sponsorInquiry': '贊助諮詢',
   },
   id: {
     'nav.home': 'Beranda',
@@ -187,6 +197,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': 'Lihat dalam bahasa Korea',
     'feed.empty': 'Konten untuk kategori ini hanya tersedia dalam bahasa Korea.',
     'post.aiTranslated': 'Artikel ini diterjemahkan menggunakan AI.',
+    'profile.sponsorInquiry': 'Kerjasama Sponsor',
+    'footer.sponsorInquiry': 'Kerjasama Sponsor',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -218,6 +230,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': 'Xem bằng tiếng Hàn',
     'feed.empty': 'Nội dung cho danh mục này chỉ có sẵn bằng tiếng Hàn.',
     'post.aiTranslated': 'Bài viết này được dịch bằng AI.',
+    'profile.sponsorInquiry': 'Hợp tác tài trợ',
+    'footer.sponsorInquiry': 'Hợp tác tài trợ',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -249,6 +263,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': 'ดูเป็นภาษาเกาหลี',
     'feed.empty': 'เนื้อหาสำหรับหมวดหมู่นี้มีเฉพาะภาษาเกาหลีเท่านั้น',
     'post.aiTranslated': 'บทความนี้แปลโดยใช้ AI',
+    'profile.sponsorInquiry': 'สอบถามสปอนเซอร์',
+    'footer.sponsorInquiry': 'สอบถามสปอนเซอร์',
   },
 };
 
