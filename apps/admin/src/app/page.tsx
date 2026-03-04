@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import SearchFilter, { type DateRange } from '@/shared/components/filter/SearchFilter';
 import {
@@ -130,26 +132,60 @@ function getDefaultDateRange(): DateRange {
 }
 
 export default function MetricsPage() {
-  const [dateRange, setDateRange] = useState<DateRange>(getDefaultDateRange);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SortKey>('views');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const defaultRange = getDefaultDateRange();
+
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: searchParams.get('from') || defaultRange.from,
+    to: searchParams.get('to') || defaultRange.to,
+  });
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [sortBy, setSortBy] = useState<SortKey>(
+    (searchParams.get('sort') as SortKey) || 'views',
+  );
+
+  const [appliedDateRange, setAppliedDateRange] = useState<DateRange>(dateRange);
+  const [appliedQuery, setAppliedQuery] = useState(searchQuery);
+
+  const updateQueryParams = useCallback(
+    (range: DateRange, query: string, sort: SortKey) => {
+      const params = new URLSearchParams();
+      if (range.from) params.set('from', range.from);
+      if (range.to) params.set('to', range.to);
+      if (query) params.set('q', query);
+      if (sort !== 'views') params.set('sort', sort);
+      const qs = params.toString();
+      router.replace(qs ? `?${qs}` : '/', { scroll: false });
+    },
+    [router],
+  );
+
+  const handleSearch = () => {
+    setAppliedDateRange(dateRange);
+    setAppliedQuery(searchQuery);
+    updateQueryParams(dateRange, searchQuery, sortBy);
+  };
+
+  const handleSortChange = (value: string) => {
+    const newSort = value as SortKey;
+    setSortBy(newSort);
+    updateQueryParams(appliedDateRange, appliedQuery, newSort);
+  };
 
   const filteredData = MOCK_DATA.filter((post) => {
-    if (searchQuery) {
-      return post.title.toLowerCase().includes(searchQuery.toLowerCase());
+    if (appliedQuery) {
+      return post.title.toLowerCase().includes(appliedQuery.toLowerCase());
     }
     return true;
   })
     .filter((post) => {
-      if (dateRange.from && post.publishedAt < dateRange.from) return false;
-      if (dateRange.to && post.publishedAt > dateRange.to) return false;
+      if (appliedDateRange.from && post.publishedAt < appliedDateRange.from) return false;
+      if (appliedDateRange.to && post.publishedAt > appliedDateRange.to) return false;
       return true;
     })
     .sort((a, b) => b[sortBy] - a[sortBy]);
-
-  const handleSearch = () => {
-    // TODO: GA4 API 연동 후 서버 사이드 검색으로 전환
-  };
 
   return (
     <div className="space-y-8">
@@ -169,7 +205,7 @@ export default function MetricsPage() {
 
       <div>
         <div className="mb-3 flex items-center justify-end">
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+          <Select value={sortBy} onValueChange={handleSortChange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
             </SelectTrigger>

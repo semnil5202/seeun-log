@@ -61,9 +61,6 @@ const NAV_ITEMS: NavGroup[] = [
 export default function AppSidebar() {
   const pathname = usePathname();
 
-  const isGroupActive = (group: NavGroup) =>
-    group.children.some((child) => child.href && pathname === child.href);
-
   return (
     <Sidebar>
       <SidebarHeader className="px-4 py-4 pl-6">
