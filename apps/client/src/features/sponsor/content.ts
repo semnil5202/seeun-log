@@ -131,7 +131,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: '브랜드와 공간의 특성에 맞춰, 목적에 맞는 형태로 협업을 진행합니다.',
       types: [
         {
-          title: '협찬 리뷰',
+          title: '제품 리뷰',
           description: '제품 또는 서비스의 특징과 장점을 중심으로, 리뷰 콘텐츠를 제작합니다.',
           icon: '📝',
         },
@@ -157,7 +157,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `안녕하세요, ${SITE_NAME_KO} 팀에게 협찬 문의드립니다.\n\n` +
           '1. 업체명/브랜드명:\n' +
-          '2. 협업 유형 (협찬 리뷰 / 체험 방문 / 배너 광고 / 기타):\n' +
+          '2. 협업 유형 (제품 리뷰 / 체험 방문 / 배너 광고 / 기타):\n' +
           '3. 예산 범위:\n' +
           '4. 희망 일정:\n' +
           '5. 기타 전달 사항:\n',
@@ -229,7 +229,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: 'We collaborate in formats tailored to the characteristics and goals of your brand and space.',
       types: [
         {
-          title: 'Sponsored Review',
+          title: 'Product Review',
           description:
             'Creates review content focusing on the features and strengths of the product or service.',
           icon: '📝',
@@ -256,7 +256,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `Hello, I'd like to inquire about sponsorship with ${SITE_NAME_EN}.\n\n` +
           '1. Company/Brand name:\n' +
-          '2. Collaboration type (Sponsored review / Experience visit / Banner ad / Other):\n' +
+          '2. Collaboration type (Product review / Experience visit / Banner ad / Other):\n' +
           '3. Budget range:\n' +
           '4. Preferred timeline:\n' +
           '5. Additional notes:\n',
@@ -328,7 +328,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: 'ブランドと空間の特性に合わせ、目的に合った形でコラボレーションを進めます。',
       types: [
         {
-          title: '協賛レビュー',
+          title: '製品レビュー',
           description: '製品やサービスの特徴と強みを中心に、レビューコンテンツを制作します。',
           icon: '📝',
         },
@@ -354,7 +354,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `こんにちは、${SITE_NAME_EN}チームに協賛のお問い合わせをいたします。\n\n` +
           '1. 会社名/ブランド名:\n' +
-          '2. コラボレーションの種類（協賛レビュー / 体験訪問 / バナー広告 / その他）:\n' +
+          '2. コラボレーションの種類（製品レビュー / 体験訪問 / バナー広告 / その他）:\n' +
           '3. 予算範囲:\n' +
           '4. 希望スケジュール:\n' +
           '5. その他の連絡事項:\n',
@@ -422,7 +422,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: '根据品牌和空间的特点，以符合目标的形式进行合作。',
       types: [
         {
-          title: '赞助评价',
+          title: '产品评价',
           description: '以产品或服务的特点和优势为核心，制作评价内容。',
           icon: '📝',
         },
@@ -447,7 +447,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `您好，想向${SITE_NAME_EN}团队咨询赞助事宜。\n\n` +
           '1. 公司名/品牌名:\n' +
-          '2. 合作类型（赞助评价 / 体验访问 / 横幅广告 / 其他）:\n' +
+          '2. 合作类型（产品评价 / 体验访问 / 横幅广告 / 其他）:\n' +
           '3. 预算范围:\n' +
           '4. 期望日程:\n' +
           '5. 其他事项:\n',
@@ -515,7 +515,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: '根據品牌和空間的特點，以符合目標的形式進行合作。',
       types: [
         {
-          title: '贊助評價',
+          title: '產品評價',
           description: '以產品或服務的特點和優勢為核心，製作評價內容。',
           icon: '📝',
         },
@@ -540,7 +540,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `您好，想向${SITE_NAME_EN}團隊諮詢贊助事宜。\n\n` +
           '1. 公司名/品牌名:\n' +
-          '2. 合作類型（贊助評價 / 體驗訪問 / 橫幅廣告 / 其他）:\n' +
+          '2. 合作類型（產品評價 / 體驗訪問 / 橫幅廣告 / 其他）:\n' +
           '3. 預算範圍:\n' +
           '4. 期望日程:\n' +
           '5. 其他事項:\n',
@@ -612,7 +612,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: 'Kami berkolaborasi dalam format yang disesuaikan dengan karakteristik dan tujuan brand serta ruang Anda.',
       types: [
         {
-          title: 'Ulasan Sponsor',
+          title: 'Ulasan Produk',
           description:
             'Membuat konten ulasan yang berfokus pada fitur dan keunggulan produk atau layanan.',
           icon: '📝',
@@ -641,7 +641,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `Halo, saya ingin bertanya tentang sponsorship dengan ${SITE_NAME_EN}.\n\n` +
           '1. Nama perusahaan/merek:\n' +
-          '2. Jenis kolaborasi (Ulasan sponsor / Kunjungan pengalaman / Iklan banner / Lainnya):\n' +
+          '2. Jenis kolaborasi (Ulasan produk / Kunjungan pengalaman / Iklan banner / Lainnya):\n' +
           '3. Kisaran anggaran:\n' +
           '4. Jadwal yang diinginkan:\n' +
           '5. Catatan tambahan:\n',
@@ -712,7 +712,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: 'Chúng tôi hợp tác theo hình thức phù hợp với đặc điểm và mục tiêu của thương hiệu và không gian của bạn.',
       types: [
         {
-          title: 'Đánh Giá Tài Trợ',
+          title: 'Đánh Giá Sản Phẩm',
           description:
             'Tạo nội dung đánh giá tập trung vào đặc điểm và ưu điểm của sản phẩm hoặc dịch vụ.',
           icon: '📝',
@@ -741,7 +741,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `Xin chào, tôi muốn hỏi về hợp tác tài trợ với ${SITE_NAME_EN}.\n\n` +
           '1. Tên công ty/thương hiệu:\n' +
-          '2. Loại hợp tác (Đánh giá tài trợ / Ghé thăm trải nghiệm / Quảng cáo banner / Khác):\n' +
+          '2. Loại hợp tác (Đánh giá sản phẩm / Ghé thăm trải nghiệm / Quảng cáo banner / Khác):\n' +
           '3. Phạm vi ngân sách:\n' +
           '4. Lịch trình mong muốn:\n' +
           '5. Ghi chú thêm:\n',
@@ -812,7 +812,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
       subtext: 'ร่วมมือในรูปแบบที่เหมาะกับลักษณะและเป้าหมายของแบรนด์และพื้นที่ของคุณ',
       types: [
         {
-          title: 'รีวิวสปอนเซอร์',
+          title: 'รีวิวสินค้า',
           description: 'สร้างเนื้อหารีวิวที่เน้นคุณสมบัติและจุดเด่นของผลิตภัณฑ์หรือบริการ',
           icon: '📝',
         },
@@ -838,7 +838,7 @@ const SPONSOR: Record<Locale, SponsorContent> = {
         body:
           `สวัสดีครับ/ค่ะ ต้องการสอบถามเรื่องสปอนเซอร์กับ ${SITE_NAME_EN}\n\n` +
           '1. ชื่อบริษัท/แบรนด์:\n' +
-          '2. ประเภทความร่วมมือ (รีวิวสปอนเซอร์ / เยี่ยมชมสถานที่ / โฆษณาแบนเนอร์ / อื่นๆ):\n' +
+          '2. ประเภทความร่วมมือ (รีวิวสินค้า / เยี่ยมชมสถานที่ / โฆษณาแบนเนอร์ / อื่นๆ):\n' +
           '3. ช่วงงบประมาณ:\n' +
           '4. กำหนดการที่ต้องการ:\n' +
           '5. หมายเหตุเพิ่มเติม:\n',
