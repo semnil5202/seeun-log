@@ -1,89 +1,156 @@
 'use server';
 
+import { openai } from '@/shared/lib/openai';
+
 import type { FlaggedTerm, TranslationResult } from '../types';
+import type { TranslationLocale } from '@/shared/types/post';
 
-export async function extractFlaggedTerms(
-  _content: string,
-  _placeName?: string,
-  _address?: string,
-): Promise<FlaggedTerm[]> {
-  // TODO: GPT-4o API 연동
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+const EXTRACT_SYSTEM_PROMPT = `당신은 한국어→다국어 번역 전문가입니다.
+주어진 한국어 블로그 본문에서 자동 번역이 어려운 용어를 추출해주세요.
 
-  return [
-    { original: '두쫀쿠', suggestions: ['Dujeonku', 'Tteok Cookie', 'Dujeunku'] },
-    { original: '내돈내산', suggestions: ['Bought with my own money', 'Self-purchased review'] },
-    { original: '존맛탱', suggestions: ['Super delicious', 'Incredibly tasty'] },
-    { original: '가성비', suggestions: [] },
-  ];
+추출 대상:
+- 한국어 신조어/인터넷 용어 (예: 존맛탱, 내돈내산, 가성비, 혜자)
+- 고유 브랜드명/메뉴명 (예: 두쫀쿠, 흑당버블티)
+- 문화적 맥락이 필요한 표현 (예: 맛집, 카공, 핫플)
+- 축약어/줄임말
+
+추출 제외:
+- 일반적인 한국어 단어 (음식, 맛있다, 분위기 등)
+- 장소명과 주소 (별도 제공됨)
+- 일반 외래어 (파스타, 카페 등)
+
+본문은 HTML 형식입니다. HTML 태그는 무시하고 텍스트만 참고해주세요.
+
+각 용어에 대해 영어 번역 후보를 1~3개 제안해주세요.
+번역 후보가 마땅치 않으면 빈 배열로 남겨주세요.
+
+응답은 반드시 JSON 객체로 작성해주세요. 형식: {"terms": [...]}`;
+
+const LOCALE_LABELS: Record<TranslationLocale, string> = {
+  en: '영어',
+  ja: '일본어',
+  'zh-CN': '중국어 간체',
+  'zh-TW': '중국어 번체',
+  id: '인도네시아어',
+  vi: '베트남어',
+  th: '태국어',
+};
+
+const TARGET_LOCALES = Object.keys(LOCALE_LABELS) as TranslationLocale[];
+
+function buildTranslateSystemPrompt(locale: TranslationLocale): string {
+  const label = LOCALE_LABELS[locale];
+
+  let placeRule = '';
+  if (locale === 'ja') placeRule = '카타카나 또는 한자 표기. 주소는 일본식 순서(도도부현→시구정촌→번지)로 표기';
+  else if (locale === 'zh-CN' || locale === 'zh-TW') placeRule = '한자 표기. 주소는 중국식 순서(성/시→구→도로→번호)로 표기';
+  else if (locale === 'th') placeRule = '태국 문자 음차 또는 원어 유지. 주소는 태국식 순서로 표기';
+  else if (locale === 'en') placeRule = '로마자 표기. 주소는 영어권 순서(번지→도로→구→시→국가)로 역순 표기';
+  else placeRule = '로마자 표기. 주소는 해당 언어권의 자연스러운 순서로 표기';
+
+  return `당신은 한국어 블로그 포스트를 ${label}(${locale})로 번역하는 전문 번역가입니다.
+
+번역 규칙:
+1. 본문(content)은 HTML 형식입니다. HTML 태그 구조(<p>, <strong>, <em>, <ul>, <li>, <h2> 등)를 그대로 유지하고 텍스트만 번역해주세요.
+2. 3줄 요약(description)은 plain text입니다. 줄바꿈(\\n)을 유지하고 텍스트만 번역해주세요.
+3. 확정 번역 용어가 제공되면 반드시 해당 번역을 사용해주세요.
+4. 장소명(place_name)과 주소(address)가 제공되면 ${placeRule}해주세요.
+5. 블로그의 친근한 어조를 유지하되, ${label}의 자연스러운 표현을 사용해주세요.
+6. 한국 고유 문화 용어는 의역하되 괄호 안에 원어를 병기할 수 있습니다.
+
+응답은 반드시 JSON 객체로 작성해주세요. 형식: {"title": "...", "content": "...", "description": "...", "place_name": "...", "address": "..."}
+place_name과 address는 입력에 포함된 경우에만 응답에 포함해주세요.`;
 }
 
-export async function translatePost(_params: {
+function parseJsonResponse(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+    return null;
+  }
+}
+
+export async function extractFlaggedTerms(
+  content: string,
+  placeName?: string,
+  address?: string,
+): Promise<FlaggedTerm[]> {
+  let userPrompt = `본문:\n${content}`;
+  if (placeName) userPrompt += `\n\n장소명: ${placeName}`;
+  if (address) userPrompt += `\n주소: ${address}`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-5-nano',
+    response_format: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: EXTRACT_SYSTEM_PROMPT },
+      { role: 'user', content: userPrompt },
+    ],
+  });
+
+  const raw = response.choices[0].message.content ?? '{"terms":[]}';
+  console.log('[extractFlaggedTerms] raw:', raw);
+  const parsed = parseJsonResponse(raw) as Record<string, unknown>;
+  if (!parsed) return [];
+
+  const arr = Array.isArray(parsed) ? parsed : (parsed.terms ?? []);
+  return (arr as Record<string, unknown>[]).map((item) => ({
+    original: (item.original ?? item.term ?? '') as string,
+    suggestions: (item.suggestions ?? item.translations ?? []) as string[],
+  }));
+}
+
+async function translateSingleLocale(
+  locale: TranslationLocale,
+  userPrompt: string,
+): Promise<TranslationResult> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-5-nano',
+    response_format: { type: 'json_object' },
+    messages: [
+      { role: 'system', content: buildTranslateSystemPrompt(locale) },
+      { role: 'user', content: userPrompt },
+    ],
+  });
+
+  const raw = response.choices[0].message.content ?? '{}';
+  console.log(`[translatePost:${locale}] raw:`, raw);
+  const parsed = parseJsonResponse(raw) as Record<string, string> | null;
+
+  return {
+    locale,
+    title: parsed?.title ?? '',
+    content: parsed?.content ?? '',
+    description: parsed?.description ?? '',
+    place_name: parsed?.place_name ?? '',
+    address: parsed?.address ?? '',
+  };
+}
+
+export async function translatePost(params: {
   title: string;
   content: string;
+  description: string;
   placeName?: string;
   address?: string;
   confirmedTerms: { original: string; confirmed: string }[];
 }): Promise<TranslationResult[]> {
-  // TODO: GPT-4o API 연동 — 확정 번역 용어를 포함하여 전체 본문 번역
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  let userPrompt = `제목: ${params.title}\n\n본문:\n${params.content}\n\n3줄 요약:\n${params.description}`;
+  if (params.placeName) userPrompt += `\n\n장소명: ${params.placeName}`;
+  if (params.address) userPrompt += `\n주소: ${params.address}`;
 
-  return [
-    {
-      locale: 'en',
-      title: 'Gangnam Hidden Gem Pasta Restaurant',
-      content:
-        '<p>Today I visited a pasta restaurant in Gangnam. The Dujeonku was super delicious! This is a self-purchased review, not sponsored.</p><p>The cream pasta and rose pasta were both amazing. Highly recommend for a date spot.</p>',
-      place_name: 'Pasta Lab',
-      address: '123 Gangnam-daero, Gangnam-gu, Seoul',
-    },
-    {
-      locale: 'ja',
-      title: '江南の隠れ家パスタレストラン',
-      content:
-        '<p>今日は江南のパスタレストランに行ってきました。ドゥジョンクがとても美味しかったです！これは自費レビューで、スポンサーではありません。</p><p>クリームパスタとロゼパスタ、どちらも最高でした。デートスポットとしておすすめです。</p>',
-      place_name: 'パスタラボ',
-      address: 'ソウル特別市江南区江南大路123',
-    },
-    {
-      locale: 'zh-CN',
-      title: '江南隐藏的意面餐厅',
-      content:
-        '<p>今天去了江南的一家意面餐厅。Dujeonku超级好吃！这是自费评测，不是赞助的。</p><p>奶油意面和玫瑰意面都很棒。强烈推荐作为约会地点。</p>',
-      place_name: '意面实验室',
-      address: '首尔市江南区江南大路123号',
-    },
-    {
-      locale: 'zh-TW',
-      title: '江南隱藏的義大利麵餐廳',
-      content:
-        '<p>今天去了江南的一家義大利麵餐廳。Dujeonku超級好吃！這是自費評測，不是贊助的。</p><p>奶油義大利麵和玫瑰義大利麵都很棒。強烈推薦作為約會地點。</p>',
-      place_name: '義大利麵實驗室',
-      address: '首爾市江南區江南大路123號',
-    },
-    {
-      locale: 'id',
-      title: 'Restoran Pasta Tersembunyi di Gangnam',
-      content:
-        '<p>Hari ini saya mengunjungi restoran pasta di Gangnam. Dujeonku-nya sangat enak! Ini adalah ulasan yang dibeli sendiri, bukan sponsor.</p><p>Pasta krim dan pasta rose keduanya luar biasa. Sangat direkomendasikan untuk tempat kencan.</p>',
-      place_name: 'Pasta Lab',
-      address: '123 Gangnam-daero, Gangnam-gu, Seoul',
-    },
-    {
-      locale: 'vi',
-      title: 'Nhà hàng mì Ý ẩn giấu ở Gangnam',
-      content:
-        '<p>Hôm nay tôi đã ghé thăm một nhà hàng mì Ý ở Gangnam. Dujeonku rất ngon! Đây là đánh giá tự mua, không phải tài trợ.</p><p>Mì kem và mì rose đều tuyệt vời. Rất khuyến khích cho địa điểm hẹn hò.</p>',
-      place_name: 'Pasta Lab',
-      address: '123 Gangnam-daero, Gangnam-gu, Seoul',
-    },
-    {
-      locale: 'th',
-      title: 'ร้านพาสต้าลับในคังนัม',
-      content:
-        '<p>วันนี้ไปร้านพาสต้าในคังนัม Dujeonku อร่อมมาก! นี่คือรีวิวซื้อเอง ไม่ใช่สปอนเซอร์</p><p>พาสต้าครีมและพาสต้าโรเซ่อร่อยทั้งคู่ แนะนำสำหรับที่เดท</p>',
-      place_name: 'Pasta Lab',
-      address: '123 Gangnam-daero, Gangnam-gu, Seoul',
-    },
-  ];
+  if (params.confirmedTerms.length > 0) {
+    userPrompt += '\n\n확정 번역 용어:';
+    for (const term of params.confirmedTerms) {
+      userPrompt += `\n- "${term.original}" → "${term.confirmed}"`;
+    }
+  }
+
+  const results = await Promise.all(
+    TARGET_LOCALES.map((locale) => translateSingleLocale(locale, userPrompt)),
+  );
+
+  return results;
 }

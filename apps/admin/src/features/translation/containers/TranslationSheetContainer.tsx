@@ -23,8 +23,9 @@ type TranslationSheetContainerProps = {
   initialTerms: FlaggedTerm[];
   title: string;
   content: string;
-  placeName?: string;
-  address?: string;
+  description: string;
+  placeName: string;
+  address: string;
 };
 
 export function TranslationSheetContainer({
@@ -34,6 +35,7 @@ export function TranslationSheetContainer({
   initialTerms,
   title,
   content,
+  description,
   placeName,
   address,
 }: TranslationSheetContainerProps) {
@@ -62,6 +64,7 @@ export function TranslationSheetContainer({
       const results = await translatePost({
         title,
         content,
+        description,
         placeName,
         address,
         confirmedTerms: terms,

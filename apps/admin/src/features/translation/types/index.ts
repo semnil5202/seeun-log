@@ -9,8 +9,9 @@ export type TranslationResult = {
   locale: TranslationLocale;
   title: string;
   content: string;
-  place_name?: string;
-  address?: string;
+  description: string;
+  place_name: string;
+  address: string;
 };
 
 export type TranslationStatus =
