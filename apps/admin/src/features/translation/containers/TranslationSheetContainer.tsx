@@ -69,7 +69,7 @@ export function TranslationSheetContainer({
       setStatus('success');
       setTimeout(() => {
         onTranslationComplete(results);
-      }, 500);
+      }, 800);
     } catch {
       setError('번역 중 오류가 발생했습니다.');
       setStatus('error');

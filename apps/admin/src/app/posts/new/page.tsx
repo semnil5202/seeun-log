@@ -19,6 +19,7 @@ import { generateSummary } from '@/features/post-editor/api/actions';
 import { extractFlaggedTerms, translatePost } from '@/features/translation/api/actions';
 import { TranslationPreviewSheet } from '@/features/translation/components/TranslationPreviewSheet';
 import { TranslationSheetContainer } from '@/features/translation/containers/TranslationSheetContainer';
+import { LoaderIcon } from 'lucide-react';
 
 import type { Category, PostFormType, SubCategory } from '@/shared/types/post';
 import type { FlaggedTerm, TranslationResult } from '@/features/translation/types';
@@ -119,8 +120,10 @@ export default function NewPostPage() {
     setIsSheetOpen(false);
   };
 
+  const commonFieldsFilled = !!(title.trim() && content.trim() && thumbnail && category && subCategory && description.trim());
+  const visitFieldsFilled = formType !== 'visit' || !!(placeName.trim() && address.trim());
   const needsTranslation = !!(category && subCategory);
-  const isSubmitDisabled = needsTranslation && !isTranslated;
+  const isSubmitDisabled = !commonFieldsFilled || !visitFieldsFilled || (needsTranslation && !isTranslated);
 
   return (
     <>
@@ -131,7 +134,9 @@ export default function NewPostPage() {
       <div className="mx-auto max-w-[688px]">
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-base font-bold text-primary-600">폼 형식</label>
+            <label className="mb-1 block text-base font-bold">
+              폼 형식 <span className="text-primary-600">*</span>
+            </label>
             <Select
               value={formType}
               onValueChange={(value) => handleFormTypeChange(value as PostFormType)}
@@ -149,13 +154,17 @@ export default function NewPostPage() {
             </Select>
           </div>
           <div>
-            <label className="mb-1 block text-base font-bold text-primary-600">썸네일</label>
+            <label className="mb-1 block text-base font-bold">
+              썸네일 <span className="text-primary-600">*</span>
+            </label>
             <ThumbnailUpload thumbnail={thumbnail} onThumbnailChange={setThumbnail} />
           </div>
         </div>
 
         <div className="mt-8">
-          <label className="mb-1 block text-base font-bold text-primary-600">본문</label>
+          <label className="mb-1 block text-base font-bold">
+            본문 <span className="text-primary-600">*</span>
+          </label>
           <TiptapEditorContainer content={content} onChange={setContent}>
             <div className="p-4">
               <div className="flex items-center justify-between">
@@ -176,7 +185,9 @@ export default function NewPostPage() {
         </div>
 
         <div className="mt-8">
-          <label className="mb-1 block text-base font-bold text-primary-600">카테고리</label>
+          <label className="mb-1 block text-base font-bold">
+            카테고리 <span className="text-primary-600">*</span>
+          </label>
           <CategorySelector
             category={category}
             subCategory={subCategory}
@@ -200,7 +211,9 @@ export default function NewPostPage() {
 
         <div className="mt-8">
           <div className="mb-1 flex items-center justify-between">
-            <label className="text-base font-bold text-primary-600">3줄 요약</label>
+            <label className="text-base font-bold">
+              3줄 요약 <span className="text-primary-600">*</span>
+            </label>
             <button
               type="button"
               onClick={handleGenerateSummary}
@@ -209,7 +222,7 @@ export default function NewPostPage() {
             >
               {isSummarized ? '요약 완료' : '요약 생성'}
               {isSummarizing && (
-                <span className="inline-block h-3 w-3 animate-pulse bg-muted-foreground" />
+                <LoaderIcon className="size-3 animate-spin" />
               )}
             </button>
           </div>
@@ -231,9 +244,12 @@ export default function NewPostPage() {
               type="button"
               onClick={handleTranslationStart}
               disabled={isExtracting || !description.trim()}
-              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isExtracting ? '분석 중...' : '번역본 생성하기'}
+              번역본 생성하기
+              {isExtracting && (
+                <LoaderIcon className="size-4 animate-spin" />
+              )}
             </button>
           )}
           {needsTranslation && !isTranslated && flaggedTerms.length > 0 && (

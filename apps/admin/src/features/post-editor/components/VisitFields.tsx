@@ -24,7 +24,9 @@ export function VisitFields({
   return (
     <div className="mt-8 space-y-4">
       <div>
-        <label className="mb-1 block text-base font-bold text-primary-600">장소</label>
+        <label className="mb-1 block text-base font-bold">
+          장소 <span className="text-primary-600">*</span>
+        </label>
         <input
           type="text"
           value={placeName}
@@ -34,7 +36,9 @@ export function VisitFields({
         />
       </div>
       <div>
-        <label className="mb-1 block text-base font-bold text-primary-600">주소</label>
+        <label className="mb-1 block text-base font-bold">
+          주소 <span className="text-primary-600">*</span>
+        </label>
         <input
           type="text"
           value={address}
@@ -45,7 +49,8 @@ export function VisitFields({
       </div>
       <div>
         <div className="mb-1 flex items-baseline gap-1.5">
-          <label className="text-base font-bold text-primary-600">가격대</label>
+          <label className="text-base font-bold">가격대</label>
+
           <span className="text-[14px] text-muted-foreground">(단위: 만원)</span>
         </div>
         <div className="flex items-center gap-2">
