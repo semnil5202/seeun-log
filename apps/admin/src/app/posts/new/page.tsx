@@ -123,6 +123,23 @@ export default function NewPostPage() {
             </div>
           </div>
         </div>
+
+        <div className="mt-10 flex items-center justify-end gap-3">
+          {category && subCategory && (
+            <button
+              type="button"
+              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+            >
+              번역본 생성
+            </button>
+          )}
+          <button
+            type="button"
+            className="h-10 bg-primary-600 px-5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-primary-700"
+          >
+            작성 완료
+          </button>
+        </div>
       </div>
     </>
   );
