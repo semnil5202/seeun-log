@@ -10,15 +10,9 @@ declare module '@tiptap/core' {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Commands<ReturnType> {
     imageCarousel: {
-      setImageCarousel: (attrs: {
-        images: ImageItem[];
-        style?: string;
-      }) => ReturnType;
+      setImageCarousel: (attrs: { images: ImageItem[]; style?: string }) => ReturnType;
       addImageToCarousel: (pos: number, src: string) => ReturnType;
-      removeImageFromCarousel: (
-        pos: number,
-        imageIndex: number,
-      ) => ReturnType;
+      removeImageFromCarousel: (pos: number, imageIndex: number) => ReturnType;
     };
   }
 }
@@ -48,8 +42,7 @@ export const CustomImageCarousel = Node.create({
       },
       style: {
         default: 'width: 100%;',
-        parseHTML: (element: HTMLElement) =>
-          element.getAttribute('style') ?? 'width: 100%;',
+        parseHTML: (element: HTMLElement) => element.getAttribute('style') ?? 'width: 100%;',
         renderHTML: (attributes: Record<string, string>) => ({
           style: attributes.style,
         }),
@@ -66,11 +59,7 @@ export const CustomImageCarousel = Node.create({
       'img',
       { src: img.src, 'data-width': img.width, 'data-height': img.height },
     ]);
-    return [
-      'div',
-      mergeAttributes(HTMLAttributes, { 'data-type': 'image-carousel' }),
-      ...images,
-    ];
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'image-carousel' }), ...images];
   },
 
   addCommands() {
@@ -108,8 +97,7 @@ export const CustomImageCarousel = Node.create({
           if (!node || node.type.name !== 'imageCarousel') return false;
 
           const currentImages = [...(node.attrs.images as ImageItem[])];
-          if (imageIndex < 0 || imageIndex >= currentImages.length)
-            return false;
+          if (imageIndex < 0 || imageIndex >= currentImages.length) return false;
 
           currentImages.splice(imageIndex, 1);
 
@@ -122,8 +110,7 @@ export const CustomImageCarousel = Node.create({
                   src: remaining.src,
                   style: `width: ${remaining.width}; height: ${remaining.height};${remaining.height !== 'auto' ? ' object-fit: cover;' : ''}`,
                 });
-                const paragraph =
-                  editor.schema.nodes.paragraph.create(null, imageNode);
+                const paragraph = editor.schema.nodes.paragraph.create(null, imageNode);
                 tr.insert(pos, paragraph);
               }
             } else {
@@ -169,9 +156,7 @@ export const CustomImageCarousel = Node.create({
         const $img = document.createElement('img');
         $img.src = img.src;
         const heightCss =
-          img.height === 'auto'
-            ? 'height: auto'
-            : `height: ${img.height}; object-fit: cover`;
+          img.height === 'auto' ? 'height: auto' : `height: ${img.height}; object-fit: cover`;
         $img.style.cssText = `width: 100%; ${heightCss}; display: block;`;
 
         $wrapper.appendChild($img);
@@ -212,10 +197,7 @@ export const CustomImageCarousel = Node.create({
           const $arrow = document.createElement('button');
           $arrow.className = `image-carousel-arrow image-carousel-arrow-${direction}`;
 
-          const $svg = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'svg',
-          );
+          const $svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
           $svg.setAttribute('width', '20');
           $svg.setAttribute('height', '20');
           $svg.setAttribute('viewBox', '0 0 24 24');
@@ -225,14 +207,8 @@ export const CustomImageCarousel = Node.create({
           $svg.setAttribute('stroke-linecap', 'round');
           $svg.setAttribute('stroke-linejoin', 'round');
 
-          const $path = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'path',
-          );
-          $path.setAttribute(
-            'd',
-            direction === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6',
-          );
+          const $path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          $path.setAttribute('d', direction === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6');
           $svg.appendChild($path);
           $arrow.appendChild($svg);
 
@@ -357,10 +333,7 @@ export const CustomImageCarousel = Node.create({
             const viewportWidth = $viewport.clientWidth || 400;
             const deltaX = isLeft ? startX - cx : cx - startX;
             const newImgPx = Math.max(startWidth + deltaX, 80);
-            const percent = Math.min(
-              (newImgPx / viewportWidth) * 100,
-              100,
-            );
+            const percent = Math.min((newImgPx / viewportWidth) * 100, 100);
             $slide.style.flex = `0 0 ${percent.toFixed(1)}%`;
 
             const deltaY = isTop ? startY - cy : cy - startY;
@@ -373,18 +346,13 @@ export const CustomImageCarousel = Node.create({
             const viewportWidth = $viewport.clientWidth || 400;
             const deltaX = isLeft ? startX - cx : cx - startX;
             const newImgPx = Math.max(startWidth + deltaX, 80);
-            const widthPct = Math.min(
-              (newImgPx / viewportWidth) * 100,
-              100,
-            ).toFixed(1);
+            const widthPct = Math.min((newImgPx / viewportWidth) * 100, 100).toFixed(1);
 
             const deltaY = isTop ? startY - cy : cy - startY;
             const newH = Math.max(startHeight + deltaY, 60);
 
             const newImages = images.map((img, idx) =>
-              idx === i
-                ? { ...img, width: `${widthPct}%`, height: `${newH}px` }
-                : img,
+              idx === i ? { ...img, width: `${widthPct}%`, height: `${newH}px` } : img,
             );
             pendingScrollIndex = i;
             updateImages(newImages);
@@ -399,8 +367,7 @@ export const CustomImageCarousel = Node.create({
           };
 
           // Mouse
-          const onMouseMove = (e: MouseEvent) =>
-            onPointerMove(e.clientX, e.clientY);
+          const onMouseMove = (e: MouseEvent) => onPointerMove(e.clientX, e.clientY);
           const onMouseUp = (e: MouseEvent) => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
@@ -476,10 +443,7 @@ export const CustomImageCarousel = Node.create({
             if (!lpTimer) return;
             const t = e.touches[0];
             if (!t) return;
-            if (
-              Math.abs(t.clientX - lpStart.x) > 10 ||
-              Math.abs(t.clientY - lpStart.y) > 10
-            ) {
+            if (Math.abs(t.clientX - lpStart.x) > 10 || Math.abs(t.clientY - lpStart.y) > 10) {
               clearTimeout(lpTimer);
               lpTimer = null;
             }
@@ -547,9 +511,7 @@ export const CustomImageCarousel = Node.create({
       $container.addEventListener('click', (e) => {
         e.stopPropagation();
         if (activeSlideIndex >= 0) {
-          const clickedSlide = (e.target as HTMLElement).closest(
-            '.image-carousel-slide',
-          );
+          const clickedSlide = (e.target as HTMLElement).closest('.image-carousel-slide');
           if (clickedSlide !== slides[activeSlideIndex]) {
             deselectSlide();
           }

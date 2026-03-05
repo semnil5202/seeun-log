@@ -4,16 +4,16 @@
 
 ## Tech Stack
 
-| Layer    | Technology                        |
-| -------- | --------------------------------- |
-| Admin    | Next.js 15 (App Router, React 19) |
-| Client   | Astro 5 (SSG)                     |
-| Styling  | Tailwind CSS                      |
-| DB       | Supabase (PostgreSQL)             |
+| Layer    | Technology                           |
+| -------- | ------------------------------------ |
+| Admin    | Next.js 15 (App Router, React 19)    |
+| Client   | Astro 5 (SSG)                        |
+| Styling  | Tailwind CSS                         |
+| DB       | Supabase (PostgreSQL)                |
 | AI       | OpenAI GPT-5 Nano (다국어 번역+요약) |
-| CI/CD    | GitHub Actions                    |
-| Hosting  | AWS S3 + CloudFront               |
-| Monorepo | pnpm + TurboRepo                  |
+| CI/CD    | GitHub Actions                       |
+| Hosting  | AWS S3 + CloudFront                  |
+| Monorepo | pnpm + TurboRepo                     |
 
 ## Project Structure
 

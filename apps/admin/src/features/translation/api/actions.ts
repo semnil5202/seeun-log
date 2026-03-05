@@ -42,10 +42,13 @@ function buildTranslateSystemPrompt(locale: TranslationLocale): string {
   const label = LOCALE_LABELS[locale];
 
   let placeRule = '';
-  if (locale === 'ja') placeRule = '카타카나 또는 한자 표기. 주소는 일본식 순서(도도부현→시구정촌→번지)로 표기';
-  else if (locale === 'zh-CN' || locale === 'zh-TW') placeRule = '한자 표기. 주소는 중국식 순서(성/시→구→도로→번호)로 표기';
+  if (locale === 'ja')
+    placeRule = '카타카나 또는 한자 표기. 주소는 일본식 순서(도도부현→시구정촌→번지)로 표기';
+  else if (locale === 'zh-CN' || locale === 'zh-TW')
+    placeRule = '한자 표기. 주소는 중국식 순서(성/시→구→도로→번호)로 표기';
   else if (locale === 'th') placeRule = '태국 문자 음차 또는 원어 유지. 주소는 태국식 순서로 표기';
-  else if (locale === 'en') placeRule = '로마자 표기. 주소는 영어권 순서(번지→도로→구→시→국가)로 역순 표기';
+  else if (locale === 'en')
+    placeRule = '로마자 표기. 주소는 영어권 순서(번지→도로→구→시→국가)로 역순 표기';
   else placeRule = '로마자 표기. 주소는 해당 언어권의 자연스러운 순서로 표기';
 
   return `당신은 한국어 블로그 포스트를 ${label}(${locale})로 번역하는 전문 번역가입니다.
@@ -91,7 +94,7 @@ export async function extractFlaggedTerms(
   });
 
   const raw = response.choices[0].message.content ?? '{"terms":[]}';
-  console.log('[extractFlaggedTerms] raw:', raw);
+  console.error('[extractFlaggedTerms] raw:', raw);
   const parsed = parseJsonResponse(raw) as Record<string, unknown>;
   if (!parsed) return [];
 
@@ -116,7 +119,7 @@ async function translateSingleLocale(
   });
 
   const raw = response.choices[0].message.content ?? '{}';
-  console.log(`[translatePost:${locale}] raw:`, raw);
+  console.error(`[translatePost:${locale}] raw:`, raw);
   const parsed = parseJsonResponse(raw) as Record<string, string> | null;
 
   return {

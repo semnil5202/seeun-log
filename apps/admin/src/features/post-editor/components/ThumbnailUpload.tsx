@@ -38,11 +38,7 @@ export function ThumbnailUpload({ thumbnail, onThumbnailChange }: ThumbnailUploa
     <>
       {thumbnail ? (
         <div className="relative">
-          <img
-            src={thumbnail}
-            alt="썸네일 미리보기"
-            className="aspect-[7/3] w-full object-cover"
-          />
+          <img src={thumbnail} alt="썸네일 미리보기" className="aspect-[7/3] w-full object-cover" />
           <button
             type="button"
             onClick={handleDelete}

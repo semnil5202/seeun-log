@@ -80,7 +80,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.price': 'Price',
     'place.currency': 'won',
     'place.targetCurrency': 'USD',
-    'place.copyToast': 'Copied in original Korean for accurate location search.\nIf you need to copy in English, please copy it manually.',
+    'place.copyToast':
+      'Copied in original Korean for accurate location search.\nIf you need to copy in English, please copy it manually.',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -120,7 +121,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.price': '価格帯',
     'place.currency': 'ウォン',
     'place.targetCurrency': 'JPY',
-    'place.copyToast': '正確な位置検索のため韓国語の原文でコピーされました。\n日本語でコピーが必要な場合は、直接コピーしてください。',
+    'place.copyToast':
+      '正確な位置検索のため韓国語の原文でコピーされました。\n日本語でコピーが必要な場合は、直接コピーしてください。',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -240,7 +242,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.price': 'Harga',
     'place.currency': 'won',
     'place.targetCurrency': 'IDR',
-    'place.copyToast': 'Disalin dalam bahasa Korea asli untuk pencarian lokasi yang akurat.\nJika perlu menyalin dalam bahasa Indonesia, silakan salin secara manual.',
+    'place.copyToast':
+      'Disalin dalam bahasa Korea asli untuk pencarian lokasi yang akurat.\nJika perlu menyalin dalam bahasa Indonesia, silakan salin secara manual.',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -280,7 +283,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.price': 'Giá',
     'place.currency': 'won',
     'place.targetCurrency': 'VND',
-    'place.copyToast': 'Đã sao chép bản gốc tiếng Hàn để tìm kiếm vị trí chính xác.\nNếu cần sao chép bằng tiếng Việt, vui lòng sao chép thủ công.',
+    'place.copyToast':
+      'Đã sao chép bản gốc tiếng Hàn để tìm kiếm vị trí chính xác.\nNếu cần sao chép bằng tiếng Việt, vui lòng sao chép thủ công.',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -320,7 +324,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.price': 'ราคา',
     'place.currency': 'วอน',
     'place.targetCurrency': 'THB',
-    'place.copyToast': 'คัดลอกต้นฉบับภาษาเกาหลีเพื่อค้นหาตำแหน่งได้แม่นยำ\nหากต้องการคัดลอกเป็นภาษาไทย กรุณาคัดลอกด้วยตนเอง',
+    'place.copyToast':
+      'คัดลอกต้นฉบับภาษาเกาหลีเพื่อค้นหาตำแหน่งได้แม่นยำ\nหากต้องการคัดลอกเป็นภาษาไทย กรุณาคัดลอกด้วยตนเอง',
   },
 };
 

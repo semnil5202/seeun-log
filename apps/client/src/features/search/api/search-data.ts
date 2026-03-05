@@ -53,9 +53,9 @@ export const buildSearchData = (posts: LocalizedPost[], locale: Locale): SearchB
     }),
   }));
 
-  const placeNames = [...new Set(
-    posts.map((p) => p.translated_place_name ?? p.place_name).filter(Boolean),
-  )] as string[];
+  const placeNames = [
+    ...new Set(posts.map((p) => p.translated_place_name ?? p.place_name).filter(Boolean)),
+  ] as string[];
   const categoryLabels = CATEGORY_SLUGS.map((slug) => getCategoryLabel(slug, locale));
   const suggestedKeywords = [...placeNames, ...categoryLabels];
 

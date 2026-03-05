@@ -124,7 +124,7 @@
   }
   input:focus-visible,
   textarea:focus-visible,
-  [data-slot="select-trigger"]:focus-visible {
+  [data-slot='select-trigger']:focus-visible {
     border-color: var(--color-primary-600) !important;
     box-shadow: none !important;
     outline: none !important;

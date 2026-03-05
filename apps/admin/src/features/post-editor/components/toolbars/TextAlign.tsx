@@ -1,10 +1,5 @@
 import { cn } from '@/lib/utils';
-import {
-  AlignCenterIcon,
-  AlignJustifyIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-} from '../icons';
+import { AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon } from '../icons';
 
 import type { EditorProps } from './types';
 

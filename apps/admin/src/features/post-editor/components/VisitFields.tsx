@@ -42,9 +42,7 @@ export function VisitFields({ register, errors }: VisitFieldsProps) {
       </div>
       <div className="flex gap-2">
         <div className="grow-[2] basis-0">
-          <label className="mb-1 block text-base font-bold">
-            가격 설명
-          </label>
+          <label className="mb-1 block text-base font-bold">가격 설명</label>
           <input
             type="text"
             {...register('pricePrefix')}
@@ -65,9 +63,7 @@ export function VisitFields({ register, errors }: VisitFieldsProps) {
             placeholder="금액"
             className={`h-9 w-full border ${errors.price ? 'border-red-500' : 'border-input'} bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
           />
-          {errors.price && (
-            <p className="mt-1 text-[14px] text-red-500">{errors.price.message}</p>
-          )}
+          {errors.price && <p className="mt-1 text-[14px] text-red-500">{errors.price.message}</p>}
         </div>
       </div>
     </div>

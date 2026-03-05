@@ -25,18 +25,18 @@
 
 ## Table: `post_translations`
 
-| Column        | Type                 | Description                                          |
-| ------------- | -------------------- | ---------------------------------------------------- |
-| `id`          | uuid                 | PK                                                   |
-| `post_id`     | uuid (FK → posts.id) | 원본 포스트 참조                                     |
+| Column        | Type                 | Description                                                |
+| ------------- | -------------------- | ---------------------------------------------------------- |
+| `id`          | uuid                 | PK                                                         |
+| `post_id`     | uuid (FK → posts.id) | 원본 포스트 참조                                           |
 | `locale`      | text                 | 언어 코드 (`en`, `ja`, `zh-CN`, `zh-TW`, `id`, `vi`, `th`) |
-| `title`       | text                 | 번역된 제목                                          |
-| `description` | text                 | 번역된 요약                                          |
-| `content`     | text                 | 번역된 본문 (HTML)                                   |
-| `place_name`  | text (nullable)      | 번역된 장소명                                        |
-| `address`     | text (nullable)      | 번역된 주소                                          |
-| `created_at`  | timestamptz          | 번역 생성일                                          |
-| `updated_at`  | timestamptz          | 번역 수정일                                          |
+| `title`       | text                 | 번역된 제목                                                |
+| `description` | text                 | 번역된 요약                                                |
+| `content`     | text                 | 번역된 본문 (HTML)                                         |
+| `place_name`  | text (nullable)      | 번역된 장소명                                              |
+| `address`     | text (nullable)      | 번역된 주소                                                |
+| `created_at`  | timestamptz          | 번역 생성일                                                |
+| `updated_at`  | timestamptz          | 번역 수정일                                                |
 
 **Constraints**: `UNIQUE(post_id, locale)`
 

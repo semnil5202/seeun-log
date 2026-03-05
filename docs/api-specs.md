@@ -6,11 +6,11 @@ Admin 앱에서 필요한 API 엔드포인트 목록. Server Action 기반으로
 
 Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
-| 기능 | 메서드 | 비고 |
-|------|--------|------|
-| 로그인 | `supabase.auth.signInWithPassword()` | email/password |
-| 로그아웃 | `supabase.auth.signOut()` | |
-| 세션 확인 | `supabase.auth.getSession()` | 앱 로드 시 |
+| 기능      | 메서드                               | 비고           |
+| --------- | ------------------------------------ | -------------- |
+| 로그인    | `supabase.auth.signInWithPassword()` | email/password |
+| 로그아웃  | `supabase.auth.signOut()`            |                |
+| 세션 확인 | `supabase.auth.getSession()`         | 앱 로드 시     |
 
 ---
 
@@ -21,6 +21,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Type:** Server Action
 
 **Input:**
+
 ```typescript
 {
   title: string;
@@ -66,6 +67,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Input:** `{ postId: string }`
 
 **Output:**
+
 ```typescript
 {
   post: Post;
@@ -82,6 +84,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Type:** Server Action
 
 **Input:**
+
 ```typescript
 {
   limit?: number;          // default: 20
@@ -116,23 +119,26 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Type:** Server Action
 
 **Input:**
+
 ```typescript
 {
   fileName: string;
   fileType: 'image/jpeg' | 'image/png' | 'image/webp';
-  fileSize: number;        // bytes, max 10MB
+  fileSize: number; // bytes, max 10MB
 }
 ```
 
 **Output:**
+
 ```typescript
 {
-  presignedUrl: string;    // PUT용 S3 URL (1시간 유효)
-  cdnUrl: string;          // 업로드 완료 후 접근 URL (media.eunminlog.site/...)
+  presignedUrl: string; // PUT용 S3 URL (1시간 유효)
+  cdnUrl: string; // 업로드 완료 후 접근 URL (media.eunminlog.site/...)
 }
 ```
 
 **Flow:**
+
 1. Client → Server Action `getPresignedUrl()` (AWS SDK v3 SigV4)
 2. Client → `PUT presignedUrl` (S3 직접 업로드)
 3. Client가 `cdnUrl`을 폼/에디터에 반영
@@ -148,6 +154,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Type:** Server Action
 
 **Input:**
+
 ```typescript
 {
   postId: string;
@@ -161,6 +168,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 ```
 
 **Output:**
+
 ```typescript
 {
   translations: {
@@ -179,6 +187,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **DB:** `INSERT INTO post_translations` (locale별 레코드)
 
 **주의:**
+
 - HTML 구조 보존, 텍스트 노드만 번역
 - 코드/URL은 번역하지 않음
 
@@ -201,6 +210,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Type:** Server Action
 
 **Input:**
+
 ```typescript
 {
   environment: 'production' | 'development';
@@ -222,6 +232,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 **Type:** Server Action 또는 API Route
 
 **Input:**
+
 ```typescript
 {
   dateFrom?: string;       // ISO 8601
@@ -232,6 +243,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 ```
 
 **Output:**
+
 ```typescript
 {
   metrics: {
@@ -241,7 +253,8 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     recommendations: number;
     comments: number;
     publishedAt: string;
-  }[];
+  }
+  [];
 }
 ```
 
@@ -253,26 +266,26 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ## 환경변수
 
-| 변수 | 범위 | 용도 |
-|------|------|------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | 클라이언트 인증 |
-| `SUPABASE_SERVICE_ROLE_KEY` | Private | Server Action DB 접근 |
-| `OPENAI_API_KEY` | Private | GPT-5 Nano 번역+요약 |
-| `GITHUB_TOKEN` | Private | 빌드 트리거 |
-| `AWS_ACCESS_KEY_ID` | Private | S3 Pre-signed URL |
-| `AWS_SECRET_ACCESS_KEY` | Private | S3 Pre-signed URL |
+| 변수                            | 범위    | 용도                  |
+| ------------------------------- | ------- | --------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Public  | Supabase URL          |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public  | 클라이언트 인증       |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Private | Server Action DB 접근 |
+| `OPENAI_API_KEY`                | Private | GPT-5 Nano 번역+요약  |
+| `GITHUB_TOKEN`                  | Private | 빌드 트리거           |
+| `AWS_ACCESS_KEY_ID`             | Private | S3 Pre-signed URL     |
+| `AWS_SECRET_ACCESS_KEY`         | Private | S3 Pre-signed URL     |
 
 ---
 
 ## 구현 우선순위
 
-| 순서 | API | Phase |
-|------|-----|-------|
-| 1 | `createPost`, `updatePost`, `getPost` | 3 |
-| 2 | `signIn`, `signOut`, `getSession` | 2 |
-| 3 | `getPresignedUrl` | 4 |
-| 4 | `generateTranslations` | 4 |
-| 5 | `listPosts`, `deletePost` | 4 |
-| 6 | `triggerBuild` | 4 |
-| 7 | `getPostMetrics` (GA4 연동) | 4 |
+| 순서 | API                                   | Phase |
+| ---- | ------------------------------------- | ----- |
+| 1    | `createPost`, `updatePost`, `getPost` | 3     |
+| 2    | `signIn`, `signOut`, `getSession`     | 2     |
+| 3    | `getPresignedUrl`                     | 4     |
+| 4    | `generateTranslations`                | 4     |
+| 5    | `listPosts`, `deletePost`             | 4     |
+| 6    | `triggerBuild`                        | 4     |
+| 7    | `getPostMetrics` (GA4 연동)           | 4     |

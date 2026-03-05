@@ -26,10 +26,7 @@ export function CategorySelector({
 
   return (
     <div className="flex gap-3">
-      <Select
-        value={category}
-        onValueChange={(value) => onCategoryChange(value as Category)}
-      >
+      <Select value={category} onValueChange={(value) => onCategoryChange(value as Category)}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="대분류" />
         </SelectTrigger>

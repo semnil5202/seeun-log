@@ -184,7 +184,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: 'Global Reach, Search-Strong Content',
-      subtext: 'Not just a blog, but a technology-driven content platform designed to rank higher in search results.',
+      subtext:
+        'Not just a blog, but a technology-driven content platform designed to rank higher in search results.',
       multilingual: {
         heading: '🌍 8-Language Multilingual Support',
         description:
@@ -226,7 +227,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     collaboration: {
       heading: 'Collaboration Options',
-      subtext: 'We collaborate in formats tailored to the characteristics and goals of your brand and space.',
+      subtext:
+        'We collaborate in formats tailored to the characteristics and goals of your brand and space.',
       types: [
         {
           title: 'Product Review',
@@ -283,7 +285,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: 'グローバルリーチ、検索に強いコンテンツ',
-      subtext: '単にブログを書くだけでなく、検索結果でより目立つように設計された技術基盤のコンテンツプラットフォームです。',
+      subtext:
+        '単にブログを書くだけでなく、検索結果でより目立つように設計された技術基盤のコンテンツプラットフォームです。',
       multilingual: {
         heading: '🌍 8言語多言語対応',
         description:
@@ -381,7 +384,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: '全球覆盖，搜索实力强的内容',
-      subtext: '不只是一个发布文章的博客，而是一个为在搜索结果中获得更好展示而设计的技术驱动内容平台。',
+      subtext:
+        '不只是一个发布文章的博客，而是一个为在搜索结果中获得更好展示而设计的技术驱动内容平台。',
       multilingual: {
         heading: '🌍 8种语言多语言支持',
         description: '韩语、英语、日语、中文（简体/繁体）、印尼语、越南语、泰语',
@@ -474,7 +478,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: '全球覆蓋，搜尋實力強的內容',
-      subtext: '不只是一個發布文章的部落格，而是一個為在搜尋結果中獲得更好展示而設計的技術驅動內容平台。',
+      subtext:
+        '不只是一個發布文章的部落格，而是一個為在搜尋結果中獲得更好展示而設計的技術驅動內容平台。',
       multilingual: {
         heading: '🌍 8種語言多語言支援',
         description: '韓語、英語、日語、中文（簡體/繁體）、印尼語、越南語、泰語',
@@ -567,7 +572,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: 'Jangkauan Global, Konten yang Kuat di Pencarian',
-      subtext: 'Bukan sekadar blog untuk menulis, tapi platform konten berbasis teknologi yang dirancang agar lebih terlihat di hasil pencarian.',
+      subtext:
+        'Bukan sekadar blog untuk menulis, tapi platform konten berbasis teknologi yang dirancang agar lebih terlihat di hasil pencarian.',
       multilingual: {
         heading: '🌍 Dukungan 8 Bahasa',
         description:
@@ -609,7 +615,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     collaboration: {
       heading: 'Opsi Kolaborasi',
-      subtext: 'Kami berkolaborasi dalam format yang disesuaikan dengan karakteristik dan tujuan brand serta ruang Anda.',
+      subtext:
+        'Kami berkolaborasi dalam format yang disesuaikan dengan karakteristik dan tujuan brand serta ruang Anda.',
       types: [
         {
           title: 'Ulasan Produk',
@@ -668,7 +675,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: 'Phạm Vi Toàn Cầu, Nội Dung Mạnh Trong Tìm Kiếm',
-      subtext: 'Không chỉ là blog viết bài đơn thuần, mà là nền tảng nội dung dựa trên công nghệ được thiết kế để nổi bật hơn trong kết quả tìm kiếm.',
+      subtext:
+        'Không chỉ là blog viết bài đơn thuần, mà là nền tảng nội dung dựa trên công nghệ được thiết kế để nổi bật hơn trong kết quả tìm kiếm.',
       multilingual: {
         heading: '🌍 Hỗ Trợ 8 Ngôn Ngữ',
         description: 'Tiếng Hàn, Anh, Nhật, Trung (Giản thể/Phồn thể), Indonesia, Việt, Thái',
@@ -709,7 +717,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     collaboration: {
       heading: 'Hình Thức Hợp Tác',
-      subtext: 'Chúng tôi hợp tác theo hình thức phù hợp với đặc điểm và mục tiêu của thương hiệu và không gian của bạn.',
+      subtext:
+        'Chúng tôi hợp tác theo hình thức phù hợp với đặc điểm và mục tiêu của thương hiệu và không gian của bạn.',
       types: [
         {
           title: 'Đánh Giá Sản Phẩm',
@@ -768,7 +777,8 @@ const SPONSOR: Record<Locale, SponsorContent> = {
     },
     seoStrengths: {
       heading: 'เข้าถึงทั่วโลก, เนื้อหาที่แข็งแกร่งในการค้นหา',
-      subtext: 'ไม่ใช่แค่บล็อกเขียนบทความ แต่เป็นแพลตฟอร์มเนื้อหาที่ขับเคลื่อนด้วยเทคโนโลยีที่ออกแบบมาให้โดดเด่นในผลการค้นหา',
+      subtext:
+        'ไม่ใช่แค่บล็อกเขียนบทความ แต่เป็นแพลตฟอร์มเนื้อหาที่ขับเคลื่อนด้วยเทคโนโลยีที่ออกแบบมาให้โดดเด่นในผลการค้นหา',
       multilingual: {
         heading: '🌍 รองรับ 8 ภาษา',
         description: 'เกาหลี, อังกฤษ, ญี่ปุ่น, จีน (ตัวย่อ/ตัวเต็ม), อินโดนีเซีย, เวียดนาม, ไทย',

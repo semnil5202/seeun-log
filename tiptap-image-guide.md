@@ -6,13 +6,13 @@
 
 ## 1. 사용 라이브러리
 
-| 패키지 | 버전 | 용도 |
-|--------|------|------|
-| `@tiptap/react` | ^2.11.7 | Tiptap React 바인딩 |
-| `@tiptap/starter-kit` | ^2.11.7 | 기본 에디터 기능 번들 (bold, italic, history, dropcursor 등) |
-| `@tiptap/extension-image` | ^2.11.7 | 이미지 노드 확장 (커스텀 확장의 베이스) |
-| `react-image-crop` | ^11.0.10 | 이미지 크롭 UI (ReactCrop 컴포넌트) |
-| `axios` | - | S3 업로드 API 호출 |
+| 패키지                    | 버전     | 용도                                                         |
+| ------------------------- | -------- | ------------------------------------------------------------ |
+| `@tiptap/react`           | ^2.11.7  | Tiptap React 바인딩                                          |
+| `@tiptap/starter-kit`     | ^2.11.7  | 기본 에디터 기능 번들 (bold, italic, history, dropcursor 등) |
+| `@tiptap/extension-image` | ^2.11.7  | 이미지 노드 확장 (커스텀 확장의 베이스)                      |
+| `react-image-crop`        | ^11.0.10 | 이미지 크롭 UI (ReactCrop 컴포넌트)                          |
+| `axios`                   | -        | S3 업로드 API 호출                                           |
 
 ---
 
@@ -102,7 +102,7 @@ const prepareImageUpload = async (name: string) => {
   const body = { name, contentType: 'image/png' };
   const response = await axios.post<{ attachment: AttachmentDTO; uploadUrl: string }>(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/s3/prepare-upload`,
-    body
+    body,
   );
   return response.data;
 };
@@ -115,7 +115,7 @@ const uploadImageOnS3 = async (uploadUrl: string, image: File) => {
 // Step 3: 업로드 완료 처리
 const completeImageUpload = async (attachmentId: number) => {
   const response = await axios.post<CompleteImageUploadDTO>(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/s3/complete-upload/${attachmentId}`
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/s3/complete-upload/${attachmentId}`,
   );
   return response.data;
 };
@@ -129,7 +129,7 @@ type CompleteImageUploadDTO = {
   name: string;
   key: string;
   url: string;
-  accessURL: string;  // ← 에디터 이미지 src에 사용되는 최종 URL
+  accessURL: string; // ← 에디터 이미지 src에 사용되는 최종 URL
   bucket: string;
   contentType: string;
   createAt: string;
@@ -171,7 +171,10 @@ export const CustomResizableImage = Image.extend({
   // 2. 커스텀 NodeView로 리사이즈 핸들 구현
   addNodeView() {
     return ({ node, editor, getPos }) => {
-      const { view, options: { editable } } = editor;
+      const {
+        view,
+        options: { editable },
+      } = editor;
       const { style } = node.attrs;
 
       // DOM 구조: div.container > img + div.dot x4
@@ -187,7 +190,7 @@ export const CustomResizableImage = Image.extend({
       $img.setAttribute('style', 'width: 100%; height: auto; display: block;');
       $container.setAttribute(
         'style',
-        `${style}; display: inline-block; position: relative; cursor: pointer;`
+        `${style}; display: inline-block; position: relative; cursor: pointer;`,
       );
       $container.appendChild($img);
 
@@ -254,7 +257,7 @@ const dotPosition = isMobile ? '-8px' : '-4px';
 
 ```typescript
 // useInitTiptapEditor.ts에서 inline: true로 설정
-CustomResizableImage.configure({ inline: true })
+CustomResizableImage.configure({ inline: true });
 ```
 
 > `inline: true`로 설정하면 이미지가 텍스트 사이에 인라인으로 삽입됩니다.
@@ -383,6 +386,7 @@ export const useUploadImageModalOpen = ({ cropRatio, accept, onSubmit }: Props) 
 ### 실제 드래그 앤 드롭 시 동작
 
 로컬 파일을 에디터에 드래그 앤 드롭하면:
+
 - Tiptap/ProseMirror의 기본 동작에 의존합니다.
 - `@tiptap/extension-image`의 기본 설정에서는 **로컬 파일 드롭을 처리하지 않으므로**, 드롭된 파일은 무시되거나 브라우저 기본 동작(새 탭에서 파일 열기 등)이 발생할 수 있습니다.
 
@@ -461,9 +465,18 @@ import FontFamily from '@tiptap/extension-font-family';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextStyle from '@tiptap/extension-text-style';
 import {
-  CharacterLimit, CustomBulletList, CustomHeading, CustomLink,
-  CustomParagraph, CustomResizableImage, CustomStarterKit,
-  CustomTextAlign, CustomTextHighlight, CustomYoutube, FontSize, TextColor,
+  CharacterLimit,
+  CustomBulletList,
+  CustomHeading,
+  CustomLink,
+  CustomParagraph,
+  CustomResizableImage,
+  CustomStarterKit,
+  CustomTextAlign,
+  CustomTextHighlight,
+  CustomYoutube,
+  FontSize,
+  TextColor,
 } from '../configs';
 
 export const useInitTiptapEditor = () => {
@@ -472,15 +485,15 @@ export const useInitTiptapEditor = () => {
 
   const editor = useEditor({
     extensions: [
-      CustomStarterKit,                              // bold, italic, strike, history, dropcursor 등
-      CustomHeading,                                  // H2~H6
+      CustomStarterKit, // bold, italic, strike, history, dropcursor 등
+      CustomHeading, // H2~H6
       CustomBulletList,
-      CustomParagraph,                                // line-height 지원
-      CustomTextAlign,                                // 텍스트 정렬
-      CustomLink,                                     // 링크 (https 강제)
-      CustomYoutube,                                  // YouTube 임베드
-      CustomTextHighlight,                            // 다색 하이라이트
-      CharacterLimit,                                 // 100,000자 제한
+      CustomParagraph, // line-height 지원
+      CustomTextAlign, // 텍스트 정렬
+      CustomLink, // 링크 (https 강제)
+      CustomYoutube, // YouTube 임베드
+      CustomTextHighlight, // 다색 하이라이트
+      CharacterLimit, // 100,000자 제한
       FontFamily,
       TextStyle,
       FontSize,

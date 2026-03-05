@@ -12,13 +12,13 @@
 
 ### 1-2. 핵심 원칙
 
-| 항목 | 규칙 |
-|------|------|
-| 화면 표시 | 번역된 place_name, address |
-| 복사 기능 | 클립보드에는 한글 원문 복사 |
-| 토스트 알림 | "정확한 위치 검색을 위해 한국어 원문으로 복사되었습니다" (각 locale 언어) |
-| JSON-LD | `itemReviewed.name`과 `address`는 한글 원문 유지 (구조화 데이터 정확도) |
-| 한국어 페이지 | 기존 동작 유지 (원문 표시, 원문 복사, 토스트 미표시) |
+| 항목          | 규칙                                                                      |
+| ------------- | ------------------------------------------------------------------------- |
+| 화면 표시     | 번역된 place_name, address                                                |
+| 복사 기능     | 클립보드에는 한글 원문 복사                                               |
+| 토스트 알림   | "정확한 위치 검색을 위해 한국어 원문으로 복사되었습니다" (각 locale 언어) |
+| JSON-LD       | `itemReviewed.name`과 `address`는 한글 원문 유지 (구조화 데이터 정확도)   |
+| 한국어 페이지 | 기존 동작 유지 (원문 표시, 원문 복사, 토스트 미표시)                      |
 
 ---
 
@@ -26,10 +26,10 @@
 
 ### 2-1. `post_translations` 테이블 변경
 
-| Column | Type | Description | Nullable |
-|--------|------|-------------|----------|
-| `place_name` | text | 번역된 장소명 | YES |
-| `address` | text | 번역된 주소 | YES |
+| Column       | Type | Description   | Nullable |
+| ------------ | ---- | ------------- | -------- |
+| `place_name` | text | 번역된 장소명 | YES      |
+| `address`    | text | 번역된 주소   | YES      |
 
 **ALTER 문**:
 
@@ -50,31 +50,31 @@ ALTER TABLE post_translations ADD COLUMN address text;
 
 **변경 전**:
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | uuid | PK |
-| `post_id` | uuid (FK) | 원본 포스트 참조 |
-| `locale` | text | 언어 코드 |
-| `title` | text | 번역된 제목 |
-| `description` | text | 번역된 요약 |
-| `content` | text | 번역된 본문 (HTML) |
-| `created_at` | timestamptz | 번역 생성일 |
-| `updated_at` | timestamptz | 번역 수정일 |
+| Column        | Type        | Description        |
+| ------------- | ----------- | ------------------ |
+| `id`          | uuid        | PK                 |
+| `post_id`     | uuid (FK)   | 원본 포스트 참조   |
+| `locale`      | text        | 언어 코드          |
+| `title`       | text        | 번역된 제목        |
+| `description` | text        | 번역된 요약        |
+| `content`     | text        | 번역된 본문 (HTML) |
+| `created_at`  | timestamptz | 번역 생성일        |
+| `updated_at`  | timestamptz | 번역 수정일        |
 
 **변경 후**:
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | uuid | PK |
-| `post_id` | uuid (FK) | 원본 포스트 참조 |
-| `locale` | text | 언어 코드 |
-| `title` | text | 번역된 제목 |
-| `description` | text | 번역된 요약 |
-| `content` | text | 번역된 본문 (HTML) |
-| `place_name` | text (nullable) | 번역된 장소명 |
-| `address` | text (nullable) | 번역된 주소 |
-| `created_at` | timestamptz | 번역 생성일 |
-| `updated_at` | timestamptz | 번역 수정일 |
+| Column        | Type            | Description        |
+| ------------- | --------------- | ------------------ |
+| `id`          | uuid            | PK                 |
+| `post_id`     | uuid (FK)       | 원본 포스트 참조   |
+| `locale`      | text            | 언어 코드          |
+| `title`       | text            | 번역된 제목        |
+| `description` | text            | 번역된 요약        |
+| `content`     | text            | 번역된 본문 (HTML) |
+| `place_name`  | text (nullable) | 번역된 장소명      |
+| `address`     | text (nullable) | 번역된 주소        |
+| `created_at`  | timestamptz     | 번역 생성일        |
+| `updated_at`  | timestamptz     | 번역 수정일        |
 
 ---
 
@@ -247,12 +247,12 @@ interface Props {
 
 **번역 키 추가** (`translations.ts`):
 
-| 키 | 용도 |
-|----|------|
-| `place.category` | 카테고리 라벨 |
-| `place.name` | 장소 라벨 |
-| `place.address` | 주소 라벨 |
-| `place.price` | 가격대 라벨 |
+| 키                | 용도                           |
+| ----------------- | ------------------------------ |
+| `place.category`  | 카테고리 라벨                  |
+| `place.name`      | 장소 라벨                      |
+| `place.address`   | 주소 라벨                      |
+| `place.price`     | 가격대 라벨                    |
 | `place.copyToast` | 토스트 메시지 (원문 복사 안내) |
 
 #### 화면 표시 로직
@@ -318,6 +318,7 @@ interface Props {
 현재 PlaceInfoCard에 인라인 `<script>`로 복사 로직이 있다. 이를 `data-toast` 속성과 전역 `Toast.astro`의 기존 메커니즘을 활용하도록 통합한다.
 
 **변경 전** (현재 인라인 스크립트):
+
 ```javascript
 document.querySelector('.copy-address')?.addEventListener('click', async (e) => {
   const btn = (e.currentTarget as HTMLButtonElement);
@@ -329,6 +330,7 @@ document.querySelector('.copy-address')?.addEventListener('click', async (e) => 
 ```
 
 **변경 후**:
+
 ```javascript
 document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
   btn.addEventListener('click', async () => {
@@ -429,9 +431,9 @@ placeName: p.translated_place_name ?? p.place_name,
 const placeNames = [...new Set(posts.map((p) => p.place_name).filter(Boolean))] as string[];
 
 // 변경 후
-const placeNames = [...new Set(
-  posts.map((p) => p.translated_place_name ?? p.place_name).filter(Boolean),
-)] as string[];
+const placeNames = [
+  ...new Set(posts.map((p) => p.translated_place_name ?? p.place_name).filter(Boolean)),
+] as string[];
 ```
 
 ### 5-5. 피드 JSON API
@@ -476,12 +478,12 @@ placeName: localized.translated_place_name ?? post.place_name ?? null,
 
 ### 6-1. 신규 번역 키
 
-| 키 | ko | en | ja | zh-CN | zh-TW | id | vi | th |
-|----|----|----|----|----|----|----|----|----|
-| `place.category` | 카테고리 | Category | カテゴリー | 分类 | 分類 | Kategori | Danh mục | หมวดหมู่ |
-| `place.name` | 장소 | Place | 場所 | 地点 | 地點 | Tempat | Địa điểm | สถานที่ |
-| `place.address` | 주소 | Address | 住所 | 地址 | 地址 | Alamat | Địa chỉ | ที่อยู่ |
-| `place.price` | 가격대 | Price | 価格帯 | 价格 | 價格 | Harga | Giá | ราคา |
+| 키                | ko          | en                                                                         | ja                                                                     | zh-CN                                                | zh-TW                                                | id                                                                                     | vi                                                                             | th                                                                   |
+| ----------------- | ----------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `place.category`  | 카테고리    | Category                                                                   | カテゴリー                                                             | 分类                                                 | 分類                                                 | Kategori                                                                               | Danh mục                                                                       | หมวดหมู่                                                             |
+| `place.name`      | 장소        | Place                                                                      | 場所                                                                   | 地点                                                 | 地點                                                 | Tempat                                                                                 | Địa điểm                                                                       | สถานที่                                                              |
+| `place.address`   | 주소        | Address                                                                    | 住所                                                                   | 地址                                                 | 地址                                                 | Alamat                                                                                 | Địa chỉ                                                                        | ที่อยู่                                                              |
+| `place.price`     | 가격대      | Price                                                                      | 価格帯                                                                 | 价格                                                 | 價格                                                 | Harga                                                                                  | Giá                                                                            | ราคา                                                                 |
 | `place.copyToast` | (빈 문자열) | Copied in original Korean for accurate location search. (+ 수동 복사 안내) | 正確な位置検索のため韓国語の原文でコピーされました。(+ 수동 복사 안내) | 为了准确搜索位置，已复制韩语原文。(+ 수동 복사 안내) | 為了準確搜尋位置，已複製韓語原文。(+ 수동 복사 안내) | Disalin dalam bahasa Korea asli untuk pencarian lokasi yang akurat. (+ 수동 복사 안내) | Đã sao chép bản gốc tiếng Hàn để tìm kiếm vị trí chính xác. (+ 수동 복사 안내) | คัดลอกต้นฉบับภาษาเกาหลีเพื่อค้นหาตำแหน่งได้แม่นยำ (+ 수동 복사 안내) |
 
 > **참고**: `place.copyToast` 메시지는 2줄 구성 (`\n` 구분). 1줄: 한국어 원문 복사 안내, 2줄: 해당 언어로 복사가 필요하면 수동 복사 안내. `place.price`는 "가격대"가 아닌 짧은 라벨("Price", "価格帯" 등)로 구현됨.
@@ -560,58 +562,58 @@ ALTER TABLE post_translations ADD COLUMN address text;
 
 ### 9-1. Client (apps/client) 변경 파일 목록
 
-| 파일 | 변경 내용 |
-|------|-----------|
-| `shared/types/post.ts` | PostTranslation에 place_name, address 추가. LocalizedPost에 translated_place_name, translated_address 추가 |
-| `features/post-feed/api/translations.ts` | getLocalizedPost()에서 translated_place_name, translated_address 매핑 |
-| `features/post-feed/mock/translations.ts` | mock 데이터에 place_name, address 추가 |
-| `features/post-detail/components/PlaceInfoCard.astro` | Props 추가, 번역 텍스트 표시, 장소명 복사 버튼 추가, 복사 스크립트 변경, 필드 라벨 다국어 처리 |
-| `layouts/PostLayout.astro` | PlaceInfoCard에 translatedPlaceName, translatedAddress props 전달 |
-| `shared/lib/i18n/translations.ts` | place.category, place.name, place.address, place.price, place.copyOriginal 키 추가 |
-| `features/search/api/search-data.ts` | placeName, 추천 키워드에 번역 텍스트 사용 |
-| `pages/api/feed/[...path].json.ts` | FeedPostData.placeName에 번역 텍스트 사용 |
-| `features/post-feed/components/PostCard.astro` | place_name 표시를 translated_place_name 우선으로 변경 |
-| `features/post-feed/components/SponsoredCard.astro` | place_name 표시를 translated_place_name 우선으로 변경 |
+| 파일                                                  | 변경 내용                                                                                                  |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `shared/types/post.ts`                                | PostTranslation에 place_name, address 추가. LocalizedPost에 translated_place_name, translated_address 추가 |
+| `features/post-feed/api/translations.ts`              | getLocalizedPost()에서 translated_place_name, translated_address 매핑                                      |
+| `features/post-feed/mock/translations.ts`             | mock 데이터에 place_name, address 추가                                                                     |
+| `features/post-detail/components/PlaceInfoCard.astro` | Props 추가, 번역 텍스트 표시, 장소명 복사 버튼 추가, 복사 스크립트 변경, 필드 라벨 다국어 처리             |
+| `layouts/PostLayout.astro`                            | PlaceInfoCard에 translatedPlaceName, translatedAddress props 전달                                          |
+| `shared/lib/i18n/translations.ts`                     | place.category, place.name, place.address, place.price, place.copyOriginal 키 추가                         |
+| `features/search/api/search-data.ts`                  | placeName, 추천 키워드에 번역 텍스트 사용                                                                  |
+| `pages/api/feed/[...path].json.ts`                    | FeedPostData.placeName에 번역 텍스트 사용                                                                  |
+| `features/post-feed/components/PostCard.astro`        | place_name 표시를 translated_place_name 우선으로 변경                                                      |
+| `features/post-feed/components/SponsoredCard.astro`   | place_name 표시를 translated_place_name 우선으로 변경                                                      |
 
 ### 9-2. 변경하지 않는 파일
 
-| 파일 | 이유 |
-|------|------|
-| `features/post-detail/lib/schema.ts` | JSON-LD는 한글 원문을 사용. `post.place_name`, `post.address`가 이미 원문 |
-| `shared/types/seo.ts` | ReviewSchema 타입 변경 없음 |
-| `shared/components/seo/BlogPostingJsonLd.astro` | 스키마 빌더 입력이 변경되지 않으므로 변경 불필요 |
+| 파일                                            | 이유                                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `features/post-detail/lib/schema.ts`            | JSON-LD는 한글 원문을 사용. `post.place_name`, `post.address`가 이미 원문 |
+| `shared/types/seo.ts`                           | ReviewSchema 타입 변경 없음                                               |
+| `shared/components/seo/BlogPostingJsonLd.astro` | 스키마 빌더 입력이 변경되지 않으므로 변경 불필요                          |
 
 ### 9-3. Admin (apps/admin) 변경
 
-| 항목 | 변경 내용 | 시점 |
-|------|-----------|------|
-| GPT 번역 프롬프트 (GPT-5 Nano 예정) | place_name, address 포함 | Phase 4+ (번역 기능 구현 시) |
-| 포스트 저장 Server Action | 번역 결과에 place_name, address 포함하여 저장 | Phase 4+ |
+| 항목                                | 변경 내용                                     | 시점                         |
+| ----------------------------------- | --------------------------------------------- | ---------------------------- |
+| GPT 번역 프롬프트 (GPT-5 Nano 예정) | place_name, address 포함                      | Phase 4+ (번역 기능 구현 시) |
+| 포스트 저장 Server Action           | 번역 결과에 place_name, address 포함하여 저장 | Phase 4+                     |
 
 ### 9-4. DB 변경
 
-| 변경 | SQL |
-|------|-----|
+| 변경                        | SQL                                                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | post_translations 컬럼 추가 | `ALTER TABLE post_translations ADD COLUMN place_name text; ALTER TABLE post_translations ADD COLUMN address text;` |
 
 ---
 
 ## 10. 구현 순서
 
-| 순서 | 작업 | 우선순위 | 의존성 |
-|------|------|----------|--------|
-| 1 | DB: post_translations 테이블에 place_name, address 컬럼 추가 (Supabase) | P0 | 없음 |
-| 2 | Client: PostTranslation, LocalizedPost 타입 변경 | P0 | #1 |
-| 3 | Client: translations.ts — getLocalizedPost() 수정 | P0 | #2 |
-| 4 | Client: mock/translations.ts — mock 데이터에 place_name, address 추가 | P0 | #2 |
-| 5 | Client: i18n/translations.ts — place.* 번역 키 추가 | P0 | 없음 |
-| 6 | Client: PlaceInfoCard.astro — Props 추가, 번역 표시, 복사 버튼 변경, 라벨 다국어 | P0 | #2, #3, #5 |
-| 7 | Client: PostLayout.astro — PlaceInfoCard props 전달 | P0 | #6 |
-| 8 | Client: PostCard.astro, SponsoredCard.astro — translated_place_name 표시 | P1 | #2, #3 |
-| 9 | Client: search-data.ts — 번역 장소명 사용 | P1 | #2, #3 |
-| 10 | Client: feed JSON API — 번역 장소명 사용 | P1 | #2, #3 |
-| 11 | docs: database.md 업데이트 | P0 | #1 |
-| 12 | Admin: GPT-5 Nano 번역 파이프라인에 place_name, address 포함 | P1 | Phase 4+ 구현 시 |
+| 순서 | 작업                                                                             | 우선순위 | 의존성           |
+| ---- | -------------------------------------------------------------------------------- | -------- | ---------------- |
+| 1    | DB: post_translations 테이블에 place_name, address 컬럼 추가 (Supabase)          | P0       | 없음             |
+| 2    | Client: PostTranslation, LocalizedPost 타입 변경                                 | P0       | #1               |
+| 3    | Client: translations.ts — getLocalizedPost() 수정                                | P0       | #2               |
+| 4    | Client: mock/translations.ts — mock 데이터에 place_name, address 추가            | P0       | #2               |
+| 5    | Client: i18n/translations.ts — place.\* 번역 키 추가                             | P0       | 없음             |
+| 6    | Client: PlaceInfoCard.astro — Props 추가, 번역 표시, 복사 버튼 변경, 라벨 다국어 | P0       | #2, #3, #5       |
+| 7    | Client: PostLayout.astro — PlaceInfoCard props 전달                              | P0       | #6               |
+| 8    | Client: PostCard.astro, SponsoredCard.astro — translated_place_name 표시         | P1       | #2, #3           |
+| 9    | Client: search-data.ts — 번역 장소명 사용                                        | P1       | #2, #3           |
+| 10   | Client: feed JSON API — 번역 장소명 사용                                         | P1       | #2, #3           |
+| 11   | docs: database.md 업데이트                                                       | P0       | #1               |
+| 12   | Admin: GPT-5 Nano 번역 파이프라인에 place_name, address 포함                     | P1       | Phase 4+ 구현 시 |
 
 > **참고**: #1(DB 변경)은 Supabase 콘솔에서 직접 실행. #2~#10은 SE가 한 PR로 구현 가능. #12는 Admin 번역 기능 구현 시점에 반영.
 
@@ -622,6 +624,7 @@ ALTER TABLE post_translations ADD COLUMN address text;
 현재 PlaceInfoCard의 `<dt>` 라벨이 한국어로 하드코딩되어 있어, 이번 작업에서 함께 다국어 처리한다. 이는 기존에 누락되어 있던 부분이다.
 
 **변경 전**:
+
 ```html
 <dt class="shrink-0 w-20 text-gray-500 font-medium">카테고리</dt>
 <dt class="shrink-0 w-20 text-gray-500 font-medium">장소</dt>
@@ -630,6 +633,7 @@ ALTER TABLE post_translations ADD COLUMN address text;
 ```
 
 **변경 후**:
+
 ```html
 <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.category", locale)}</dt>
 <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.name", locale)}</dt>

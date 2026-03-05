@@ -33,20 +33,12 @@ import type { Category, PostFormType, SubCategory } from '@/shared/types/post';
 import type { FlaggedTerm, TranslationResult } from '@/features/translation/types';
 
 export default function NewPostPage() {
-  const {
-    register,
-    control,
-    watch,
-    setValue,
-    getValues,
-    trigger,
-    setFocus,
-    formState,
-  } = useForm<PostFormValues>({
-    resolver: zodResolver(postFormSchema),
-    defaultValues: POST_FORM_DEFAULTS,
-    mode: 'onSubmit',
-  });
+  const { register, control, watch, setValue, getValues, trigger, setFocus, formState } =
+    useForm<PostFormValues>({
+      resolver: zodResolver(postFormSchema),
+      defaultValues: POST_FORM_DEFAULTS,
+      mode: 'onSubmit',
+    });
 
   const { errors } = formState;
 
@@ -144,11 +136,7 @@ export default function NewPostPage() {
     try {
       const { title: t, content: c, description: d, placeName: pn, address: addr } = getValues();
 
-      const terms = await extractFlaggedTerms(
-        c,
-        pn || undefined,
-        addr || undefined,
-      );
+      const terms = await extractFlaggedTerms(c, pn || undefined, addr || undefined);
 
       if (terms.length === 0) {
         const results = await translatePost({
@@ -306,7 +294,9 @@ export default function NewPostPage() {
             category={(category || '') as Category | ''}
             subCategory={(subCategory || '') as SubCategory | ''}
             onCategoryChange={handleCategoryChange}
-            onSubCategoryChange={(value) => setValue('subCategory', value, { shouldValidate: true })}
+            onSubCategoryChange={(value) =>
+              setValue('subCategory', value, { shouldValidate: true })
+            }
           />
           {(errors.category || errors.subCategory) && (
             <p className="mt-1 text-[14px] text-red-500">
@@ -329,9 +319,7 @@ export default function NewPostPage() {
               className="inline-flex items-center gap-1.5 border border-input px-3 py-1 text-xs font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSummarized ? '요약 완료' : '요약 생성'}
-              {isSummarizing && (
-                <LoaderIcon className="size-3 animate-spin" />
-              )}
+              {isSummarizing && <LoaderIcon className="size-3 animate-spin" />}
             </button>
           </div>
           <Controller
@@ -366,9 +354,7 @@ export default function NewPostPage() {
                 className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
               >
                 번역본 생성하기
-                {isExtracting && (
-                  <LoaderIcon className="size-4 animate-spin" />
-                )}
+                {isExtracting && <LoaderIcon className="size-4 animate-spin" />}
               </button>
             )}
             {needsTranslation && !isTranslated && flaggedTerms.length > 0 && (
@@ -398,9 +384,7 @@ export default function NewPostPage() {
             </button>
           </div>
           {translationError && (
-            <p className="mt-2 text-end text-[14px] text-red-500">
-              번역본 생성이 먼저 필요합니다.
-            </p>
+            <p className="mt-2 text-end text-[14px] text-red-500">번역본 생성이 먼저 필요합니다.</p>
           )}
         </div>
       </div>

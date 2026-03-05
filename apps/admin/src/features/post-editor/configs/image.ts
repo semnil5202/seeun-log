@@ -125,13 +125,9 @@ export const CustomResizableImage = Image.extend({
         const isLeft = index === 0 || index === 2;
 
         const onMouseMove = (e: MouseEvent) => {
-          const editorWidth =
-            document.querySelector('.ProseMirror')?.clientWidth ?? 400;
+          const editorWidth = document.querySelector('.ProseMirror')?.clientWidth ?? 400;
           const deltaX = isLeft ? startX - e.clientX : e.clientX - startX;
-          const newWidth = Math.min(
-            Math.max(startWidth + deltaX, 50),
-            editorWidth,
-          );
+          const newWidth = Math.min(Math.max(startWidth + deltaX, 50), editorWidth);
           const percent = ((newWidth / editorWidth) * 100).toFixed(1);
           $container.style.width = `${percent}%`;
           $img.style.width = '100%';
