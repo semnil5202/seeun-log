@@ -121,7 +121,7 @@ export default function NewPostPage() {
   };
 
   const commonFieldsFilled = !!(title.trim() && content.trim() && thumbnail && category && subCategory && description.trim());
-  const visitFieldsFilled = formType !== 'visit' || !!(placeName.trim() && address.trim());
+  const visitFieldsFilled = formType !== 'visit' || !!(placeName.trim() && address.trim() && price.trim());
   const needsTranslation = !!(category && subCategory);
   const isSubmitDisabled = !commonFieldsFilled || !visitFieldsFilled || (needsTranslation && !isTranslated);
 
