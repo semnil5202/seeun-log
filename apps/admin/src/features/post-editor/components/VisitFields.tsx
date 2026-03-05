@@ -47,27 +47,32 @@ export function VisitFields({
           className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
         />
       </div>
-      <div>
-        <div className="mb-1 flex items-baseline gap-1.5">
-          <label className="text-base font-bold">
-            가격 <span className="text-primary-600">*</span>
+      <div className="flex gap-2">
+        <div className="grow-[2] basis-0">
+          <label className="mb-1 block text-base font-bold">
+            가격 설명 <span className="text-muted-foreground">(선택)</span>
           </label>
-          <span className="text-[14px] text-muted-foreground">(단위: 만원)</span>
-        </div>
-        <div className="flex items-center gap-2">
           <input
             type="text"
             value={pricePrefix}
             onChange={(e) => onPricePrefixChange(e.target.value)}
-            placeholder="특정 가격 설명 (ex: 메인 메뉴 평균 가격: ) (선택)"
-            className="h-9 grow-[2] basis-0 border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
+            placeholder="ex: 메인 메뉴 평균 가격: "
+            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
           />
+        </div>
+        <div className="grow basis-0">
+          <div className="mb-1 flex items-baseline gap-1.5">
+            <label className="text-base font-bold">
+              금액 <span className="text-muted-foreground">(필수값)</span>
+            </label>
+            <span className="text-[14px] text-muted-foreground">(단위: 만원)</span>
+          </div>
           <input
             type="number"
             value={price}
             onChange={(e) => onPriceChange(e.target.value)}
             placeholder="금액"
-            className="h-9 grow basis-0 border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
         </div>
       </div>
