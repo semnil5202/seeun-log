@@ -49,11 +49,16 @@
 - rating prop removed, replaced with description prop (3줄 요약)
 - StarRating.astro no longer imported (file kept for future use, still used in schema.ts JSON-LD)
 - description displayed as `\n`-split `⋅` bullet list with `post.summary` i18n label (8 locales)
-- ui-specs.md PlaceInfoCard section updated to reflect new props and layout
+- border-radius removed, dt width w-20 (80px)
+- copy buttons use `data-copy` + `data-toast` pattern (Toast.astro event delegation)
+- Toast.astro: duration 4s, whitespace-pre-line for multiline messages
+- Translation key: `place.copyToast` (NOT `place.copyOriginal` -- specs updated 2026-03-05)
+- NearbyPostList: `nearbyLabel` prop removed
+- Sponsor page: "협찬 리뷰" -> "제품 리뷰" naming in content.ts
 
 ## Feature Specs Created
 
-- `docs/place-i18n-specs.md` — place_name/address i18n (2026-03-05): DB schema change (post_translations add place_name, address nullable), LocalizedPost type adds translated_place_name/translated_address (separate from original), PlaceInfoCard shows translation + copies Korean original, Toast on non-ko copy, JSON-LD keeps Korean original, PlaceInfoCard field labels also i18n'd (place.category/name/address/price keys), search/feed data use translated place_name
+- `docs/place-i18n-specs.md` — place_name/address i18n (2026-03-05, updated 2026-03-05): DB schema change (post_translations add place_name, address nullable), LocalizedPost type adds translated_place_name/translated_address (separate from original), PlaceInfoCard shows translation + copies Korean original, Toast on non-ko copy, JSON-LD keeps Korean original, PlaceInfoCard field labels i18n'd (place.category/name/address/price/copyToast keys), search/feed data use translated place_name. Place i18n Client-side implementation completed (all TODO items checked except DB ALTER and Admin GPT-4o pipeline).
 
 ## Documentation Patterns
 

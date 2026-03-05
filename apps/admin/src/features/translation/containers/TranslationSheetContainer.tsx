@@ -67,7 +67,9 @@ export function TranslationSheetContainer({
         confirmedTerms: terms,
       });
       setStatus('success');
-      onTranslationComplete(results);
+      setTimeout(() => {
+        onTranslationComplete(results);
+      }, 500);
     } catch {
       setError('번역 중 오류가 발생했습니다.');
       setStatus('error');
@@ -119,13 +121,6 @@ export function TranslationSheetContainer({
                 <CheckIcon className="size-6 text-white" />
               </div>
               <p className="text-sm font-semibold">번역이 완료되었습니다.</p>
-              <button
-                type="button"
-                onClick={() => handleOpenChange(false)}
-                className="mt-2 h-9 border border-input px-4 text-sm shadow-xs transition-colors hover:bg-accent"
-              >
-                닫기
-              </button>
             </div>
           )}
 

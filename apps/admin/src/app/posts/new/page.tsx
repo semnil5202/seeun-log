@@ -226,6 +226,16 @@ export default function NewPostPage() {
         </div>
 
         <div className="mt-10 flex items-center justify-end gap-3">
+          {needsTranslation && !isTranslated && flaggedTerms.length === 0 && (
+            <button
+              type="button"
+              onClick={handleTranslationStart}
+              disabled={isExtracting || !description.trim()}
+              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isExtracting ? '분석 중...' : '번역본 생성하기'}
+            </button>
+          )}
           {needsTranslation && !isTranslated && flaggedTerms.length > 0 && (
             <button
               type="button"
@@ -233,16 +243,6 @@ export default function NewPostPage() {
               className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
             >
               용어 검토 계속하기
-            </button>
-          )}
-          {needsTranslation && !isTranslated && (
-            <button
-              type="button"
-              onClick={handleTranslationStart}
-              disabled={isExtracting}
-              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isExtracting ? '분석 중...' : '번역본 생성'}
             </button>
           )}
           {isTranslated && (
@@ -280,6 +280,8 @@ export default function NewPostPage() {
         onOpenChange={setIsPreviewOpen}
         originalTitle={title}
         originalContent={content}
+        originalPlaceName={placeName || undefined}
+        originalAddress={address || undefined}
         translations={translationResults}
       />
     </>

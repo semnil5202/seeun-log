@@ -34,11 +34,14 @@
   - Metrics page (/ -- mock data, SearchFilter + sort dropdown + Table)
   - Flat route structure (no route groups), placeholder pages for /dashboard, /posts/new, /posts/[id]/edit
   - SearchFilter as shared/global component (date range + search + children extension)
-- Admin Phase 3 (partial): Tiptap editor implemented (extensions, toolbar, page /posts/new, SSR-safe container, ProseMirror CSS)
-  - Post-editor remaining: meta form, Zod validation, image insert, save, edit page, Placeholder extension
+- Admin Phase 3 (major progress): Tiptap editor + form type + meta form + translation integration
+  - Completed: FormType select (visit/product-review), CategorySelector, ThumbnailUpload (WebP), VisitFields, 3줄 요약 (textarea + AI mock), TextAlign toolbar, 13 SVG icons, image insert (CustomResizableImage with 4-corner resize)
+  - Translation: extractFlaggedTerms + translatePost Server Actions, TranslationSheetContainer (2-step: term review -> translate), TranslationPreviewSheet (7 locale preview)
+  - Post-editor remaining: Zod validation, S3 upload, save action, edit page, Placeholder ext, toggles (sponsored/recommended/multilingual), rating input, slug auto-gen
   - HTML output: inline styles on all elements (headings, links, lists, blockquote) -- Client needs CSS adaptation
   - Critical Client issue: `insertInArticleAds()` uses Markdown `## ` regex, needs migration to `<h2>` pattern
-- Admin remaining: auth, post-editor (meta/save), post-management, media upload, translation, build trigger
+- Client PlaceInfoCard: rating removed from UI, replaced with description (3줄 요약) as bullet list. StarRating.astro now unused but file kept.
+- Admin remaining: auth, post-editor (save/S3), post-management, media upload, translation (DB save), build trigger
 - CI/CD: designed (docs/ci-cd.md) -- pending se implementation
 
 ### Theme System
