@@ -21,6 +21,7 @@ export default function NewPostPage() {
   const [address, setAddress] = useState('');
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
+  const [isTranslated, setIsTranslated] = useState(false);
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -32,7 +33,11 @@ export default function NewPostPage() {
   const handleCategoryChange = (value: Category) => {
     setCategory(value);
     setSubCategory('');
+    setIsTranslated(false);
   };
+
+  const needsTranslation = !!(category && subCategory);
+  const isSubmitDisabled = needsTranslation && !isTranslated;
 
   return (
     <>
@@ -125,17 +130,20 @@ export default function NewPostPage() {
         </div>
 
         <div className="mt-10 flex items-center justify-end gap-3">
-          {category && subCategory && (
+          {needsTranslation && (
             <button
               type="button"
-              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+              onClick={() => setIsTranslated(true)}
+              disabled={isTranslated}
+              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
-              번역본 생성
+              {isTranslated ? '번역 완료' : '번역본 생성'}
             </button>
           )}
           <button
             type="button"
-            className="h-10 bg-primary-600 px-5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-primary-700"
+            disabled={isSubmitDisabled}
+            className="h-10 bg-primary-600 px-5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             작성 완료
           </button>
