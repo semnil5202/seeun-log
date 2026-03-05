@@ -36,7 +36,7 @@ export default function NewPostPage() {
 
   return (
     <>
-      <div className="mb-6">
+      <div className="mx-auto mb-6 max-w-[688px]">
         <h1 className="text-xl font-bold">게시글 작성</h1>
         <p className="mt-1 text-sm text-muted-foreground">새로운 게시글을 작성합니다.</p>
       </div>
