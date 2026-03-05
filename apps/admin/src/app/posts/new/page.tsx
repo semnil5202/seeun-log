@@ -6,8 +6,12 @@ import { Separator } from '@/components/ui/separator';
 import { CategorySelector } from '@/features/post-editor/components/CategorySelector';
 import { ThumbnailUpload } from '@/features/post-editor/components/ThumbnailUpload';
 import { TiptapEditorContainer } from '@/features/post-editor/containers/TiptapEditorContainer';
+import { extractFlaggedTerms, translatePost } from '@/features/translation/api/actions';
+import { TranslationPreviewSheet } from '@/features/translation/components/TranslationPreviewSheet';
+import { TranslationSheetContainer } from '@/features/translation/containers/TranslationSheetContainer';
 
 import type { Category, SubCategory } from '@/shared/types/post';
+import type { FlaggedTerm, TranslationResult } from '@/features/translation/types';
 
 const TITLE_MAX_LENGTH = 40;
 
@@ -22,6 +26,11 @@ export default function NewPostPage() {
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [isTranslated, setIsTranslated] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [flaggedTerms, setFlaggedTerms] = useState<FlaggedTerm[]>([]);
+  const [translationResults, setTranslationResults] = useState<TranslationResult[]>([]);
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -34,6 +43,44 @@ export default function NewPostPage() {
     setCategory(value);
     setSubCategory('');
     setIsTranslated(false);
+    setTranslationResults([]);
+  };
+
+  const handleTranslationStart = async () => {
+    setIsExtracting(true);
+
+    try {
+      const terms = await extractFlaggedTerms(
+        content,
+        placeName || undefined,
+        address || undefined,
+      );
+
+      if (terms.length === 0) {
+        const results = await translatePost({
+          title,
+          content,
+          placeName: placeName || undefined,
+          address: address || undefined,
+          confirmedTerms: [],
+        });
+        setTranslationResults(results);
+        setIsTranslated(true);
+      } else {
+        setFlaggedTerms(terms);
+        setIsSheetOpen(true);
+      }
+    } catch {
+      // TODO: 에러 처리 (toast 등)
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleTranslationComplete = (results: TranslationResult[]) => {
+    setTranslationResults(results);
+    setIsTranslated(true);
+    setIsSheetOpen(false);
   };
 
   const needsTranslation = !!(category && subCategory);
@@ -130,14 +177,23 @@ export default function NewPostPage() {
         </div>
 
         <div className="mt-10 flex items-center justify-end gap-3">
-          {needsTranslation && (
+          {needsTranslation && !isTranslated && (
             <button
               type="button"
-              onClick={() => setIsTranslated(true)}
-              disabled={isTranslated}
+              onClick={handleTranslationStart}
+              disabled={isExtracting}
               className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isTranslated ? '번역 완료' : '번역본 생성'}
+              {isExtracting ? '분석 중...' : '번역본 생성'}
+            </button>
+          )}
+          {isTranslated && (
+            <button
+              type="button"
+              onClick={() => setIsPreviewOpen(true)}
+              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+            >
+              번역본 확인하기
             </button>
           )}
           <button
@@ -149,6 +205,25 @@ export default function NewPostPage() {
           </button>
         </div>
       </div>
+
+      <TranslationSheetContainer
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        onTranslationComplete={handleTranslationComplete}
+        initialTerms={flaggedTerms}
+        title={title}
+        content={content}
+        placeName={placeName || undefined}
+        address={address || undefined}
+      />
+
+      <TranslationPreviewSheet
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        originalTitle={title}
+        originalContent={content}
+        translations={translationResults}
+      />
     </>
   );
 }
