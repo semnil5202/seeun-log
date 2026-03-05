@@ -35,8 +35,8 @@ export default function NewPostPage() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [placeName, setPlaceName] = useState('');
   const [address, setAddress] = useState('');
-  const [priceMin, setPriceMin] = useState('');
-  const [priceMax, setPriceMax] = useState('');
+  const [pricePrefix, setPricePrefix] = useState('');
+  const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummarized, setIsSummarized] = useState(false);
@@ -51,8 +51,8 @@ export default function NewPostPage() {
     setFormType(value);
     setPlaceName('');
     setAddress('');
-    setPriceMin('');
-    setPriceMax('');
+    setPricePrefix('');
+    setPrice('');
   };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -200,12 +200,12 @@ export default function NewPostPage() {
           <VisitFields
             placeName={placeName}
             address={address}
-            priceMin={priceMin}
-            priceMax={priceMax}
+            pricePrefix={pricePrefix}
+            price={price}
             onPlaceNameChange={setPlaceName}
             onAddressChange={setAddress}
-            onPriceMinChange={setPriceMin}
-            onPriceMaxChange={setPriceMax}
+            onPricePrefixChange={setPricePrefix}
+            onPriceChange={setPrice}
           />
         )}
 

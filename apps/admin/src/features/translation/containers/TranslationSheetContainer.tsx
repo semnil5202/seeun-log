@@ -89,8 +89,8 @@ export function TranslationSheetContainer({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="right" className="sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle>번역본 생성</SheetTitle>
-          <SheetDescription>
+          <SheetTitle className="text-lg">번역본 생성</SheetTitle>
+          <SheetDescription className="text-base">
             번역이 어려운 용어를 검토하고 확정 번역을 입력해주세요.
           </SheetDescription>
         </SheetHeader>

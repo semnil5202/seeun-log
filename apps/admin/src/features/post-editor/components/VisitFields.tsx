@@ -1,25 +1,25 @@
-/** 체험 방문 전용 필드 — 장소, 주소, 가격대. */
+/** 체험 방문 전용 필드 — 장소, 주소, 가격. */
 
 type VisitFieldsProps = {
   placeName: string;
   address: string;
-  priceMin: string;
-  priceMax: string;
+  pricePrefix: string;
+  price: string;
   onPlaceNameChange: (value: string) => void;
   onAddressChange: (value: string) => void;
-  onPriceMinChange: (value: string) => void;
-  onPriceMaxChange: (value: string) => void;
+  onPricePrefixChange: (value: string) => void;
+  onPriceChange: (value: string) => void;
 };
 
 export function VisitFields({
   placeName,
   address,
-  priceMin,
-  priceMax,
+  pricePrefix,
+  price,
   onPlaceNameChange,
   onAddressChange,
-  onPriceMinChange,
-  onPriceMaxChange,
+  onPricePrefixChange,
+  onPriceChange,
 }: VisitFieldsProps) {
   return (
     <div className="mt-8 space-y-4">
@@ -48,25 +48,20 @@ export function VisitFields({
         />
       </div>
       <div>
-        <div className="mb-1 flex items-baseline gap-1.5">
-          <label className="text-base font-bold">가격대</label>
-
-          <span className="text-[14px] text-muted-foreground">(단위: 만원)</span>
-        </div>
+        <label className="mb-1 block text-base font-bold">가격</label>
         <div className="flex items-center gap-2">
           <input
-            type="number"
-            value={priceMin}
-            onChange={(e) => onPriceMinChange(e.target.value)}
-            placeholder="최소"
-            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            type="text"
+            value={pricePrefix}
+            onChange={(e) => onPricePrefixChange(e.target.value)}
+            placeholder="메인메뉴 평균: "
+            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
           />
-          <span className="shrink-0 text-sm text-muted-foreground">-</span>
           <input
             type="number"
-            value={priceMax}
-            onChange={(e) => onPriceMaxChange(e.target.value)}
-            placeholder="최대"
+            value={price}
+            onChange={(e) => onPriceChange(e.target.value)}
+            placeholder="금액 (원)"
             className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
         </div>

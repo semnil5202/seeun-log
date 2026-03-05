@@ -38,7 +38,7 @@ export function TermReviewItem({ term, confirmedValue, onChange }: TermReviewIte
           type="text"
           value={confirmedValue}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="확정 번역을 입력해주세요."
+          placeholder="확정 번역을 영어로 입력하세요."
           className="mt-1 h-8 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
         />
       </div>
