@@ -226,6 +226,15 @@ export default function NewPostPage() {
         </div>
 
         <div className="mt-10 flex items-center justify-end gap-3">
+          {needsTranslation && !isTranslated && flaggedTerms.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setIsSheetOpen(true)}
+              className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+            >
+              용어 검토 계속하기
+            </button>
+          )}
           {needsTranslation && !isTranslated && (
             <button
               type="button"
