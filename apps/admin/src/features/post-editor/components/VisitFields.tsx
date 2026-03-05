@@ -53,11 +53,11 @@ export function VisitFields({ register, errors }: VisitFieldsProps) {
           />
         </div>
         <div className="grow basis-0">
-          <div className="mb-1 flex items-baseline gap-1.5">
+          <div className="mb-1 flex items-baseline justify-between">
             <label className="text-base font-bold">
               금액 <span className="text-primary-600">*</span>
             </label>
-            <span className="text-[14px] text-muted-foreground">(단위: 만원)</span>
+            <span className="text-[12px] text-muted-foreground">(단위: 만원)</span>
           </div>
           <input
             type="number"
