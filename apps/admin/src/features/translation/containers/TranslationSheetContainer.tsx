@@ -87,7 +87,7 @@ export function TranslationSheetContainer({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent side="right" className="sm:max-w-lg">
+      <SheetContent side="right" className="w-full sm:max-w-[688px]">
         <SheetHeader>
           <SheetTitle className="text-lg">번역본 생성</SheetTitle>
           <SheetDescription className="text-base">

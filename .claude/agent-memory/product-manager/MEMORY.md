@@ -40,14 +40,14 @@
   - 3줄 요약: generateSummary Server Action (mock), textarea + AI button
   - Toolbar now includes TextAlign (Left/Center/Right/Justify) + 13 SVG icons
   - Translation: extractFlaggedTerms + translatePost Server Actions, TranslationSheetContainer (0.8s auto-close), TranslationPreviewSheet (8 locale filter tabs, default en)
-  - Form validation: runtime check (all required fields + visit fields + translation), "작성 완료" button disabled until all pass
+  - Form validation: react-hook-form + Zod (mode: 'onSubmit'). Buttons always enabled, click triggers Zod validation -> focus + error message. Korean error messages in Zod schema.
   - Label style: all labels `text-base font-bold` black + required `*` primary-600
   - Loading spinners: LoaderIcon animate-spin on summary/translation buttons
-  - Translation UX: "용어 검토 계속하기" button for sheet re-open, 3줄 요약 empty disables translation
+  - Translation UX: "용어 검토 계속하기" button for sheet re-open. "번역본 생성하기" always enabled (no description.trim() disabled), validates via Zod on click
 - Image insert: CustomResizableImage (DOM NodeView, 4-corner resize handles, width % storage), UploadImage toolbar (blob URL temp)
 - Tiptap HTML output uses inline styles -- critical Client impact: `insertInArticleAds()` needs `<h2>` regex migration
 - Price field: price_prefix (text, optional) + price (number, required for visit). Display: "${prefix}${price.toLocaleString()}원"
-- Remaining: Zod validation, S3 upload, save action, edit page, Placeholder ext, toggles (sponsored/recommended/multilingual), rating, slug auto-gen
+- Remaining: S3 upload, save action, edit page, Placeholder ext, toggles (sponsored/recommended/multilingual), rating, slug auto-gen
 - Pending DB migrations: posts (price_prefix, price ADD + price_min, price_max DROP), post_translations (place_name, address ADD)
 
 ## Client PlaceInfoCard Changes (2026-03-05)
@@ -66,6 +66,7 @@
 
 - `docs/place-i18n-specs.md` — place_name/address i18n (2026-03-05, updated 2026-03-05): DB schema change (post_translations add place_name, address nullable), LocalizedPost type adds translated_place_name/translated_address (separate from original), PlaceInfoCard shows translation + copies Korean original, Toast on non-ko copy, JSON-LD keeps Korean original, PlaceInfoCard field labels i18n'd (place.category/name/address/price/copyToast keys), search/feed data use translated place_name. Place i18n Client-side implementation completed (all TODO items checked except DB ALTER and Admin GPT-5 Nano pipeline).
 - `docs/api-specs.md` — Admin API specs (also updated GPT-4o -> GPT-5 Nano)
+- `docs/gpt-prompts.md` — GPT prompt design doc (summary generation, term extraction, post translation)
 
 ## Documentation Patterns
 
