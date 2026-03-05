@@ -47,8 +47,8 @@ export function TranslationPreviewSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-[688px]">
         <SheetHeader>
-          <SheetTitle>번역본 확인</SheetTitle>
-          <SheetDescription>한국어 원문과 다국어 번역본을 확인합니다.</SheetDescription>
+          <SheetTitle className="text-lg">번역본 확인</SheetTitle>
+          <SheetDescription className="text-base">한국어 원문과 다국어 번역본을 확인합니다.</SheetDescription>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4">
@@ -58,7 +58,7 @@ export function TranslationPreviewSheet({
                 key={key}
                 type="button"
                 onClick={() => setSelected(key)}
-                className={`px-3 py-1 text-xs font-semibold transition-colors ${
+                className={`px-3 py-1 text-sm font-semibold transition-colors ${
                   selected === key
                     ? 'bg-primary-600 text-white'
                     : 'border border-input text-muted-foreground hover:bg-accent'
@@ -73,23 +73,23 @@ export function TranslationPreviewSheet({
             {selected === 'ko' ? (
               <>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">제목</label>
+                  <label className="text-sm font-semibold text-muted-foreground">제목</label>
                   <p className="mt-1 text-lg font-bold">{originalTitle}</p>
                 </div>
                 {originalPlaceName && (
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">장소</label>
+                    <label className="text-sm font-semibold text-muted-foreground">장소</label>
                     <p className="mt-1 text-sm">{originalPlaceName}</p>
                   </div>
                 )}
                 {originalAddress && (
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">주소</label>
+                    <label className="text-sm font-semibold text-muted-foreground">주소</label>
                     <p className="mt-1 text-sm">{originalAddress}</p>
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">본문</label>
+                  <label className="text-sm font-semibold text-muted-foreground">본문</label>
                   <div
                     className="prose prose-sm mt-1 max-w-none"
                     dangerouslySetInnerHTML={{ __html: originalContent }}
@@ -99,23 +99,23 @@ export function TranslationPreviewSheet({
             ) : selectedTranslation ? (
               <>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">제목</label>
+                  <label className="text-sm font-semibold text-muted-foreground">제목</label>
                   <p className="mt-1 text-lg font-bold">{selectedTranslation.title}</p>
                 </div>
                 {selectedTranslation.place_name && (
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">장소</label>
+                    <label className="text-sm font-semibold text-muted-foreground">장소</label>
                     <p className="mt-1 text-sm">{selectedTranslation.place_name}</p>
                   </div>
                 )}
                 {selectedTranslation.address && (
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">주소</label>
+                    <label className="text-sm font-semibold text-muted-foreground">주소</label>
                     <p className="mt-1 text-sm">{selectedTranslation.address}</p>
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">본문</label>
+                  <label className="text-sm font-semibold text-muted-foreground">본문</label>
                   <div
                     className="prose prose-sm mt-1 max-w-none"
                     dangerouslySetInnerHTML={{ __html: selectedTranslation.content }}
