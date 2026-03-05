@@ -17,9 +17,9 @@
 
 ### Image Style
 
-- 이미지/썸네일에 `border-radius` 적용하지 않는다 (sharp corners).
-- 빠르고 간결한 인상을 위한 의도적 선택.
-- 애드센스 플레이스홀더도 동일하게 `rounded-none` 적용.
+- Client 앱 전체 `border-radius`가 테마 레벨에서 `0px` (`global.css`의 `@theme inline`).
+- 별도의 `rounded-none` 클래스 불필요.
+- 상세: [`docs/theme.md`](theme.md) Border Radius 섹션 참조.
 
 ## Categories
 

@@ -1,6 +1,17 @@
 @import 'tailwindcss';
 @import '@eunminlog/config/theme.css';
 
+@theme inline {
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
 [itemprop='articleBody'] img,
 img[data-lightbox] {
   cursor: pointer;
