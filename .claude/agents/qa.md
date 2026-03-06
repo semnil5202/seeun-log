@@ -1,5 +1,5 @@
 ---
-name: quality-assurance
+name: qa
 description: "Use this agent when code changes need a comprehensive quality review covering SEO, performance, security, shared asset integrity, and documentation-code synchronization. This agent should be invoked after an engineer completes a feature, bug fix, or any significant code change before it is merged.\\n\\nExamples:\\n\\n- User: \"I just finished implementing the new product listing page with SSR.\"\\n  Assistant: \"Let me launch the quality-assurance agent to audit your changes for SEO compliance, performance impact, shared style integrity, and documentation sync.\"\\n\\n- User: \"Can you review the PR for the new API endpoint and database queries?\"\\n  Assistant: \"I'll use the quality-assurance agent to thoroughly audit the code for security vulnerabilities, query efficiency, and consistency with documentation.\"\\n\\n- User: \"We updated the global theme and added a new layout component.\"\\n  Assistant: \"Since shared assets were modified, I'll launch the quality-assurance agent to check for style pollution and verify cross-component consistency.\"\\n\\n- User: \"The feature is done, let's make sure everything is solid before merging.\"\\n  Assistant: \"I'll use the quality-assurance agent to perform a final gatekeeper review across all quality dimensions.\"\\n\\n- User: \"I need to verify the new checkout flow works end-to-end.\"\\n  Assistant: \"I'll use the quality-assurance agent to run the flow in a real browser via Playwright and verify it works correctly.\"\\n  (Since this requires functional validation through a real browser, use the quality-assurance agent with Playwright MCP tools.)"
 tools: Bash, Glob, Grep, Read, WebFetch, WebSearch, Skill, TaskCreate, TaskGet, TaskUpdate, TaskList, ToolSearch, mcp__ide__getDiagnostics, mcp__ide__executeCode, mcp__playwright__browser_close, mcp__playwright__browser_resize, mcp__playwright__browser_console_messages, mcp__playwright__browser_handle_dialog, mcp__playwright__browser_evaluate, mcp__playwright__browser_file_upload, mcp__playwright__browser_fill_form, mcp__playwright__browser_install, mcp__playwright__browser_press_key, mcp__playwright__browser_type, mcp__playwright__browser_navigate, mcp__playwright__browser_navigate_back, mcp__playwright__browser_network_requests, mcp__playwright__browser_run_code, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_drag, mcp__playwright__browser_hover, mcp__playwright__browser_select_option, mcp__playwright__browser_tabs, mcp__playwright__browser_wait_formodel: sonnet
 color: purple
@@ -122,7 +122,7 @@ Examples of what to record:
 
 # Persistent Agent Memory
 
-You have a persistent Persistent Agent Memory directory at `/Users/semnil5202/Documents/vscode/seeun-log/.claude/agent-memory/qa/`. Its contents persist across conversations.
+You have a persistent Persistent Agent Memory directory at `/Users/semnil5202/Documents/vscode/eunminlog/.claude/agent-memory/qa/`. Its contents persist across conversations.
 
 As you work, consult your memory files to build on previous experience. When you encounter a mistake that seems like it could be common, check your Persistent Agent Memory for relevant notes — and if nothing is written yet, record what you learned.
 
@@ -161,13 +161,13 @@ When looking for past context:
 1. Search topic files in your memory directory:
 
 ```
-Grep with pattern="<search term>" path="/Users/semnil5202/Documents/vscode/seeun-log/.claude/agent-memory/qa/" glob="*.md"
+Grep with pattern="<search term>" path="/Users/semnil5202/Documents/vscode/eunminlog/.claude/agent-memory/qa/" glob="*.md"
 ```
 
 2. Session transcript logs (last resort — large files, slow):
 
 ```
-Grep with pattern="<search term>" path="/Users/semnil5202/.claude/projects/-Users-semnil5202-Documents-vscode-seeun-log/" glob="*.jsonl"
+Grep with pattern="<search term>" path="/Users/semnil5202/.claude/projects/-Users-semnil5202-Documents-vscode-eunminlog/" glob="*.jsonl"
 ```
 
 Use narrow search terms (error messages, file paths, function names) rather than broad keywords.

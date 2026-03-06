@@ -4,8 +4,9 @@
 
 Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 
-- `apps/admin` — Next.js 15, App Router, CSR, port 3001
+- `apps/admin` — Next.js 15, App Router, CSR, HTTPS dev at local-admin.eunminlog.site:4322
 - `apps/client` — Astro 5 SSG, Tailwind CSS, React islands only for interactivity
+- DB: Supabase PostgreSQL (mock data 기반 개발)
 
 ## Key Architecture Patterns
 
@@ -13,7 +14,10 @@ Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 - **No infinite scroll** anywhere — strictly forbidden per ui-specs.md.
 - **Responsive toggle**: `hidden lg:block` / `block lg:hidden` CSS-only. Never two separate HTML structures.
 - **Mobile In-Feed Ads**: index 1 and 3 in feed, `block lg:hidden` only.
-- **@/ path alias** maps to `./src/*` in client app.
+- **@/ path alias** maps to `./src/*` in both apps.
+- **Admin Feature pattern**: Feature → Container → Component. containers/ = hooks + children composition, components/ = pure UI (props → JSX).
+- **Layout chain (client)**: `PostLayout.astro` → `Layout.astro` → `BaseHead.astro` → `Hreflang.astro`
+- **Header chain (client)**: `Layout.astro` → `Header.astro` → `PCHeader.astro`/`MobileHeader.astro` → `LanguageSelector.astro`
 
 ## Component Conventions (apps/client)
 
@@ -24,7 +28,17 @@ Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 - Images: always explicit `width="640" height="360"`, `aspect-video` container for CLS prevention.
 - Title in `<h2>`, description with `line-clamp-2`.
 
-## i18n Helpers (apps/client)
+## i18n Patterns
+
+- Default locale: `ko` (no prefix). Others: `/en/`, `/ja/`, `/zh-CN/`, `/zh-TW/`, `/id/`, `/vi/`, `/th/`
+- `is_multilingual: boolean` on Post type controls multilingual behavior
+- `is_multilingual: false` → no locale paths, no hreflang tags, excluded from multilingual feeds/search
+- Korean (ko) paths always generated regardless of `is_multilingual`
+- LanguageSelector: `isMultilingual=false` → non-ko buttons are `disabled` (CSS opacity + cursor-not-allowed) with CSS-only tooltip
+- Locale category/sub-category paths not generated if no multilingual posts exist (filtered in getStaticPaths)
+- PCHeader/MobileHeader/CategoryTree filter categories by `getMultilingualCategories()` when `locale !== 'ko'`
+
+### i18n Helpers
 
 - `getLocalePath(path, locale)` — prepends locale prefix for non-Korean. Korean = no prefix.
 - `getCategoryLabel(category, locale)` — localized category name.
@@ -33,10 +47,10 @@ Couple's blog platform. Monorepo: pnpm workspaces + Turbo.
 
 ## Types
 
-Type files live at `src/shared/types/` (moved from `src/types/`). Always import via `@/shared/types/`.
+Type files live at `src/shared/types/` in both apps. Always import via `@/shared/types/`.
 
 - `Post` from `@/shared/types/post` — includes `is_sponsored`, `is_recommended`, `rating`, `category`, `sub_category`, `slug`, `thumbnail`.
-- `LocalizedPost` from `@/shared/types/post` (NOT `@/shared/types/common`) — extends Post with `locale` field.
+- `LocalizedPost` from `@/shared/types/post` — extends Post with `locale` field.
 - `BreadcrumbItem` from `@/shared/types/seo` — `{ name: string; url: string }`.
 - `Locale` from `@/shared/types/common` — 8 locales, default `"ko"`.
 - `CategorySlug` — `"delicious" | "cafe" | "travel"`. From `@/shared/types/category`.
@@ -67,63 +81,35 @@ Always trailing slash.
 
 ## Data Layer (apps/client)
 
-- `src/lib/mock/posts.ts` — `MOCK_POSTS: Post[]`, 12 posts across all categories
-- `src/lib/mock/translations.ts` — `MOCK_TRANSLATIONS: PostTranslation[]`, 3 entries (post-1/en, post-11/en, post-11/ja)
+- `src/features/post-feed/mock/posts.ts` — `MOCK_POSTS: Post[]`, 12 posts across all categories
+- `src/lib/mock/translations.ts` — `MOCK_TRANSLATIONS: PostTranslation[]`
 - `src/lib/api/posts.ts` — all async query functions (getAllPosts, getPostsByCategory, etc.). Default perPage=9.
 - `src/lib/api/translations.ts` — getTranslation, getTranslationsForPost, getLocalizedPost
 - All API functions are async even in mock mode for drop-in Supabase migration
 - Sort: newest-first `created_at DESC` throughout
-- `getLocalizedPost` fallback: no translation → original Korean content + requested locale tag
-
-## Supabase Index Notes (docs/database.md)
-
-- slug: unique index
-- category, (category, sub_category): compound index
-- is_sponsored, is_recommended: single-column boolean indexes
-- created_at: sort index
-- post_translations(post_id, locale): unique compound index
+- Multilingual-aware functions: `getMultilingualPosts`, `getPaginatedMultilingualPosts`, etc.
+- `getMultilingualCategories()` → CategorySlug[] with ≥1 multilingual post
 
 ## Layout Shell (apps/client) — BUILT
 
-Key files and their relationships:
-
 - `src/layouts/ListLayout.astro` — list page entry: Layout > ThreeColumnLayout > slot
 - `src/layouts/Layout.astro` — HTML shell: BaseHead + Header + slot + Footer. Has `<slot name="head" />` inside `<head>` for JSON-LD injection.
-- `src/layouts/PostLayout.astro` — post detail layout: Layout (single-column, no sidebars). Props: post, locale, breadcrumbs, canonical, path.
-- `src/components/layout/Header.astro` — sticky wrapper: `hidden lg:block` PCHeader + `block lg:hidden` MobileHeader
-- `src/components/layout/PCHeader.astro` — desktop: logo + category nav + `<details>` language dropdown + search
-- `src/components/layout/MobileHeader.astro` — mobile: logo + snap-scroll nav pills + lang/search icons
-- `src/components/layout/LeftSidebar.astro` — PC only `hidden lg:block`; sticky CategoryTree
-- `src/components/layout/RightSidebar.astro` — PC only `hidden lg:block`; props: sponsoredPosts + recommendedPosts
-- `src/components/layout/ThreeColumnLayout.astro` — grid `grid-cols-1 lg:grid-cols-[240px_1fr_280px]`
-- `src/components/layout/Footer.astro` — copyright always; mobile CategoryTree sitemap `block lg:hidden`
-- `src/components/navigation/CategoryTree.astro` — shared; LeftSidebar (PC LNB) + Footer (mobile SEO)
+- `src/layouts/PostLayout.astro` — post detail layout: Layout (single-column, no sidebars).
+- PC language dropdown: `<details>`/`<summary>` — zero JS, keyboard accessible
+- LeftSidebar: `sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto` for independent scrolling
 
 ## Pages & Routing (apps/client) — BUILT
 
-All 7 page files + PostLayout built. 137 pages generated at build time.
+All 7 page files + PostLayout built. 137+ pages generated at build time.
 
-- `src/pages/index.astro` — Korean home (/)
-- `src/pages/[locale]/index.astro` — i18n home (/{locale}/)
-- `src/pages/[category]/index.astro` — Korean category (/{category}/)
-- `src/pages/[category]/[sub_category]/index.astro` — Korean subcategory
-- `src/pages/[category]/[sub_category]/[slug].astro` — Korean post detail
-- `src/pages/[locale]/[category]/index.astro` — i18n category
-- `src/pages/[locale]/[category]/[sub_category]/[slug].astro` — i18n post detail
+## Build Command
 
-Key page patterns:
+```bash
+pnpm --filter @eunminlog/client build
+```
 
-- `canonical` = full locale-aware path (e.g. `/en/delicious/`)
-- `path` = locale-agnostic path (e.g. `/delicious/`) — used by BaseHead > Hreflang for all locale variants
-- Korean cast Post→LocalizedPost: `{ ...post, locale: "ko" }` (no translation fetch needed)
-- Parallel fetch: `await Promise.all([getPaginatedPosts(1), getSponsoredPosts(), getRecommendedPosts()])`
-- BreadcrumbJsonLd injection: `<BreadcrumbJsonLd slot="head" items={breadcrumbItems} />`
-- PostLayout uses `<Fragment slot="head">` to inject both BreadcrumbJsonLd + BlogPostingJsonLd
+## Comment Policy
 
-Key layout patterns:
-
-- PC language dropdown: `<details>`/`<summary>` — zero JS, keyboard accessible
-- LeftSidebar: `sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto` for independent scrolling
-- Both PCHeader + MobileHeader always in DOM; CSS-only toggles — crawlers see both
-
-See `docs/ui-specs.md`, `docs/seo-strategy.md`, `docs/database.md`, `docs/architecture.md` for full specs.
+- No `// PERF:`, `// SEO:`, `// COST:` tags in code
+- Pages: 1-line JSDoc at file top only
+- Components: 1-2 line JSDoc describing what it does

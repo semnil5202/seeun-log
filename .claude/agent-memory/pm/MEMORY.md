@@ -1,127 +1,105 @@
 # Product Manager Agent Memory
 
-## Project: eunminlog (은민로그)
+## Project Context
 
-### Key Facts
+- **Project**: eunminlog (couple blog platform)
+- **Key docs**: `docs/admin-specs.md`, `docs/architecture.md`, `docs/database.md`, `docs/ui-specs.md`, `docs/seo-strategy.md`, `docs/theme.md`, `docs/ga4-tracking.md`, `docs/ci-cd.md`, `docs/TODO.md`
 
-- Couple blog platform: 맛집/카페/여행 reviews
+## User Decisions (confirmed)
+
+- Admin auth: Supabase Auth email/password (no social login, no signup flow, 1-2 users)
+- Editor: Tiptap (HTML output, not Markdown)
+- CSR-first: Server Action only for presigned URL, Supabase writes, GitHub token, GPT API calls
+- GPT-5 Nano translation+summary+term extraction: Server Action calls (not CSR). `OPENAI_API_KEY` server-only env. `shared/lib/openai.ts` shared client. temperature not supported (default 1). `response_format: { type: 'json_object' }`. 7 locales parallel via `Promise.allSettled`. Partial failure allowed (`TranslationResult.failed?: boolean`). `retrySingleLocale` for individual locale retry.
+- Media gallery: Tiptap manages image insert/delete/order, Client renders consecutive images as CSS snap gallery (B approach)
+- Vercel Hobby plan is sufficient for admin
+- Content format: HTML (Tiptap) -- database.md already updated to "HTML"
+- Admin route structure: flat (no route groups), sidebar globally applied
+- No Co-Authored-By in commits
+- shadcn/ui for admin UI components (Radix UI + Tailwind)
+
+## Architecture Notes
+
+- Admin: Next.js 15, App Router, React 19, HTTPS dev at local-admin.eunminlog.site:4322 (mkcert)
+- Admin UI: shadcn/ui components at src/components/ui/, shared components at src/shared/
+- Admin layout: SidebarLayout (client component) wraps all pages, AppSidebar with 5 nav groups
+- Client: Astro 5 SSG (already implemented), HTTPS dev at local-client.eunminlog.site:4321 (mkcert + Vite)
+- Both apps: `pnpm setup:local` (root) runs setup scripts for both
+- DB: Supabase PostgreSQL (posts + post_translations + categories tables)
+- Media: S3 `media-eunminlog` bucket, CloudFront `media.eunminlog.site`
+- CI/CD: GitHub Actions workflow_dispatch for build trigger
+- Global UI pattern: Layout.astro contains 1x Toast + 1x ImageLightbox + 1x CookieConsentBanner (shared/components/ui/ + features/consent/)
+- Logo text: `SITE_NAME_KO`("은민로그") for ko, `SITE_NAME_EN`("eunminlog") for others (packages/config/site.ts)
+
+## Admin Phase Status (as of 2026-03-06)
+
+- Phase 1 completed: Supabase client, types, HTTPS dev server (--experimental-https), sidebar, metrics page (mock, RHF), SearchFilter (RHF register props), shadcn components, ESLint config
+- Phase 3 (major progress): Tiptap editor + form type + meta form + translation integration
+  - Form type: `PostFormType = 'visit' | 'product-review'` -- UI-only concept (not stored in DB)
+  - Layout order: 폼형식 -> 썸네일 -> 본문(title+editor) -> 카테고리 -> [visit전용필드] -> 3줄요약 -> 액션버튼
+  - New components: CategorySelector, ThumbnailUpload (WebP convert), VisitFields (place/address/price)
+  - 3줄 요약: generateSummary Server Action (GPT-5 Nano API 연동 완료), textarea + AI button
+  - Toolbar now includes TextAlign (Left/Center/Right/Justify) + 13 SVG icons
+  - Translation: extractFlaggedTerms + translatePost + retrySingleLocale Server Actions, TranslationSheetContainer (0.8s auto-close), TranslationPreviewSheet (8 locale filter tabs, default en, failed locale retry button)
+  - GPT-5 Nano API fully integrated (mock removed): summary, term extraction, translation all use real API
+  - Translation performance: 7 locales parallel via Promise.allSettled, partial failure allowed, description included in translation, address locale-specific formatting
+  - Failure fallback: toast.error on summary/extraction/translation failure, "번역본 재생성하기" button text change on extraction failure, per-locale retry in preview sheet
+  - Form validation: react-hook-form + Zod (mode: 'onSubmit'). Buttons always enabled, click triggers Zod validation -> focus + error message. Korean error messages in Zod schema.
+  - Label style: all labels `text-base font-bold` black + required `*` primary-600
+  - Loading spinners: LoaderIcon animate-spin on summary/translation buttons
+  - Translation UX: "용어 검토 계속하기" button for sheet re-open. "번역본 생성하기" always enabled (no description.trim() disabled), validates via Zod on click
+- Post list page (`/posts`): SearchFilter (RHF) + table (title/published/modified) + sort dropdown (newest published/newest modified) + "새 글 작성" button. Sidebar routing updated: "게시글 작성/수정/삭제" -> `/posts`
+- Category management page (`/categories`): SearchFilter.Query only, grouped parent-child table, "새 카테고리 생성" button, no pagination (pageSize 100)
+- Image insert: CustomResizableImage (DOM NodeView, 4-corner resize handles, width % storage), UploadImage toolbar (blob URL temp)
+- Tiptap HTML output uses inline styles -- critical Client impact: `insertInArticleAds()` needs `<h2>` regex migration
+- Price field: price_prefix (text, optional) + price (number, required for visit). Display: "${prefix}${price.toLocaleString()}원"
+- Admin toast: sonner library (`<Toaster position="top-right" richColors />` in layout.tsx)
+- Admin button: cursor-pointer default, search button variant="outline"
+- Remaining: S3 upload, save action, edit page, delete, Placeholder ext, toggles (sponsored/recommended/multilingual), rating, slug auto-gen, translation DB save
+- Pending DB migrations: M-03~M-07 (price fields, category enum->text, categories table, index redesign). See docs/database.md Section 7
+- Phase 5-1 completed: SearchFilter compound component refactoring (DateRange + Query sub-components) + Pagination shared component (max 9 pages, ellipsis group navigation, URL page query)
+- Phase 5-2 completed: Category management page (`/categories`) -- group table (category/sub rows), SearchFilter.Query only, mock data, pageSize 100 (no pagination)
+- Phase 5-3 completed: Applied Pagination to `/posts` + `/` pages (pageSize 10)
+- admin-specs.md Section 4-7: category-management feature spec (CM-1~CM-4), Section 5-4: SearchFilter compound pattern, Section 5-5: Pagination spec
+
+## Client PlaceInfoCard Changes (2026-03-05, updated 2026-03-06)
+
+- rating prop removed, replaced with description prop (3줄 요약) + translatedDescription
+- StarRating.astro no longer imported (file kept for future use, still used in schema.ts JSON-LD)
+- description displayed as `\n`-split `⋅` bullet list with `post.summary` i18n label (8 locales)
+- border-radius removed, dt width w-20 (80px)
+- copy buttons use `data-copy` + `data-toast` pattern (Toast.astro event delegation)
+- Toast.astro: duration 4s, whitespace-pre-line for multiline messages
+- Translation key: `place.copyToast` (NOT `place.copyOriginal` -- specs updated 2026-03-05)
+- Price: `place.currency` i18n (원/won/ウォン etc.) + `place.targetCurrency` for Google currency converter link
+- NearbyPostList: `nearbyLabel` prop removed
+- Sponsor page: "협찬 리뷰" -> "제품 리뷰" naming in content.ts
+
+## Feature Specs Created
+
+- `docs/place-i18n-specs.md` — place_name/address i18n (2026-03-05, updated 2026-03-05)
+- `docs/api-specs.md` — Admin API specs (GPT-5 Nano, 번역 파이프라인 GPT/DB 분리, 카테고리 CRUD, listPosts pagination)
+- `docs/gpt-prompts.md` — GPT prompt design doc (summary generation, term extraction, post translation)
+- `docs/cookie-consent-specs.md` — Cookie Consent + AdSense NPA 연동 (2026-03-06, 구현 완료)
+
+## Key Business Rules
+
+- Categories: delicious (한식/양식/일식/주점), cafe (핫플/카공), travel (국내/해외/숙소)
+- URL: /{category}/{sub_category}/{slug} (ko), /{locale}/{category}/{sub_category}/{slug} (i18n)
+- Content types: normal, sponsored (is_sponsored), editor's pick (is_recommended)
 - Monetization: Sponsored content + ad placement (SEO-driven traffic)
 - Authors: Semin & Chaeun (2-person admin team)
-- License: MIT, owner: 이세민
+- Strict UI rules: NO hamburger menu, NO drawer, NO infinite scroll
 
-### Architecture
-
-- Monorepo: pnpm workspaces + TurboRepo
-- apps/admin: Next.js 15 (App Router, React 19) -- CSR + Server Action, HTTPS dev at local-admin.eunminlog.site:4322, shadcn/ui, flat route structure
-- apps/client: Astro 5 -- SSG only, port 4321
-- DB: Supabase PostgreSQL, `posts` + `post_translations` tables
-- AI: OpenAI GPT-5 Nano for multilingual translation + summary (currently mock, OPENAI_API_KEY env needed)
-- Deploy: GitHub Actions -> Astro SSG build -> AWS S3 + CloudFront
-- Shared packages: tsconfig, eslint-config, config (future: types, ui)
-- Styling: Tailwind CSS v4, shared theme via @eunminlog/config/theme.css (@theme inline)
-
-### Current Status (as of 2026-03-04)
-
-- Phase: Client app complete (208 pages), Admin Phase 1 complete
-- Client: monorepo, shared packages, docs, Tailwind v4 theme, all UI components, all page routes (ko + 7 locales), GA4 tracking implemented
-- Client features: post-feed, post-detail, search -- all mock data (Supabase connection pending)
-- Admin Phase 1 completed:
-  - Supabase client setup (browser lazy init + server service role)
-  - Shared types (Post, PostTranslation, Category, SubCategory, TranslationLocale)
-  - HTTPS local dev server (mkcert, local-admin.eunminlog.site:4322)
-  - shadcn/ui components (sidebar, button, input, table, select, calendar, popover, collapsible, separator, sheet, skeleton, tooltip)
-  - Global sidebar (AppSidebar -- 5 nav groups, Collapsible, logo)
-  - Metrics page (/ -- mock data, SearchFilter + sort dropdown + Table)
-  - Flat route structure (no route groups), placeholder pages for /dashboard, /posts/new, /posts/[id]/edit
-  - SearchFilter as shared/global component (date range + search + children extension)
-- Admin Phase 3 (major progress): Tiptap editor + form type + meta form + translation integration
-  - Completed: FormType select (visit/product-review), CategorySelector, ThumbnailUpload (WebP), VisitFields, 3줄 요약 (textarea + AI mock), TextAlign toolbar, 13 SVG icons, image insert (CustomResizableImage with 4-corner resize)
-  - Translation: extractFlaggedTerms + translatePost Server Actions, TranslationSheetContainer (2-step: term review -> translate), TranslationPreviewSheet (7 locale preview)
-  - Post-editor remaining: Zod validation, S3 upload, save action, edit page, Placeholder ext, toggles (sponsored/recommended/multilingual), rating input, slug auto-gen
-  - HTML output: inline styles on all elements (headings, links, lists, blockquote) -- Client needs CSS adaptation
-  - Critical Client issue: `insertInArticleAds()` uses Markdown `## ` regex, needs migration to `<h2>` pattern
-- Client PlaceInfoCard: rating removed from UI, replaced with description (3줄 요약) as bullet list. StarRating.astro now unused but file kept.
-- Admin remaining: auth, post-editor (save/S3), post-management, media upload, translation (DB save), build trigger
-- CI/CD: designed (docs/ci-cd.md) -- pending se implementation
-
-### Theme System
+## Theme System
 
 - Primary: Sage Green (base #A6BAA1, logo #6F8B68)
 - Secondary: Soft Coral (base #D4A594, for sponsored/pick UI)
-- Mapping: rose->primary, amber(sponsored)->secondary, amber(rating)->yellow, gray->gray
-- Semantic tokens: primary/secondary aliases, label, line, background
-- Documented in docs/theme.md
 
-### Key Business Rules
+## Documentation Patterns
 
-- Categories: delicious (한식/양식/일식/주점), cafe (핫플/카공), travel (국내/해외/숙소)
-- URL: /{category}/{sub_category}/{slug}
-- Content types: normal, sponsored (is_sponsored), editor's pick (is_recommended)
-- Strict UI rules: NO hamburger menu, NO drawer, NO infinite scroll
-- PC: 3-column (left sidebar + main feed + right sidebar)
-- Mobile: snap scroll header nav, SubCategoryTabs on category pages, in-feed ads at index 1,5, footer with full subcategory links
-
-### Documentation
-
-- docs/architecture.md -- system architecture, deploy flow
-- docs/ui-specs.md -- PC/Mobile layout rules, component specs
-- docs/database.md -- DB schema, index recommendations
-- docs/seo-strategy.md -- SEO, JSON-LD, URL structure, image optimization
-- docs/theme.md -- color palette, semantic tokens, usage guide
-- docs/ga4-tracking.md -- GA4 event tracking strategy, event schema, implementation guide
-- docs/ci-cd.md -- GitHub Actions CI/CD pipeline design (deploy-client.yml)
-
-### Search Feature Decisions
-
-- Client-side search: all posts embedded as JSON at build time, JS filters by title/description/place_name
-- No server-side search, no DB queries at runtime
-- Search triggered on Enter (form submit), not real-time
-- URL updated via history.replaceState with ?q= param
-- noindex, follow -- search results not crawled
-- In-feed Adsense at result index 1 and 5
-- Suggested keywords: place_name + category labels extracted at build time
-- Headers (PC + Mobile): zero JavaScript, search button is simple <a> link to /search/
-
-### AdSense Specifications
-
-- PostLayout Fixed: mobile 300x50, PC 468x60 (centered)
-- RightSidebar Fixed: 300x250 (PC only, sticky)
-- In-Article: fluid h-300px, inserted before 2nd and last ## heading sections
-- In-feed: fluid h-250px, at card index 1 and 3 (feed + search results)
-
-### GA4 Analytics
-
-- Measurement ID: G-QX8XPFX6YK (packages/config/site.ts)
-- gtag.js installed in Layout.astro -- basic page_view auto-collected
-- Strategy: gtag API direct calls (no React-based libraries)
-- Events: Enhanced page_view (custom params), select_content (card click), ad_impression/ad_view/ad_click
-- Implementation pattern: event delegation for clicks, IntersectionObserver for ad tracking
-- Analytics code goes in shared/lib/analytics/ (gtag.ts, post-tracker.ts, ad-tracker.ts)
-- 14 custom dimensions to register in GA4 console
-
-### CI/CD
-
-- Pipeline: GitHub Actions, single workflow `deploy-client.yml`
-- Branch strategy: main -> prod (prod-eunminlog-static), develop -> dev (dev-eunminlog-static)
-- AWS region: ap-northeast-2, CloudFront OAC, S3 public access blocked
-- SITE_URL: needs env var support in astro.config.mjs (process.env.SITE_URL fallback to packages/config/site.ts)
-- Supabase env vars: not needed yet (mock data), add when Supabase integration is done
-- Secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PROD/DEV_CLOUDFRONT_DISTRIBUTION_ID
-
-### Multilingual Conditional Processing (is_multilingual)
-
-- Decision date: 2026-03-03 (updated approach)
-- `posts.is_multilingual` (boolean, default true): controls per-post multilingual support
-- false = Korean-only: no locale routes for post detail, no hreflang, no translation, no card in locale lists
-- LanguageSelector: disabled state (CSS-only tooltip) for non-ko buttons on non-multilingual posts -- NO fallback page
-- `/not-available/` page to be deleted (replaced by LanguageSelector disabled state)
-- Locale nav filtering: hide categories/subcategories with 0 multilingual posts from sidebar/header on locale pages
-- Locale path generation: category/subcategory index locale routes only generated when multilingual posts >= 1 in that classification
-- Home (`/{locale}/`) always generated regardless
-- Empty feed state: "Content coming soon" message when category/subcategory feed is empty (locale-translated)
-- Non-multilingual posts excluded from locale feed JSON and locale search data
-- Implementation order: Client mock first -> DB migration + Admin UI later (tracked in docs/TODO.md)
-
-### Open Design Questions
-
-- No tags/keywords table defined (but "Popular Tags" mentioned in UI specs)
+- All docs in Korean with English technical terms
+- docs/TODO.md: checklist format with Phase sections (completed/remaining), cross-references to spec docs
+- Feature specs use table-based requirement IDs (AUTH-1, PE-1, MEDIA-1 etc.)
+- Server Action vs CSR distinction table in each feature section
+- admin-specs.md Section 10: implementation order table with status column
