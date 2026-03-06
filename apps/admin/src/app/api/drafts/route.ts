@@ -28,6 +28,8 @@ export async function POST(request: Request) {
     post_id?: string | null;
     title: string;
     form_data: Record<string, unknown>;
+    translation_data?: Record<string, unknown> | null;
+    image_alts?: Record<string, unknown>[];
   };
 
   const now = new Date().toISOString();
@@ -38,6 +40,8 @@ export async function POST(request: Request) {
       .update({
         title: body.title || '제목 없음',
         form_data: body.form_data,
+        translation_data: body.translation_data ?? null,
+        image_alts: body.image_alts ?? [],
         post_id: body.post_id ?? null,
         updated_at: now,
       })
@@ -76,6 +80,8 @@ export async function POST(request: Request) {
     .insert({
       title: body.title || '제목 없음',
       form_data: body.form_data,
+      translation_data: body.translation_data ?? null,
+      image_alts: body.image_alts ?? [],
       post_id: body.post_id ?? null,
       created_at: now,
       updated_at: now,

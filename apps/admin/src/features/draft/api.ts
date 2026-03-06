@@ -1,5 +1,6 @@
 import type { PostFormValues } from '@/features/post-editor/types/form';
-import type { Draft, DraftListItem } from './types';
+import type { ImageAlt } from '@/features/translation/types';
+import type { Draft, DraftListItem, TranslationData } from './types';
 
 export async function fetchDrafts(): Promise<DraftListItem[]> {
   const res = await fetch('/api/drafts');
@@ -20,6 +21,8 @@ export async function saveDraft(params: {
   postId?: string | null;
   title: string;
   formData: PostFormValues;
+  translationData?: TranslationData | null;
+  imageAlts?: ImageAlt[];
 }): Promise<Draft> {
   const res = await fetch('/api/drafts', {
     method: 'POST',
@@ -29,6 +32,8 @@ export async function saveDraft(params: {
       post_id: params.postId,
       title: params.title,
       form_data: params.formData,
+      translation_data: params.translationData ?? null,
+      image_alts: params.imageAlts ?? [],
     }),
   });
   if (!res.ok) throw new Error('임시저장에 실패했습니다.');

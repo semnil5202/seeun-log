@@ -1,17 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { PostFormValues } from '@/features/post-editor/types/form';
+import type { ImageAlt } from '@/features/translation/types';
+import type { TranslationData } from '../types';
 import { saveDraft } from '../api';
 
 const AUTO_SAVE_INTERVAL = 2 * 60 * 1000;
 
 type UseAutoSaveDraftParams = {
   getValues: () => PostFormValues;
+  getTranslationData?: () => TranslationData | null;
+  getImageAlts?: () => ImageAlt[];
   postId?: string | null;
   enabled?: boolean;
 };
 
-export function useAutoSaveDraft({ getValues, postId, enabled = true }: UseAutoSaveDraftParams) {
+export function useAutoSaveDraft({
+  getValues,
+  getTranslationData,
+  getImageAlts,
+  postId,
+  enabled = true,
+}: UseAutoSaveDraftParams) {
   const [draftId, setDraftId] = useState<string | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -28,6 +38,8 @@ export function useAutoSaveDraft({ getValues, postId, enabled = true }: UseAutoS
         postId: postId ?? null,
         title: values.title || '제목 없음',
         formData: values,
+        translationData: getTranslationData?.() ?? null,
+        imageAlts: getImageAlts?.() ?? [],
       });
       setDraftId(draft.id);
       setLastSavedAt(new Date());
@@ -36,7 +48,7 @@ export function useAutoSaveDraft({ getValues, postId, enabled = true }: UseAutoS
     } finally {
       setIsSaving(false);
     }
-  }, [getValues, draftId, postId]);
+  }, [getValues, getTranslationData, getImageAlts, draftId, postId]);
 
   const saveManual = useCallback(async () => {
     setIsSaving(true);
@@ -47,6 +59,8 @@ export function useAutoSaveDraft({ getValues, postId, enabled = true }: UseAutoS
         postId: postId ?? null,
         title: values.title || '제목 없음',
         formData: values,
+        translationData: getTranslationData?.() ?? null,
+        imageAlts: getImageAlts?.() ?? [],
       });
       setDraftId(draft.id);
       setLastSavedAt(new Date());
@@ -54,7 +68,7 @@ export function useAutoSaveDraft({ getValues, postId, enabled = true }: UseAutoS
     } finally {
       setIsSaving(false);
     }
-  }, [getValues, draftId, postId]);
+  }, [getValues, getTranslationData, getImageAlts, draftId, postId]);
 
   useEffect(() => {
     if (!enabled) return;
