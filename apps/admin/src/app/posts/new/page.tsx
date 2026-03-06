@@ -330,7 +330,7 @@ export default function NewPostPage() {
 
         <div className="mt-8">
           <label className="mb-1 block text-base font-bold">
-            슬러그 생성 <span className="text-primary-600">*</span>
+            슬러그 <span className="text-primary-600">*</span>
           </label>
           <SlugField
             sourceText={title}

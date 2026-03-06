@@ -60,7 +60,11 @@
 - Phase 5-1 completed: SearchFilter compound component refactoring (DateRange + Query sub-components) + Pagination shared component (max 9 pages, ellipsis group navigation, URL page query)
 - Phase 5-2 completed: Category management page (`/categories`) -- group table (category/sub rows), SearchFilter.Query only, mock data, pageSize 100 (no pagination)
 - Phase 5-3 completed: Applied Pagination to `/posts` + `/` pages (pageSize 10)
-- admin-specs.md Section 4-7: category-management feature spec (CM-1~CM-4), Section 5-4: SearchFilter compound pattern, Section 5-5: Pagination spec
+- admin-specs.md Section 4-7: category-management feature spec (CM-1~CM-10), Section 4-2-A: 게시글 수정 상세 스펙, Section 5-4: SearchFilter compound pattern, Section 5-5: Pagination spec
+- Category edit: slug 수정 허용 (기존 불가→허용), is_multilingual 수정 불가, slug 변경시 경고 모달, 이름만 변경시 확인 모달
+- Post edit: 다국어 게시글은 dirty 감지 → 번역 재생성 필수 → 수정 완료 버튼 번역 후 활성화
+- Edit entry points: 테이블 row의 이름/제목을 `text-blue-600 underline` 하이퍼링크로 표시
+- api-specs.md: getCategory(7.3) 추가, updateCategory(7.4) slug 수정 허용으로 변경
 
 ## Client PlaceInfoCard Changes (2026-03-05, updated 2026-03-06)
 

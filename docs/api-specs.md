@@ -260,7 +260,7 @@ DELETE FROM posts WHERE id = :postId;
 
 **DB:** 없음 (결과는 클라이언트 UI에서 선택/직접 입력)
 
-**사용처:** 카테고리 생성 (`/categories/new`), 게시글 작성 (`/posts/new`)
+**사용처:** 카테고리 생성/수정 (`/categories/new`, `/categories/[id]/edit`), 게시글 작성/수정 (`/posts/new`, `/posts/[id]/edit`)
 
 ---
 
@@ -593,7 +593,38 @@ RETURNING id;
 
 ---
 
-### 7.3 카테고리 수정 — `updateCategory`
+### 7.3 카테고리 단건 조회 — `getCategory`
+
+**Type:** Server Action
+
+**Input:** `{ categoryId: string }`
+
+**Output:**
+
+```typescript
+{
+  category: {
+    id: string;
+    slug: string;
+    name: string;
+    parent_id: string | null;
+    sort_order: number;
+    is_multilingual: boolean;
+    created_at: string;
+  };
+}
+```
+
+**DB:**
+
+```sql
+-- 인덱스: categories_pkey
+SELECT * FROM categories WHERE id = :categoryId;
+```
+
+---
+
+### 7.4 카테고리 수정 — `updateCategory`
 
 **Type:** Server Action
 
@@ -602,8 +633,8 @@ RETURNING id;
 ```typescript
 {
   categoryId: string;
+  slug?: string;                 // 변경 시 UNIQUE 검증 필요
   name?: string;
-  is_multilingual?: boolean;
   sort_order?: number;
 }
 ```
@@ -614,18 +645,23 @@ RETURNING id;
 
 ```sql
 UPDATE categories
-SET name = COALESCE(:name, name),
-    is_multilingual = COALESCE(:is_multilingual, is_multilingual),
+SET slug = COALESCE(:slug, slug),
+    name = COALESCE(:name, name),
     sort_order = COALESCE(:sort_order, sort_order),
     updated_at = now()
 WHERE id = :categoryId;
 ```
 
-**제약:** `slug`과 `parent_id`는 수정 불가 (URL 구조 변경 방지)
+**제약:**
+
+- `parent_id`는 수정 불가 (대분류/소분류 계층 변경 방지)
+- `is_multilingual`은 수정 불가 (한 번 설정 후 변경 불가 -- 추후 지원 예정)
+- `slug` 수정 시 UNIQUE 제약 위반 검사 필요 (DB 레벨 + application 레벨)
+- `slug` 수정 시 해당 카테고리를 참조하는 `posts.category` 또는 `posts.sub_category` 값도 함께 업데이트 필요 (application-level, FK 없으므로)
 
 ---
 
-### 7.4 카테고리 삭제 — `deleteCategory`
+### 7.5 카테고리 삭제 — `deleteCategory`
 
 **Type:** Server Action
 
@@ -678,4 +714,4 @@ DELETE FROM categories WHERE id = :categoryId;
 | 7    | `listPosts`, `deletePost`                                  | 4     | 미구현     |
 | 8    | `triggerBuild`                                             | 4     | 미구현     |
 | 9    | `getPostMetrics` (GA4 연동)                                | 4     | mock       |
-| 10   | `listCategories`, `createCategory`, `updateCategory`, `deleteCategory` | 5 | 미구현 |
+| 10   | `listCategories`, `createCategory`, `getCategory`, `updateCategory`, `deleteCategory` | 5 | 미구현 |

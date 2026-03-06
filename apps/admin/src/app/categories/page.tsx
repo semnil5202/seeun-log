@@ -149,7 +149,14 @@ function CategoriesContent() {
               ) : (
                 groupedData.flatMap((group) => [
                   <TableRow key={group.category.category} className="bg-muted/50">
-                    <TableCell className="py-3 font-bold">{group.category.label}</TableCell>
+                    <TableCell className="py-3 font-bold">
+                      <Link
+                        href={`/categories/${group.category.category}/edit`}
+                        className="text-blue-600 underline"
+                      >
+                        {group.category.label}
+                      </Link>
+                    </TableCell>
                     <TableCell />
                     <TableCell className="py-3 text-center">{group.category.postCount}</TableCell>
                     <TableCell />
@@ -158,7 +165,14 @@ function CategoriesContent() {
                   ...group.subCategories.map((sub) => (
                     <TableRow key={`${group.category.category}-${sub.subCategory}`}>
                       <TableCell />
-                      <TableCell className="py-3">{sub.subCategoryLabel}</TableCell>
+                      <TableCell className="py-3">
+                        <Link
+                          href={`/categories/${sub.subCategory}/edit`}
+                          className="text-blue-600 underline"
+                        >
+                          {sub.subCategoryLabel}
+                        </Link>
+                      </TableCell>
                       <TableCell className="py-3 text-center">{sub.postCount}</TableCell>
                       <TableCell className="py-3 text-center">
                         {sub.isMultilingual ? '지원' : '미지원'}

@@ -216,7 +216,11 @@ function PostsContent() {
               ) : (
                 pagedData.map((post) => (
                   <TableRow key={post.id}>
-                    <TableCell className="py-3 font-medium">{post.title}</TableCell>
+                    <TableCell className="py-3 font-medium">
+                      <Link href={`/posts/${post.id}/edit`} className="text-blue-600 underline">
+                        {post.title}
+                      </Link>
+                    </TableCell>
                     <TableCell className="py-3 text-center">{post.publishedAt}</TableCell>
                     <TableCell className="py-3 text-center">{post.updatedAt}</TableCell>
                   </TableRow>

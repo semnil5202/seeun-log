@@ -3,7 +3,8 @@
 import { useState } from 'react';
 
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,10 +35,9 @@ export default function NewCategoryPage() {
       <div>
         <Link
           href="/categories"
-          className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          className="mb-3 inline-flex text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-4" />
-          목록으로 돌아가기
+          <ChevronLeft className="size-5" />
         </Link>
         <h1 className="text-xl font-bold">새 카테고리 생성</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -63,7 +63,7 @@ export default function NewCategoryPage() {
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-muted-foreground">
-            슬러그 생성 <span className="text-primary-600">*</span>
+            슬러그 <span className="text-primary-600">*</span>
           </label>
           <SlugField
             sourceText={categoryName}
@@ -115,7 +115,7 @@ export default function NewCategoryPage() {
 
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-muted-foreground">
-            슬러그 생성 <span className="text-primary-600">*</span>
+            슬러그 <span className="text-primary-600">*</span>
           </label>
           <SlugField
             sourceText={subName}
@@ -132,7 +132,12 @@ export default function NewCategoryPage() {
               id="multilingual-check"
               className="size-4 cursor-pointer accent-primary-600"
               checked={subMultilingual}
-              onChange={(e) => setSubMultilingual(e.target.checked)}
+              onChange={(e) => {
+                setSubMultilingual(e.target.checked);
+                toast.info(
+                  '한 번 설정하면 현재는 변경이 불가합니다. 추후 변경 기능이 지원될 예정입니다.',
+                );
+              }}
             />
             <label
               htmlFor="multilingual-check"
