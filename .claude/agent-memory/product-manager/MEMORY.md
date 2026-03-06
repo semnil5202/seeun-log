@@ -9,8 +9,8 @@
 
 - Admin auth: Supabase Auth email/password (no social login, no signup flow, 1-2 users)
 - Editor: Tiptap (HTML output, not Markdown)
-- CSR-first: Server Action only for presigned URL, Supabase writes, GitHub token
-- GPT-5 Nano translation+summary: CSR direct call (Vercel Hobby 10s timeout workaround). Currently mock, OPENAI_API_KEY env needed
+- CSR-first: Server Action only for presigned URL, Supabase writes, GitHub token, GPT API calls
+- GPT-5 Nano translation+summary+term extraction: Server Action calls (not CSR). `OPENAI_API_KEY` server-only env. `shared/lib/openai.ts` shared client. temperature not supported (default 1). `response_format: { type: 'json_object' }`. 7 locales parallel via `Promise.allSettled`. Partial failure allowed (`TranslationResult.failed?: boolean`). `retrySingleLocale` for individual locale retry.
 - Media gallery: Tiptap manages image insert/delete/order, Client renders consecutive images as CSS snap gallery (B approach)
 - Vercel Hobby plan is sufficient for admin
 - Content format: HTML (Tiptap) -- database.md already updated to "HTML"
@@ -30,24 +30,30 @@
 - CI/CD: GitHub Actions workflow_dispatch for build trigger
 - Global UI pattern: Layout.astro contains 1x Toast + 1x ImageLightbox (shared/components/ui/)
 
-## Admin Phase Status (as of 2026-03-05)
+## Admin Phase Status (as of 2026-03-06)
 
-- Phase 1 completed: Supabase client, types, HTTPS dev server, sidebar, metrics page (mock), SearchFilter, shadcn components, ESLint config
+- Phase 1 completed: Supabase client, types, HTTPS dev server (--experimental-https), sidebar, metrics page (mock, RHF), SearchFilter (RHF register props), shadcn components, ESLint config
 - Phase 3 (major progress): Tiptap editor + form type + meta form + translation integration
   - Form type: `PostFormType = 'visit' | 'product-review'` -- UI-only concept (not stored in DB)
   - Layout order: 폼형식 -> 썸네일 -> 본문(title+editor) -> 카테고리 -> [visit전용필드] -> 3줄요약 -> 액션버튼
   - New components: CategorySelector, ThumbnailUpload (WebP convert), VisitFields (place/address/price)
-  - 3줄 요약: generateSummary Server Action (mock), textarea + AI button
+  - 3줄 요약: generateSummary Server Action (GPT-5 Nano API 연동 완료), textarea + AI button
   - Toolbar now includes TextAlign (Left/Center/Right/Justify) + 13 SVG icons
-  - Translation: extractFlaggedTerms + translatePost Server Actions, TranslationSheetContainer (0.8s auto-close), TranslationPreviewSheet (8 locale filter tabs, default en)
+  - Translation: extractFlaggedTerms + translatePost + retrySingleLocale Server Actions, TranslationSheetContainer (0.8s auto-close), TranslationPreviewSheet (8 locale filter tabs, default en, failed locale retry button)
+  - GPT-5 Nano API fully integrated (mock removed): summary, term extraction, translation all use real API
+  - Translation performance: 7 locales parallel via Promise.allSettled, partial failure allowed, description included in translation, address locale-specific formatting
+  - Failure fallback: toast.error on summary/extraction/translation failure, "번역본 재생성하기" button text change on extraction failure, per-locale retry in preview sheet
   - Form validation: react-hook-form + Zod (mode: 'onSubmit'). Buttons always enabled, click triggers Zod validation -> focus + error message. Korean error messages in Zod schema.
   - Label style: all labels `text-base font-bold` black + required `*` primary-600
   - Loading spinners: LoaderIcon animate-spin on summary/translation buttons
   - Translation UX: "용어 검토 계속하기" button for sheet re-open. "번역본 생성하기" always enabled (no description.trim() disabled), validates via Zod on click
+- Post list page (`/posts`): SearchFilter (RHF) + table (title/published/modified) + sort dropdown (newest published/newest modified) + "새 글 작성" button. Sidebar routing updated: "게시글 작성/수정/삭제" -> `/posts`
 - Image insert: CustomResizableImage (DOM NodeView, 4-corner resize handles, width % storage), UploadImage toolbar (blob URL temp)
 - Tiptap HTML output uses inline styles -- critical Client impact: `insertInArticleAds()` needs `<h2>` regex migration
 - Price field: price_prefix (text, optional) + price (number, required for visit). Display: "${prefix}${price.toLocaleString()}원"
-- Remaining: S3 upload, save action, edit page, Placeholder ext, toggles (sponsored/recommended/multilingual), rating, slug auto-gen
+- Admin toast: sonner library (`<Toaster position="top-right" richColors />` in layout.tsx)
+- Admin button: cursor-pointer default, search button variant="outline"
+- Remaining: S3 upload, save action, edit page, delete, Placeholder ext, toggles (sponsored/recommended/multilingual), rating, slug auto-gen, translation DB save
 - Pending DB migrations: posts (price_prefix, price ADD + price_min, price_max DROP), post_translations (place_name, address ADD)
 
 ## Client PlaceInfoCard Changes (2026-03-05)
