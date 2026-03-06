@@ -53,7 +53,7 @@ const href = getLocalePath(
     <div class="shrink-0 w-20 h-20 overflow-hidden bg-gray-100">
       <img
         src={post.thumbnail}
-        alt={post.title}
+        alt={post.thumbnail_alt ?? post.title}
         width={80}
         height={80}
         loading="lazy"

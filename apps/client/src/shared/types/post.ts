@@ -12,6 +12,7 @@ export type Post = {
   category: CategorySlug;
   sub_category: AllSubCategorySlug;
   thumbnail: string;
+  thumbnail_alt: string | null;
   is_sponsored: boolean;
   is_recommended: boolean;
   is_multilingual: boolean;
@@ -34,6 +35,7 @@ export type PostTranslation = {
   content: string;
   place_name: string | null;
   address: string | null;
+  thumbnail_alt: string | null;
   image_alts: ImageAlt[];
   created_at: string;
   updated_at: string;

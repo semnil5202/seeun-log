@@ -12,6 +12,7 @@ export type SearchItem = {
   category: string;
   subCategory: string;
   thumbnail: string;
+  thumbnailAlt: string;
   placeName: string | null;
   isSponsored: boolean;
   isRecommended: boolean;
@@ -39,6 +40,7 @@ export const buildSearchData = (posts: LocalizedPost[], locale: Locale): SearchB
     category: p.category,
     subCategory: p.sub_category,
     thumbnail: p.thumbnail,
+    thumbnailAlt: p.thumbnail_alt ?? p.title,
     placeName: p.translated_place_name ?? p.place_name,
     isSponsored: p.is_sponsored,
     isRecommended: p.is_recommended,

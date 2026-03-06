@@ -140,7 +140,7 @@ const gaPageParams = {
           <div class="aspect-video w-full overflow-hidden mb-6 bg-gray-100">
             <img
               src={post.thumbnail}
-              alt={post.title}
+              alt={post.thumbnail_alt ?? post.title}
               width="1280"
               height="720"
               loading="eager"

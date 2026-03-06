@@ -22,6 +22,7 @@ type FeedPostData = {
   title: string;
   description: string;
   thumbnail: string;
+  thumbnailAlt: string;
   href: string;
   categoryLabel: string;
   dateStr: string;
@@ -47,6 +48,7 @@ const buildFeedPostData = async (post: Post, locale: Locale): Promise<FeedPostDa
     title: localized.title,
     description: localized.description,
     thumbnail: post.thumbnail,
+    thumbnailAlt: localized.thumbnail_alt ?? localized.title,
     href: getLocalePath(postPath, locale),
     categoryLabel: getCategoryLabel(post.category, locale),
     dateStr: new Date(post.created_at).toLocaleDateString(locale, {
