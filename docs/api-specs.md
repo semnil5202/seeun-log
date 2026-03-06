@@ -1,6 +1,10 @@
 # Admin API Specs
 
+> Last updated: 2026-03-06
+
 Admin 앱에서 필요한 API 엔드포인트 목록. Server Action 기반으로 구현하며, Supabase service role 키를 사용한다.
+
+---
 
 ## 1. 인증 (Phase 2)
 
@@ -27,8 +31,8 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
   title: string;
   description: string;
   slug: string;                              // unique
-  category: Category;
-  sub_category: SubCategory;
+  category: string;                          // categories.slug 참조 (대분류)
+  sub_category: string;                      // categories.slug 참조 (소분류)
   content: string;                           // Tiptap HTML
   thumbnail: string;                         // S3 CDN URL
   is_sponsored?: boolean;                    // default: false
@@ -44,7 +48,17 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `{ postId: string }` or error
 
-**DB:** `INSERT INTO posts`
+**DB:**
+
+```sql
+INSERT INTO posts (slug, title, description, content, category, sub_category,
+  thumbnail, is_sponsored, is_recommended, is_multilingual, rating,
+  place_name, address, price_prefix, price)
+VALUES (:slug, :title, :description, :content, :category, :sub_category,
+  :thumbnail, :is_sponsored, :is_recommended, :is_multilingual, :rating,
+  :place_name, :address, :price_prefix, :price)
+RETURNING id;
+```
 
 ---
 
@@ -56,7 +70,12 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `{ success: boolean }` or error
 
-**DB:** `UPDATE posts WHERE id = postId`
+**DB:**
+
+```sql
+UPDATE posts SET title = :title, ..., updated_at = now()
+WHERE id = :postId;
+```
 
 ---
 
@@ -75,7 +94,15 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 }
 ```
 
-**DB:** `SELECT * FROM posts WHERE id = ?` + `SELECT * FROM post_translations WHERE post_id = ?`
+**DB:**
+
+```sql
+-- 인덱스: posts_pkey
+SELECT * FROM posts WHERE id = :postId;
+
+-- 인덱스: idx_translations_post_locale
+SELECT * FROM post_translations WHERE post_id = :postId;
+```
 
 ---
 
@@ -87,16 +114,54 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ```typescript
 {
-  limit?: number;          // default: 20
-  offset?: number;
-  category?: Category;
-  search?: string;         // title ILIKE
+  page?: number;                // default: 1
+  pageSize?: number;            // default: 10
+  sortBy?: 'publishedAt' | 'updatedAt';  // default: 'publishedAt'
+  dateFrom?: string;            // ISO 8601 (기간 필터 시작)
+  dateTo?: string;              // ISO 8601 (기간 필터 끝)
+  search?: string;              // title ILIKE 검색
 }
 ```
 
-**Output:** `{ posts: Post[]; total: number }`
+**Output:**
 
-**DB:** `SELECT * FROM posts` + 필터/페이지네이션
+```typescript
+{
+  posts: {
+    id: string;
+    title: string;
+    slug: string;
+    category: string;
+    sub_category: string;
+    created_at: string;
+    updated_at: string;
+  }[];
+  total: number;                // 페이지네이션용 총 건수
+  page: number;
+  pageSize: number;
+}
+```
+
+**DB:**
+
+```sql
+-- 데이터 조회 (sortBy = 'publishedAt' 기준)
+-- 인덱스: idx_posts_created_at_desc (range scan + title ILIKE filter)
+SELECT id, title, slug, category, sub_category, created_at, updated_at
+FROM posts
+WHERE created_at BETWEEN :dateFrom AND :dateTo
+  AND (:search IS NULL OR title ILIKE '%' || :search || '%')
+ORDER BY created_at DESC
+LIMIT :pageSize OFFSET (:page - 1) * :pageSize;
+
+-- 총 건수 (동일 조건)
+SELECT COUNT(*) FROM posts
+WHERE created_at BETWEEN :dateFrom AND :dateTo
+  AND (:search IS NULL OR title ILIKE '%' || :search || '%');
+```
+
+- `sortBy = 'updatedAt'`일 때: `WHERE updated_at BETWEEN ... ORDER BY updated_at DESC` → `idx_posts_updated_at_desc` 사용
+- `dateFrom`/`dateTo` 미지정 시 전체 기간 조회
 
 ---
 
@@ -108,7 +173,12 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `{ success: boolean }`
 
-**DB:** `DELETE FROM post_translations WHERE post_id = ?` → `DELETE FROM posts WHERE id = ?`
+**DB:**
+
+```sql
+-- post_translations는 ON DELETE CASCADE로 자동 삭제
+DELETE FROM posts WHERE id = :postId;
+```
 
 ---
 
@@ -147,23 +217,80 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ---
 
-## 4. 번역 (Phase 4)
+## 4. 번역 (Phase 3~4)
 
-### 4.1 번역본 생성 — `generateTranslations`
+번역 파이프라인은 GPT 호출과 DB 저장을 분리한다. GPT 호출 결과를 프리뷰에서 확인한 후 저장한다.
 
-**Type:** Server Action
+### 4.1 요약 생성 — `generateSummary`
+
+**Type:** Server Action (구현 완료)
 
 **Input:**
 
 ```typescript
 {
-  postId: string;
+  title: string;
+  content: string;               // Tiptap HTML
+}
+```
+
+**Output:** `{ summary: string }` — 3줄 요약 텍스트 (`\n` 구분)
+
+**External:** OpenAI GPT-5 Nano API
+
+**DB:** 없음 (결과는 클라이언트 폼 state에 반영)
+
+---
+
+### 4.2 용어 추출 — `extractFlaggedTerms`
+
+**Type:** Server Action (구현 완료)
+
+**Input:**
+
+```typescript
+{
+  title: string;
+  description: string;
+  content: string;
+  place_name?: string | null;
+  address?: string | null;
+}
+```
+
+**Output:**
+
+```typescript
+{
+  terms: {
+    original: string;            // 원문 용어
+    context: string;             // 사용 맥락
+    suggestion: string;          // 번역 가이드
+  }[];
+}
+```
+
+**External:** OpenAI GPT-5 Nano API
+
+**DB:** 없음 (TranslationSheetContainer에서 용어 검토 UI 표시)
+
+---
+
+### 4.3 번역본 생성 — `translatePost`
+
+**Type:** Server Action (구현 완료)
+
+**Input:**
+
+```typescript
+{
   title: string;
   description: string;
   content: string;                           // Tiptap HTML
   place_name?: string | null;
   address?: string | null;
   targetLocales: TranslationLocale[];        // ['en','ja','zh-CN','zh-TW','id','vi','th']
+  flaggedTerms?: FlaggedTerm[];              // 용어 가이드
 }
 ```
 
@@ -178,28 +305,108 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     content: string;
     place_name?: string;
     address?: string;
+    failed?: boolean;                        // 해당 locale 번역 실패 여부
   }[];
 }
 ```
 
-**External:** OpenAI GPT-5 Nano API (`OPENAI_API_KEY`)
+**External:** OpenAI GPT-5 Nano API — 7개 locale `Promise.allSettled` 병렬 호출
 
-**DB:** `INSERT INTO post_translations` (locale별 레코드)
+**DB:** 없음 (결과는 TranslationPreviewSheet에서 프리뷰 표시. DB 저장은 `saveTranslations`에서 별도 수행)
 
-**주의:**
+**실패 처리:**
 
-- HTML 구조 보존, 텍스트 노드만 번역
-- 코드/URL은 번역하지 않음
+- `Promise.allSettled`로 부분 성공 허용
+- 실패한 locale은 `failed: true` 플래그 설정
+- 개별 locale 재시도는 `retrySingleLocale`로 처리
 
 ---
 
-### 4.2 번역 조회 — `getTranslations`
+### 4.4 개별 locale 재번역 — `retrySingleLocale`
+
+**Type:** Server Action (구현 완료)
+
+**Input:**
+
+```typescript
+{
+  title: string;
+  description: string;
+  content: string;
+  place_name?: string | null;
+  address?: string | null;
+  targetLocale: TranslationLocale;           // 단일 locale
+  flaggedTerms?: FlaggedTerm[];
+}
+```
+
+**Output:** `translatePost`의 단일 locale 결과와 동일 구조
+
+**External:** OpenAI GPT-5 Nano API (단일 호출)
+
+**DB:** 없음
+
+---
+
+### 4.5 번역 저장 — `saveTranslations`
+
+**Type:** Server Action (미구현)
+
+**Input:**
+
+```typescript
+{
+  postId: string;
+  translations: {
+    locale: TranslationLocale;
+    title: string;
+    description: string;
+    content: string;
+    place_name?: string | null;
+    address?: string | null;
+  }[];
+}
+```
+
+**Output:** `{ success: boolean; savedCount: number }`
+
+**DB:**
+
+```sql
+-- locale별 UPSERT (인덱스: idx_translations_post_locale)
+INSERT INTO post_translations (post_id, locale, title, description, content, place_name, address)
+VALUES (:post_id, :locale, :title, :description, :content, :place_name, :address)
+ON CONFLICT (post_id, locale)
+DO UPDATE SET
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  content = EXCLUDED.content,
+  place_name = EXCLUDED.place_name,
+  address = EXCLUDED.address,
+  updated_at = now();
+```
+
+- 게시글 저장 (`createPost` / `updatePost`) 시 번역 데이터도 함께 저장
+- 번역이 없는 locale은 skip (partial save 허용)
+
+---
+
+### 4.6 번역 조회 — `getTranslations`
 
 **Type:** Server Action
 
 **Input:** `{ postId: string; locale?: TranslationLocale }`
 
 **Output:** `{ translations: PostTranslation[] }`
+
+**DB:**
+
+```sql
+-- 인덱스: idx_translations_post_locale
+SELECT * FROM post_translations
+WHERE post_id = :postId
+  AND (:locale IS NULL OR locale = :locale);
+```
 
 ---
 
@@ -235,7 +442,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ```typescript
 {
-  dateFrom?: string;       // ISO 8601
+  page?: number;               // default: 1
+  pageSize?: number;           // default: 10
+  dateFrom?: string;           // ISO 8601
   dateTo?: string;
   sortBy?: 'views' | 'recommendations' | 'comments';
   search?: string;
@@ -253,14 +462,170 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     recommendations: number;
     comments: number;
     publishedAt: string;
-  }
-  [];
+  }[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 ```
 
 **현재:** mock 데이터 (`apps/admin/src/app/page.tsx`)
 
 **향후:** GA4 Reporting API 또는 Supabase 커스텀 이벤트 테이블
+
+---
+
+## 7. 카테고리 관리 (Phase 5)
+
+### 7.1 카테고리 목록 조회 — `listCategories`
+
+**Type:** Server Action
+
+**Input:**
+
+```typescript
+{
+  search?: string;             // name ILIKE 검색 (optional)
+}
+```
+
+**Output:**
+
+```typescript
+{
+  categories: {
+    id: string;
+    slug: string;
+    name: string;
+    parent_id: string | null;
+    sort_order: number;
+    is_multilingual: boolean;
+    created_at: string;
+    post_count: number;          // 해당 카테고리에 포함된 게시글 수
+  }[];
+}
+```
+
+**DB:**
+
+```sql
+-- 인덱스: idx_categories_parent (GROUP BY), idx_posts_category_sub_created (JOIN)
+-- 카테고리 12개 + posts full scan → 현 규모에서 < 10ms
+SELECT c.id, c.slug, c.name, c.parent_id, c.sort_order,
+       c.is_multilingual, c.created_at,
+       COUNT(p.id) AS post_count
+FROM categories c
+LEFT JOIN posts p ON (
+  CASE WHEN c.parent_id IS NULL
+    THEN p.category = c.slug
+    ELSE p.sub_category = c.slug
+  END
+)
+WHERE (:search IS NULL OR c.name ILIKE '%' || :search || '%')
+GROUP BY c.id
+ORDER BY c.parent_id NULLS FIRST, c.sort_order;
+```
+
+**참고:** 페이지네이션 없음 (pageSize 100, 카테고리 총 수 12개로 단일 페이지)
+
+---
+
+### 7.2 카테고리 생성 — `createCategory`
+
+**Type:** Server Action
+
+**Input:**
+
+```typescript
+{
+  slug: string;                // unique, URL 경로용
+  name: string;                // 표시명
+  parent_id?: string | null;   // null이면 대분류, 값이면 소분류
+  is_multilingual?: boolean;   // default: true
+}
+```
+
+**Output:** `{ categoryId: string }` or error
+
+**DB:**
+
+```sql
+-- sort_order: 같은 parent 내 마지막 순서 + 1
+INSERT INTO categories (slug, name, parent_id, sort_order, is_multilingual)
+VALUES (
+  :slug, :name, :parent_id,
+  COALESCE(
+    (SELECT MAX(sort_order) + 1 FROM categories
+     WHERE parent_id IS NOT DISTINCT FROM :parent_id),
+    0
+  ),
+  :is_multilingual
+)
+RETURNING id;
+```
+
+**Validation:**
+
+- slug 중복 검사 (UNIQUE 제약으로 DB 레벨에서도 보장)
+- parent_id 유효성 검사 (존재하는 대분류인지, 2-depth 초과 방지)
+
+---
+
+### 7.3 카테고리 수정 — `updateCategory`
+
+**Type:** Server Action
+
+**Input:**
+
+```typescript
+{
+  categoryId: string;
+  name?: string;
+  is_multilingual?: boolean;
+  sort_order?: number;
+}
+```
+
+**Output:** `{ success: boolean }` or error
+
+**DB:**
+
+```sql
+UPDATE categories
+SET name = COALESCE(:name, name),
+    is_multilingual = COALESCE(:is_multilingual, is_multilingual),
+    sort_order = COALESCE(:sort_order, sort_order),
+    updated_at = now()
+WHERE id = :categoryId;
+```
+
+**제약:** `slug`과 `parent_id`는 수정 불가 (URL 구조 변경 방지)
+
+---
+
+### 7.4 카테고리 삭제 — `deleteCategory`
+
+**Type:** Server Action
+
+**Input:** `{ categoryId: string }`
+
+**Output:** `{ success: boolean }` or error
+
+**Validation:**
+
+1. 해당 카테고리에 포함된 게시글이 있으면 삭제 거부 (post_count > 0)
+2. 대분류인 경우 하위 소분류가 존재하면 삭제 거부 (FK ON DELETE RESTRICT)
+
+**DB:**
+
+```sql
+-- 1. 게시글 존재 여부 확인
+SELECT COUNT(*) FROM posts
+WHERE category = :slug OR sub_category = :slug;
+
+-- 2. 게시글 0건일 때만 삭제
+DELETE FROM categories WHERE id = :categoryId;
+```
 
 ---
 
@@ -280,12 +645,15 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ## 구현 우선순위
 
-| 순서 | API                                   | Phase |
-| ---- | ------------------------------------- | ----- |
-| 1    | `createPost`, `updatePost`, `getPost` | 3     |
-| 2    | `signIn`, `signOut`, `getSession`     | 2     |
-| 3    | `getPresignedUrl`                     | 4     |
-| 4    | `generateTranslations`                | 4     |
-| 5    | `listPosts`, `deletePost`             | 4     |
-| 6    | `triggerBuild`                        | 4     |
-| 7    | `getPostMetrics` (GA4 연동)           | 4     |
+| 순서 | API                                                        | Phase | 상태       |
+| ---- | ---------------------------------------------------------- | ----- | ---------- |
+| 1    | `createPost`, `updatePost`, `getPost`                      | 3     | 미구현     |
+| 2    | `signIn`, `signOut`, `getSession`                          | 2     | 미구현     |
+| 3    | `getPresignedUrl`                                          | 4     | 미구현     |
+| 4    | `generateSummary`, `extractFlaggedTerms`                   | 3     | 구현 완료  |
+| 5    | `translatePost`, `retrySingleLocale`                       | 3     | 구현 완료  |
+| 6    | `saveTranslations`                                         | 4     | 미구현     |
+| 7    | `listPosts`, `deletePost`                                  | 4     | 미구현     |
+| 8    | `triggerBuild`                                             | 4     | 미구현     |
+| 9    | `getPostMetrics` (GA4 연동)                                | 4     | mock       |
+| 10   | `listCategories`, `createCategory`, `updateCategory`, `deleteCategory` | 5 | 미구현 |
