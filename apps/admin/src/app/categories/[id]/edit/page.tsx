@@ -322,13 +322,13 @@ function ChildCategoryEdit({ data }: { data: CategoryData }) {
             <input
               type="checkbox"
               id="multilingual-check"
-              className="size-4 accent-primary-600"
+              className="size-4 cursor-not-allowed accent-primary-600"
               checked={data.is_multilingual}
               disabled
             />
             <label
               htmlFor="multilingual-check"
-              className="text-sm font-medium text-muted-foreground"
+              className="cursor-not-allowed text-sm font-medium text-muted-foreground"
             >
               다국어 지원
             </label>

@@ -62,8 +62,7 @@ type SponsorContent = {
   };
 };
 
-// TODO: 실제 이메일로 교체
-const CONTACT_EMAIL = 'test@test.com';
+const CONTACT_EMAIL = 'eunminlog@gmail.com';
 
 const SPONSOR: Record<Locale, SponsorContent> = {
   ko: {
