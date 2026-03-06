@@ -209,7 +209,6 @@ function NewPostContent() {
     setValue('address', '');
     setValue('pricePrefix', '');
     setValue('price', '');
-    trigger();
   };
 
   const handleCategoryChange = (value: string) => {
