@@ -1,10 +1,11 @@
 'use client';
 
 import { Suspense, useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import SearchFilter, { type DateRange } from '@/shared/components/filter/SearchFilter';
+import SearchFilter from '@/shared/components/filter/SearchFilter';
 import {
   Select,
   SelectContent,
@@ -22,6 +23,12 @@ import {
 } from '@/components/ui/table';
 
 type SortKey = 'views' | 'recommendations' | 'comments';
+
+type FilterFormValues = {
+  from: string;
+  to: string;
+  query: string;
+};
 
 type PostMetric = {
   id: number;
@@ -121,7 +128,7 @@ const MOCK_DATA: PostMetric[] = [
   },
 ];
 
-function getDefaultDateRange(): DateRange {
+function getDefaultDateRange() {
   const now = new Date();
   const monthAgo = new Date(now);
   monthAgo.setMonth(monthAgo.getMonth() - 1);
@@ -145,22 +152,25 @@ function MetricsContent() {
 
   const defaultRange = getDefaultDateRange();
 
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: searchParams.get('from') || defaultRange.from,
-    to: searchParams.get('to') || defaultRange.to,
+  const { register, getValues } = useForm<FilterFormValues>({
+    defaultValues: {
+      from: searchParams.get('from') || defaultRange.from,
+      to: searchParams.get('to') || defaultRange.to,
+      query: searchParams.get('q') || '',
+    },
   });
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [sortBy, setSortBy] = useState<SortKey>((searchParams.get('sort') as SortKey) || 'views');
 
-  const [appliedDateRange, setAppliedDateRange] = useState<DateRange>(dateRange);
-  const [appliedQuery, setAppliedQuery] = useState(searchQuery);
+  const [appliedFilter, setAppliedFilter] = useState<FilterFormValues>(getValues());
+  const [sortBy, setSortBy] = useState<SortKey>(
+    (searchParams.get('sort') as SortKey) || 'views',
+  );
 
   const updateQueryParams = useCallback(
-    (range: DateRange, query: string, sort: SortKey) => {
+    (filter: FilterFormValues, sort: SortKey) => {
       const params = new URLSearchParams();
-      if (range.from) params.set('from', range.from);
-      if (range.to) params.set('to', range.to);
-      if (query) params.set('q', query);
+      if (filter.from) params.set('from', filter.from);
+      if (filter.to) params.set('to', filter.to);
+      if (filter.query) params.set('q', filter.query);
       if (sort !== 'views') params.set('sort', sort);
       const qs = params.toString();
       router.replace(qs ? `?${qs}` : '/', { scroll: false });
@@ -169,26 +179,26 @@ function MetricsContent() {
   );
 
   const handleSearch = () => {
-    setAppliedDateRange(dateRange);
-    setAppliedQuery(searchQuery);
-    updateQueryParams(dateRange, searchQuery, sortBy);
+    const current = getValues();
+    setAppliedFilter(current);
+    updateQueryParams(current, sortBy);
   };
 
   const handleSortChange = (value: string) => {
     const newSort = value as SortKey;
     setSortBy(newSort);
-    updateQueryParams(appliedDateRange, appliedQuery, newSort);
+    updateQueryParams(appliedFilter, newSort);
   };
 
   const filteredData = MOCK_DATA.filter((post) => {
-    if (appliedQuery) {
-      return post.title.toLowerCase().includes(appliedQuery.toLowerCase());
+    if (appliedFilter.query) {
+      return post.title.toLowerCase().includes(appliedFilter.query.toLowerCase());
     }
     return true;
   })
     .filter((post) => {
-      if (appliedDateRange.from && post.publishedAt < appliedDateRange.from) return false;
-      if (appliedDateRange.to && post.publishedAt > appliedDateRange.to) return false;
+      if (appliedFilter.from && post.publishedAt < appliedFilter.from) return false;
+      if (appliedFilter.to && post.publishedAt > appliedFilter.to) return false;
       return true;
     })
     .sort((a, b) => b[sortBy] - a[sortBy]);
@@ -201,10 +211,9 @@ function MetricsContent() {
       </div>
 
       <SearchFilter
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-        searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
+        registerFrom={register('from')}
+        registerTo={register('to')}
+        registerQuery={register('query')}
         onSearch={handleSearch}
         searchPlaceholder="게시글 제목 검색"
       />

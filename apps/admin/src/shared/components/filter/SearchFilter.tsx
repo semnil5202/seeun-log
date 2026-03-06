@@ -1,32 +1,26 @@
 'use client';
 
 import type { KeyboardEvent, ReactNode } from 'react';
+import type { UseFormRegisterReturn } from 'react-hook-form';
 
 import { Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export type DateRange = {
-  from: string;
-  to: string;
-};
-
 type SearchFilterProps = {
-  dateRange: DateRange;
-  onDateRangeChange: (range: DateRange) => void;
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
+  registerFrom: UseFormRegisterReturn;
+  registerTo: UseFormRegisterReturn;
+  registerQuery: UseFormRegisterReturn;
   onSearch: () => void;
   searchPlaceholder?: string;
   children?: ReactNode;
 };
 
 export default function SearchFilter({
-  dateRange,
-  onDateRangeChange,
-  searchQuery,
-  onSearchQueryChange,
+  registerFrom,
+  registerTo,
+  registerQuery,
   onSearch,
   searchPlaceholder = '검색어 입력',
   children,
@@ -40,19 +34,9 @@ export default function SearchFilter({
       <div className="flex flex-wrap items-center gap-3 max-md:flex-col max-md:items-start">
         <span className="w-12 shrink-0 text-sm font-bold text-primary-600">기간</span>
         <div className="flex flex-wrap items-center gap-2">
-          <Input
-            type="date"
-            value={dateRange.from}
-            onChange={(e) => onDateRangeChange({ ...dateRange, from: e.target.value })}
-            className="w-[150px]"
-          />
+          <Input type="date" {...registerFrom} className="w-[150px]" />
           <span className="text-muted-foreground">&rarr;</span>
-          <Input
-            type="date"
-            value={dateRange.to}
-            onChange={(e) => onDateRangeChange({ ...dateRange, to: e.target.value })}
-            className="w-[150px]"
-          />
+          <Input type="date" {...registerTo} className="w-[150px]" />
         </div>
         {children && <div className="ml-auto flex items-center gap-2 max-md:ml-0">{children}</div>}
       </div>
@@ -63,8 +47,7 @@ export default function SearchFilter({
           <Input
             type="text"
             placeholder={searchPlaceholder}
-            value={searchQuery}
-            onChange={(e) => onSearchQueryChange(e.target.value)}
+            {...registerQuery}
             onKeyDown={handleKeyDown}
             className="w-full max-w-[330px]"
           />
