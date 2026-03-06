@@ -2,6 +2,8 @@
 
 import { type ChangeEvent, useRef } from 'react';
 
+import { NodeSelection } from '@tiptap/pm/state';
+
 import { cn } from '@/lib/utils';
 import { ImageIcon } from '../icons';
 import { toWebP } from '../../lib/image';
@@ -16,15 +18,29 @@ export function UploadImage({ editor }: EditorProps) {
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    const webpBlob = await toWebP(file);
-    const url = URL.createObjectURL(webpBlob);
+    const urls: string[] = [];
+    for (const file of Array.from(files)) {
+      const webpBlob = await toWebP(file);
+      urls.push(URL.createObjectURL(webpBlob));
+    }
+
     const { state } = editor;
-    const { $from } = state.selection;
+    const { selection } = state;
+    const { $from } = selection;
 
-    // Case 1: cursor after an imageCarousel block
+    // Case 0: carousel node itself is selected (NodeSelection) → append images
+    if (selection instanceof NodeSelection && selection.node.type.name === 'imageCarousel') {
+      for (const url of urls) {
+        editor.commands.addImageToCarousel($from.pos, url);
+      }
+      e.target.value = '';
+      return;
+    }
+
+    // Case 1: cursor after an imageCarousel block → append all images
     let carouselPos: number | null = null;
 
     if ($from.depth >= 1) {
@@ -44,12 +60,59 @@ export function UploadImage({ editor }: EditorProps) {
     }
 
     if (carouselPos !== null) {
-      editor.commands.addImageToCarousel(carouselPos, url);
+      for (const url of urls) {
+        editor.commands.addImageToCarousel(carouselPos, url);
+      }
       e.target.value = '';
       return;
     }
 
-    // Case 2: cursor right after an inline image
+    // Case 2: multiple files selected → create carousel directly
+    if (urls.length > 1) {
+      const images = urls.map((src) => ({ src, width: '90%', height: 'auto' }));
+
+      // If cursor is after an inline image, include it in the carousel
+      const nodeBefore = $from.nodeBefore;
+      if (nodeBefore?.type.name === 'image') {
+        const existingSrc = nodeBefore.attrs.src as string;
+        const imageEndPos = $from.pos;
+        const imageStartPos = imageEndPos - nodeBefore.nodeSize;
+
+        editor
+          .chain()
+          .focus()
+          .command(({ tr, dispatch }) => {
+            if (!dispatch) return true;
+
+            tr.delete(imageStartPos, imageEndPos);
+
+            const $afterDelete = tr.doc.resolve(imageStartPos);
+            const parentNode = $afterDelete.parent;
+            const parentStart = $afterDelete.start($afterDelete.depth);
+            const parentEnd = $afterDelete.end($afterDelete.depth);
+
+            const carouselNode = editor.schema.nodes.imageCarousel.create({
+              images: [{ src: existingSrc, width: '90%', height: 'auto' }, ...images],
+            });
+
+            if (parentNode.content.size === 0) {
+              tr.replaceWith(parentStart - 1, parentEnd + 1, carouselNode);
+            } else {
+              tr.insert(parentEnd + 1, carouselNode);
+            }
+
+            return true;
+          })
+          .run();
+      } else {
+        editor.commands.setImageCarousel({ images });
+      }
+
+      e.target.value = '';
+      return;
+    }
+
+    // Case 3: single file, cursor right after an inline image → merge into carousel
     const nodeBefore = $from.nodeBefore;
     if (nodeBefore?.type.name === 'image') {
       const existingSrc = nodeBefore.attrs.src as string;
@@ -72,7 +135,7 @@ export function UploadImage({ editor }: EditorProps) {
           const carouselNode = editor.schema.nodes.imageCarousel.create({
             images: [
               { src: existingSrc, width: '90%', height: 'auto' },
-              { src: url, width: '90%', height: 'auto' },
+              { src: urls[0], width: '90%', height: 'auto' },
             ],
           });
 
@@ -90,8 +153,8 @@ export function UploadImage({ editor }: EditorProps) {
       return;
     }
 
-    // Case 3: default — insert as single image
-    editor.chain().focus().setImage({ src: url }).run();
+    // Case 4: single file, no special context → insert as single image
+    editor.chain().focus().setImage({ src: urls[0] }).run();
     e.target.value = '';
   };
 
@@ -110,6 +173,7 @@ export function UploadImage({ editor }: EditorProps) {
         ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+        multiple
         onChange={handleFileChange}
         className="hidden"
       />

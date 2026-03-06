@@ -10,13 +10,15 @@ type TiptapEditorProps = {
 };
 
 export function TiptapEditor({ editor, placeholder }: TiptapEditorProps) {
-  const [isEmpty, setIsEmpty] = useState(true);
+  const [hasContent, setHasContent] = useState(false);
 
   useEffect(() => {
-    setIsEmpty(editor.isEmpty);
+    setHasContent(!editor.isEmpty || editor.state.doc.childCount > 1 || !editor.state.doc.firstChild?.type.isTextblock || editor.state.doc.firstChild?.type.name !== 'paragraph');
 
     const handleUpdate = () => {
-      setIsEmpty(editor.isEmpty);
+      const doc = editor.state.doc;
+      const isDefaultEmpty = editor.isEmpty && doc.childCount === 1 && doc.firstChild?.type.name === 'paragraph';
+      setHasContent(!isDefaultEmpty);
     };
 
     editor.on('update', handleUpdate);
@@ -38,7 +40,7 @@ export function TiptapEditor({ editor, placeholder }: TiptapEditorProps) {
       onClick={handleWrapperClick}
     >
       <EditorContent editor={editor} />
-      {isEmpty && placeholder && (
+      {!hasContent && placeholder && (
         <div className="pointer-events-none absolute left-4 top-4 text-muted-foreground">
           {placeholder}
         </div>

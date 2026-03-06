@@ -6,7 +6,10 @@ export const postFormSchema = z
   .object({
     formType: z.enum(['visit', 'product-review']),
     title: z.string().min(1, '제목을 입력해주세요.').max(TITLE_MAX_LENGTH),
-    content: z.string().min(1, '본문을 입력해주세요.'),
+    content: z
+      .string()
+      .min(1, '본문을 입력해주세요.')
+      .refine((val) => val.replace(/<[^>]*>/g, '').trim().length > 0, '본문을 입력해주세요.'),
     category: z.string().min(1, '대분류를 선택해주세요.'),
     subCategory: z.string().min(1, '소분류를 선택해주세요.'),
     thumbnail: z.string().min(1, '썸네일을 등록해주세요.'),
