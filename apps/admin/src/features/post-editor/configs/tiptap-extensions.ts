@@ -73,13 +73,18 @@ const CustomBulletList = BulletList.configure({
   },
 });
 
+const MARKDOWN_TO_HEADING: { hashes: number; level: Level }[] = [
+  { hashes: 1, level: 2 },
+  { hashes: 2, level: 3 },
+  { hashes: 3, level: 4 },
+  { hashes: 4, level: 5 },
+];
+
 const CustomHeading = Heading.extend({
   addInputRules() {
-    const levels: Level[] = [2, 3, 4, 5, 6];
-
-    return levels.map((level) =>
+    return MARKDOWN_TO_HEADING.map(({ hashes, level }) =>
       textblockTypeInputRule({
-        find: new RegExp(`^(#{${level}})\\s$`),
+        find: new RegExp(`^(#{${hashes}})\\s$`),
         type: this.type,
         getAttributes: { level },
       }),
@@ -93,7 +98,7 @@ const CustomHeading = Heading.extend({
     return [`h${level}`, { ...HTMLAttributes, style }, 0];
   },
 }).configure({
-  levels: [2, 3, 4, 5, 6],
+  levels: [2, 3, 4, 5],
 });
 
 const CustomLink = Link.configure({
