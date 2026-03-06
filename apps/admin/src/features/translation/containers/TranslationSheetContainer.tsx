@@ -14,7 +14,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 
 import type { FlaggedTerm, TranslationResult, TranslationStatus } from '../types';
-import { translatePost } from '../api/actions';
+import { fetchTranslatePost } from '../api/client';
 import { LOCALE_FILTER_LABELS } from '../constants/locale';
 import { TermReviewList } from '../components/TermReviewList';
 
@@ -66,7 +66,7 @@ export function TranslationSheetContainer({
     }));
 
     try {
-      const results = await translatePost({
+      const results = await fetchTranslatePost({
         title,
         content,
         description,

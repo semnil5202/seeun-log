@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 import { Input } from '@/components/ui/input';
 import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
-import { generateSlugSuggestions } from '@/features/post-editor/api/actions';
+import { fetchSlugSuggestions } from '@/features/post-editor/api/client';
 
 type SlugFieldProps = {
   sourceText: string;
@@ -34,7 +34,7 @@ export function SlugField({
 
     setIsGenerating(true);
     try {
-      const slugs = await generateSlugSuggestions(sourceText);
+      const slugs = await fetchSlugSuggestions(sourceText);
       setSuggestions(slugs);
       setIsGenerated(true);
       if (!value) onChange(slugs[0]);

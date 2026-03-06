@@ -32,13 +32,13 @@ import { ThumbnailUpload } from '@/features/post-editor/components/ThumbnailUplo
 import { VisitFields } from '@/features/post-editor/components/VisitFields';
 import { TiptapEditorContainer } from '@/features/post-editor/containers/TiptapEditorContainer';
 import { FORM_TYPE_OPTIONS } from '@/features/post-editor/constants/category';
-import { generateSummary } from '@/features/post-editor/api/actions';
+import { streamSummary } from '@/features/post-editor/api/client';
 import {
   postFormSchema,
   TITLE_MAX_LENGTH,
   type PostFormValues,
 } from '@/features/post-editor/types/form';
-import { retrySingleLocale } from '@/features/translation/api/actions';
+import { fetchRetrySingleLocale } from '@/features/translation/api/client';
 import {
   TranslationEditSheet,
   type TranslationField,
@@ -209,7 +209,9 @@ export default function EditPostPage() {
 
     try {
       const { title: t, content: c } = getValues();
-      const summary = await generateSummary(t, c);
+      const summary = await streamSummary(t, c, (partial) => {
+        setValue('description', partial);
+      });
       setValue('description', summary, { shouldValidate: true });
       setIsSummarized(true);
     } catch {
@@ -221,7 +223,7 @@ export default function EditPostPage() {
 
   const handleRetranslateLocale = async (locale: TranslationLocale): Promise<TranslationResult> => {
     const { title: t, content: c, description: d, placeName: pn, address: addr } = getValues();
-    const result = await retrySingleLocale(locale, {
+    const result = await fetchRetrySingleLocale(locale, {
       title: t,
       content: c,
       description: d,

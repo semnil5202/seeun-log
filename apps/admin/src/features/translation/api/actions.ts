@@ -54,7 +54,8 @@ function buildTranslateSystemPrompt(locale: TranslationLocale): string {
   return `당신은 한국어 블로그 포스트를 ${label}(${locale})로 번역하는 전문 번역가입니다.
 
 번역 규칙:
-1. 본문(content)은 HTML 형식입니다. HTML 태그 구조(<p>, <strong>, <em>, <ul>, <li>, <h2> 등)를 그대로 유지하고 텍스트만 번역해주세요.
+1. 본문(content)은 HTML 형식입니다. 아래 HTML 태그는 절대 번역하거나 제거하지 마세요. 태그 구조와 속성을 그대로 유지하고 텍스트만 번역해주세요.
+   보존 필수 태그: <p>, <br>, <strong>, <em>, <s>, <u>, <a>, <h2>, <h3>, <h4>, <h5>, <h6>, <ul>, <ol>, <li>, <blockquote>, <hr>, <img>, <table>, <thead>, <tbody>, <tr>, <th>, <td>, <div>, <span>
 2. 3줄 요약(description)은 plain text입니다. 줄바꿈(\\n)을 유지하고 텍스트만 번역해주세요.
 3. 확정 번역 용어가 제공되면 반드시 해당 번역을 사용해주세요.
 4. 장소명(place_name)과 주소(address)가 제공되면 ${placeRule}해주세요.
