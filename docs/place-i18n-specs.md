@@ -31,12 +31,7 @@
 | `place_name` | text | 번역된 장소명 | YES      |
 | `address`    | text | 번역된 주소   | YES      |
 
-**ALTER 문**:
-
-```sql
-ALTER TABLE post_translations ADD COLUMN place_name text;
-ALTER TABLE post_translations ADD COLUMN address text;
-```
+**ALTER 문**: [`secrets-reference.md` 섹션 8-6](secrets-reference.md#8-6-마이그레이션-sql)을 참조한다.
 
 **설계 의도**:
 
@@ -539,16 +534,9 @@ GPT 응답에서 `place_name`, `address` 번역 결과를 추출하여 `post_tra
 
 ### 8-1. Supabase 마이그레이션
 
-```sql
--- 1. 컬럼 추가
-ALTER TABLE post_translations ADD COLUMN place_name text;
-ALTER TABLE post_translations ADD COLUMN address text;
+SQL은 [`secrets-reference.md` 섹션 8-6](secrets-reference.md#8-6-마이그레이션-sql)을 참조한다.
 
--- 2. 기존 번역 레코드에 대한 place_name, address 번역은
---    Admin에서 해당 포스트를 편집/재번역할 때 자동으로 채워진다.
---    기존 번역 레코드의 place_name, address는 NULL 상태로 유지해도 무방하다.
---    (프론트엔드에서 NULL이면 한글 원문으로 폴백)
-```
+기존 번역 레코드에 대한 place_name, address 번역은 Admin에서 해당 포스트를 편집/재번역할 때 자동으로 채워진다. 기존 번역 레코드의 place_name, address는 NULL 상태로 유지해도 무방하다 (프론트엔드에서 NULL이면 한글 원문으로 폴백).
 
 ### 8-2. 기존 번역 데이터 일괄 업데이트 (선택)
 
@@ -597,9 +585,9 @@ ALTER TABLE post_translations ADD COLUMN address text;
 
 ### 9-4. DB 변경
 
-| 변경                        | SQL                                                                                                                |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| post_translations 컬럼 추가 | `ALTER TABLE post_translations ADD COLUMN place_name text; ALTER TABLE post_translations ADD COLUMN address text;` |
+| 변경                        | 참조                                                                                                  |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| post_translations 컬럼 추가 | [`secrets-reference.md` 섹션 8-6](secrets-reference.md#8-6-마이그레이션-sql) |
 
 ---
 

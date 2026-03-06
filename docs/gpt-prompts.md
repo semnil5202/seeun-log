@@ -216,14 +216,4 @@ JSON 배열 파싱 → `TranslationResult[]` 타입으로 변환.
 
 ## API 호출 공통 설정
 
-```ts
-{
-  model: 'gpt-5-nano',
-  temperature: 0.3,       // 일관된 번역 품질
-  response_format: { type: 'json_object' },  // 용어 추출, 번역에만 적용
-}
-```
-
-- 요약 생성: `response_format` 미사용 (plain text)
-- 용어 추출 / 번역: `response_format: { type: 'json_object' }` 사용
-- 모든 호출에 `temperature: 0.3` 적용 (창의성보다 일관성 우선)
+> 모델명, temperature 등 API 설정은 [`secrets-reference.md` 섹션 5](secrets-reference.md#5-gpt-api-공통-설정)를 참조한다.

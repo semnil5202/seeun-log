@@ -24,9 +24,7 @@
 
 ### GA4 Measurement ID
 
-```
-G-QX8XPFX6YK (packages/config/site.ts)
-```
+> [`secrets-reference.md` 섹션 4](secrets-reference.md#4-ga4)를 참조한다.
 
 ---
 

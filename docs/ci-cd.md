@@ -36,32 +36,7 @@ Client SSG 빌드 시 Supabase에 접속하기 위한 시크릿. 키 목록은 [
 
 ### 3-4. 필요한 IAM 정책
 
-배포용 IAM 사용자에게 아래 권한을 부여해야 한다:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "S3Deploy",
-      "Effect": "Allow",
-      "Action": ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket", "s3:GetObject"],
-      "Resource": [
-        "arn:aws:s3:::prod-eunminlog-static",
-        "arn:aws:s3:::prod-eunminlog-static/*",
-        "arn:aws:s3:::dev-eunminlog-static",
-        "arn:aws:s3:::dev-eunminlog-static/*"
-      ]
-    },
-    {
-      "Sid": "CloudFrontInvalidation",
-      "Effect": "Allow",
-      "Action": "cloudfront:CreateInvalidation",
-      "Resource": "*"
-    }
-  ]
-}
-```
+> IAM 정책 JSON은 [`secrets-reference.md` 섹션 9-1](secrets-reference.md#9-1-s3--cloudfront-배포-정책)을 참조한다.
 
 ## 4. Workflow File Structure
 
@@ -372,18 +347,7 @@ S3 배포 후, 캐시 무효화 전에 실행:
 
 ### 9-3. 추가 IAM 권한
 
-```json
-{
-  "Sid": "CloudFrontFunctionUpdate",
-  "Effect": "Allow",
-  "Action": [
-    "cloudfront:DescribeFunction",
-    "cloudfront:UpdateFunction",
-    "cloudfront:PublishFunction"
-  ],
-  "Resource": "*"
-}
-```
+> IAM 정책 JSON은 [`secrets-reference.md` 섹션 9-2](secrets-reference.md#9-2-cloudfront-function-업데이트-정책)를 참조한다.
 
 ### 9-4. 추가 GitHub Secrets
 

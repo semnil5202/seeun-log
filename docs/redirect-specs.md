@@ -171,13 +171,7 @@ var CATEGORY_REDIRECTS = {
 
 ### 4.3 마이그레이션
 
-```sql
--- M-08: posts.prev_slug 추가
-ALTER TABLE posts ADD COLUMN prev_slug text;
-
--- M-09: categories.prev_slug 추가
-ALTER TABLE categories ADD COLUMN prev_slug text;
-```
+> 마이그레이션 SQL은 [`secrets-reference.md` 섹션 8-6](secrets-reference.md#8-6-마이그레이션-sql)을 참조한다.
 
 ## 5. Admin 변경
 
@@ -208,34 +202,11 @@ ALTER TABLE categories ADD COLUMN prev_slug text;
 
 **`updatePost` — prev_slug 자동 저장 추가:**
 
-```sql
--- slug가 변경된 경우
-UPDATE posts
-SET slug = :newSlug,
-    prev_slug = :oldSlug,
-    updated_at = now(),
-    ... (기타 변경 필드)
-WHERE id = :postId;
-```
+> SQL은 [`secrets-reference.md` 섹션 8-1](secrets-reference.md#8-1-게시글-crud)을 참조한다.
 
 **`updateCategory` — prev_slug 자동 저장 추가:**
 
-```sql
--- slug가 변경된 경우
-UPDATE categories
-SET slug = :newSlug,
-    prev_slug = :oldSlug,
-    name = COALESCE(:name, name),
-    sort_order = COALESCE(:sort_order, sort_order),
-    updated_at = now()
-WHERE id = :categoryId;
-
--- posts 참조값 업데이트 (기존 스펙, 변경 없음)
--- 대분류인 경우
-UPDATE posts SET category = :newSlug WHERE category = :oldSlug;
--- 소분류인 경우
-UPDATE posts SET sub_category = :newSlug WHERE sub_category = :oldSlug;
-```
+> SQL은 [`secrets-reference.md` 섹션 8-3](secrets-reference.md#8-3-카테고리)을 참조한다.
 
 ## 6. 빌드 파이프라인 변경
 
@@ -254,11 +225,7 @@ Step 6.5: Generate redirect mappings
 
 **빌드 스크립트 (Node.js):**
 
-1. Supabase에서 리다이렉트 대상 조회:
-   ```sql
-   SELECT slug, prev_slug, category, sub_category FROM posts WHERE prev_slug IS NOT NULL;
-   SELECT slug, prev_slug, parent_id FROM categories WHERE prev_slug IS NOT NULL;
-   ```
+1. Supabase에서 리다이렉트 대상 조회 (SQL: [`secrets-reference.md` 섹션 8-5](secrets-reference.md#8-5-리다이렉트-매핑-조회-빌드-스크립트))
 2. 매핑 오브젝트 생성
 3. CF Function 템플릿 파일에 매핑 데이터를 인라인 삽입하여 최종 CF Function 코드 생성
 
@@ -272,18 +239,7 @@ Step 9.5: Update CloudFront Function
 
 **필요 IAM 권한 추가:**
 
-```json
-{
-  "Sid": "CloudFrontFunctionUpdate",
-  "Effect": "Allow",
-  "Action": [
-    "cloudfront:DescribeFunction",
-    "cloudfront:UpdateFunction",
-    "cloudfront:PublishFunction"
-  ],
-  "Resource": "*"
-}
-```
+> IAM 정책 JSON은 [`secrets-reference.md` 섹션 9-2](secrets-reference.md#9-2-cloudfront-function-업데이트-정책)를 참조한다.
 
 ### 6.3 추가 GitHub Secrets
 

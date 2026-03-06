@@ -4,6 +4,8 @@
 
 Admin 앱에서 필요한 API 엔드포인트 목록. Server Action 기반으로 구현하며, Supabase service role 키를 사용한다.
 
+> DB SQL 쿼리는 [`secrets-reference.md`](secrets-reference.md) 섹션 8을 참조한다.
+
 ---
 
 ## 1. 인증 (Phase 2)
@@ -48,17 +50,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `{ postId: string }` or error
 
-**DB:**
-
-```sql
-INSERT INTO posts (slug, title, description, content, category, sub_category,
-  thumbnail, is_sponsored, is_recommended, is_multilingual, rating,
-  place_name, address, price_prefix, price)
-VALUES (:slug, :title, :description, :content, :category, :sub_category,
-  :thumbnail, :is_sponsored, :is_recommended, :is_multilingual, :rating,
-  :place_name, :address, :price_prefix, :price)
-RETURNING id;
-```
+**DB:** [`secrets-reference.md` 섹션 8-1](secrets-reference.md#8-1-게시글-crud) — createPost SQL
 
 ---
 
@@ -70,21 +62,7 @@ RETURNING id;
 
 **Output:** `{ success: boolean }` or error
 
-**DB:**
-
-```sql
--- slug가 변경된 경우: prev_slug에 기존 slug 저장
-UPDATE posts
-SET slug = :newSlug,
-    prev_slug = :oldSlug,
-    title = :title, ...,
-    updated_at = now()
-WHERE id = :postId;
-
--- slug가 변경되지 않은 경우: prev_slug 유지 (변경하지 않음)
-UPDATE posts SET title = :title, ..., updated_at = now()
-WHERE id = :postId;
-```
+**DB:** [`secrets-reference.md` 섹션 8-1](secrets-reference.md#8-1-게시글-crud) — updatePost SQL
 
 **prev_slug 자동 저장 규칙:**
 
@@ -110,15 +88,7 @@ WHERE id = :postId;
 }
 ```
 
-**DB:**
-
-```sql
--- 인덱스: posts_pkey
-SELECT * FROM posts WHERE id = :postId;
-
--- 인덱스: idx_translations_post_locale
-SELECT * FROM post_translations WHERE post_id = :postId;
-```
+**DB:** [`secrets-reference.md` 섹션 8-1](secrets-reference.md#8-1-게시글-crud) — getPost SQL
 
 ---
 
@@ -158,23 +128,7 @@ SELECT * FROM post_translations WHERE post_id = :postId;
 }
 ```
 
-**DB:**
-
-```sql
--- 데이터 조회 (sortBy = 'publishedAt' 기준)
--- 인덱스: idx_posts_created_at_desc (range scan + title ILIKE filter)
-SELECT id, title, slug, category, sub_category, created_at, updated_at
-FROM posts
-WHERE created_at BETWEEN :dateFrom AND :dateTo
-  AND (:search IS NULL OR title ILIKE '%' || :search || '%')
-ORDER BY created_at DESC
-LIMIT :pageSize OFFSET (:page - 1) * :pageSize;
-
--- 총 건수 (동일 조건)
-SELECT COUNT(*) FROM posts
-WHERE created_at BETWEEN :dateFrom AND :dateTo
-  AND (:search IS NULL OR title ILIKE '%' || :search || '%');
-```
+**DB:** [`secrets-reference.md` 섹션 8-1](secrets-reference.md#8-1-게시글-crud) — listPosts SQL
 
 - `sortBy = 'updatedAt'`일 때: `WHERE updated_at BETWEEN ... ORDER BY updated_at DESC` → `idx_posts_updated_at_desc` 사용
 - `dateFrom`/`dateTo` 미지정 시 전체 기간 조회
@@ -189,12 +143,7 @@ WHERE created_at BETWEEN :dateFrom AND :dateTo
 
 **Output:** `{ success: boolean }`
 
-**DB:**
-
-```sql
--- post_translations는 ON DELETE CASCADE로 자동 삭제
-DELETE FROM posts WHERE id = :postId;
-```
+**DB:** [`secrets-reference.md` 섹션 8-1](secrets-reference.md#8-1-게시글-crud) — deletePost SQL
 
 ---
 
@@ -408,21 +357,7 @@ DELETE FROM posts WHERE id = :postId;
 
 **Output:** `{ success: boolean; savedCount: number }`
 
-**DB:**
-
-```sql
--- locale별 UPSERT (인덱스: idx_translations_post_locale)
-INSERT INTO post_translations (post_id, locale, title, description, content, place_name, address)
-VALUES (:post_id, :locale, :title, :description, :content, :place_name, :address)
-ON CONFLICT (post_id, locale)
-DO UPDATE SET
-  title = EXCLUDED.title,
-  description = EXCLUDED.description,
-  content = EXCLUDED.content,
-  place_name = EXCLUDED.place_name,
-  address = EXCLUDED.address,
-  updated_at = now();
-```
+**DB:** [`secrets-reference.md` 섹션 8-2](secrets-reference.md#8-2-번역) — saveTranslations SQL
 
 - 게시글 저장 (`createPost` / `updatePost`) 시 번역 데이터도 함께 저장
 - 번역이 없는 locale은 skip (partial save 허용)
@@ -437,14 +372,7 @@ DO UPDATE SET
 
 **Output:** `{ translations: PostTranslation[] }`
 
-**DB:**
-
-```sql
--- 인덱스: idx_translations_post_locale
-SELECT * FROM post_translations
-WHERE post_id = :postId
-  AND (:locale IS NULL OR locale = :locale);
-```
+**DB:** [`secrets-reference.md` 섹션 8-2](secrets-reference.md#8-2-번역) — getTranslations SQL
 
 ---
 
@@ -544,25 +472,7 @@ WHERE post_id = :postId
 }
 ```
 
-**DB:**
-
-```sql
--- 인덱스: idx_categories_parent (GROUP BY), idx_posts_category_sub_created (JOIN)
--- 카테고리 12개 + posts full scan → 현 규모에서 < 10ms
-SELECT c.id, c.slug, c.name, c.parent_id, c.sort_order,
-       c.is_multilingual, c.created_at,
-       COUNT(p.id) AS post_count
-FROM categories c
-LEFT JOIN posts p ON (
-  CASE WHEN c.parent_id IS NULL
-    THEN p.category = c.slug
-    ELSE p.sub_category = c.slug
-  END
-)
-WHERE (:search IS NULL OR c.name ILIKE '%' || :search || '%')
-GROUP BY c.id
-ORDER BY c.parent_id NULLS FIRST, c.sort_order;
-```
+**DB:** [`secrets-reference.md` 섹션 8-3](secrets-reference.md#8-3-카테고리) — listCategories SQL
 
 **참고:** 페이지네이션 없음 (pageSize 100, 카테고리 총 수 12개로 단일 페이지)
 
@@ -585,22 +495,7 @@ ORDER BY c.parent_id NULLS FIRST, c.sort_order;
 
 **Output:** `{ categoryId: string }` or error
 
-**DB:**
-
-```sql
--- sort_order: 같은 parent 내 마지막 순서 + 1
-INSERT INTO categories (slug, name, parent_id, sort_order, is_multilingual)
-VALUES (
-  :slug, :name, :parent_id,
-  COALESCE(
-    (SELECT MAX(sort_order) + 1 FROM categories
-     WHERE parent_id IS NOT DISTINCT FROM :parent_id),
-    0
-  ),
-  :is_multilingual
-)
-RETURNING id;
-```
+**DB:** [`secrets-reference.md` 섹션 8-3](secrets-reference.md#8-3-카테고리) — createCategory SQL
 
 **Validation:**
 
@@ -631,12 +526,7 @@ RETURNING id;
 }
 ```
 
-**DB:**
-
-```sql
--- 인덱스: categories_pkey
-SELECT * FROM categories WHERE id = :categoryId;
-```
+**DB:** [`secrets-reference.md` 섹션 8-3](secrets-reference.md#8-3-카테고리) — getCategory SQL
 
 ---
 
@@ -657,30 +547,7 @@ SELECT * FROM categories WHERE id = :categoryId;
 
 **Output:** `{ success: boolean }` or error
 
-**DB:**
-
-```sql
--- slug가 변경된 경우: prev_slug에 기존 slug 저장 + posts 참조값 업데이트
-UPDATE categories
-SET slug = :newSlug,
-    prev_slug = :oldSlug,
-    name = COALESCE(:name, name),
-    sort_order = COALESCE(:sort_order, sort_order),
-    updated_at = now()
-WHERE id = :categoryId;
-
--- posts 참조값 업데이트 (대분류인 경우)
-UPDATE posts SET category = :newSlug WHERE category = :oldSlug;
--- posts 참조값 업데이트 (소분류인 경우)
-UPDATE posts SET sub_category = :newSlug WHERE sub_category = :oldSlug;
-
--- slug가 변경되지 않은 경우: prev_slug 유지
-UPDATE categories
-SET name = COALESCE(:name, name),
-    sort_order = COALESCE(:sort_order, sort_order),
-    updated_at = now()
-WHERE id = :categoryId;
-```
+**DB:** [`secrets-reference.md` 섹션 8-3](secrets-reference.md#8-3-카테고리) — updateCategory SQL
 
 **제약:**
 
@@ -705,16 +572,7 @@ WHERE id = :categoryId;
 1. 해당 카테고리에 포함된 게시글이 있으면 삭제 거부 (post_count > 0)
 2. 대분류인 경우 하위 소분류가 존재하면 삭제 거부 (FK ON DELETE RESTRICT)
 
-**DB:**
-
-```sql
--- 1. 게시글 존재 여부 확인
-SELECT COUNT(*) FROM posts
-WHERE category = :slug OR sub_category = :slug;
-
--- 2. 게시글 0건일 때만 삭제
-DELETE FROM categories WHERE id = :categoryId;
-```
+**DB:** [`secrets-reference.md` 섹션 8-3](secrets-reference.md#8-3-카테고리) — deleteCategory SQL
 
 ---
 
