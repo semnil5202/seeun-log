@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   Select,
@@ -37,6 +37,7 @@ import { SlugField } from '@/shared/components/slug/SlugField';
 import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
 import { fetchDraft } from '@/features/draft/api';
 import { useAutoSaveDraft } from '@/features/draft/hooks/useAutoSaveDraft';
+import { createPost } from '@/features/post-management/api/actions';
 import { LoaderIcon, Save, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -52,6 +53,7 @@ export default function NewPostPage() {
 }
 
 function NewPostContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { register, control, watch, setValue, getValues, reset, trigger, setFocus, formState } =
     useForm<PostFormValues>({
@@ -62,7 +64,7 @@ function NewPostContent() {
 
   const { errors } = formState;
 
-  const { lastSavedAt, isSaving, saveManual, loadDraftId } = useAutoSaveDraft({
+  const { draftId, lastSavedAt, isSaving, saveManual, loadDraftId } = useAutoSaveDraft({
     getValues,
   });
 
@@ -86,6 +88,7 @@ function NewPostContent() {
   const [translationResults, setTranslationResults] = useState<TranslationResult[]>([]);
   const [translationError, setTranslationError] = useState(false);
   const [extractionFailed, setExtractionFailed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastConfirmedTerms, setLastConfirmedTerms] = useState<
     { original: string; confirmed: string }[]
   >([]);
@@ -238,7 +241,20 @@ function NewPostContent() {
       return;
     }
 
-    // TODO: 작성 완료 처리
+    setIsSubmitting(true);
+    try {
+      await createPost({
+        formValues: getValues(),
+        translations: translationResults,
+        draftId: draftId,
+      });
+      toast.success('게시글이 작성되었습니다.');
+      router.push('/posts');
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : '게시글 작성에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleTranslationComplete = (
@@ -486,9 +502,10 @@ function NewPostContent() {
             <button
               type="button"
               onClick={handleSubmitClick}
-              className="h-10 bg-primary-600 px-5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-primary-700"
+              disabled={isSubmitting}
+              className="h-10 bg-primary-600 px-5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              작성 완료
+              {isSubmitting ? '작성 중...' : '작성 완료'}
             </button>
           </div>
           {translationError && (

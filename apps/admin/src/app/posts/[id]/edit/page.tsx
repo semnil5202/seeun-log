@@ -5,12 +5,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, LoaderIcon, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { fetchDraft } from '@/features/draft/api';
 import { useAutoSaveDraft } from '@/features/draft/hooks/useAutoSaveDraft';
+import { fetchPost, updatePost } from '@/features/post-management/api/actions';
 
 import {
   AlertDialog,
@@ -52,57 +53,118 @@ import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
 import type { Category, PostFormType, SubCategory, TranslationLocale } from '@/shared/types/post';
 import type { TranslationResult } from '@/features/translation/types';
 
-const MOCK_POST = {
-  id: '1',
-  title: '강남역 숨은 파스타 맛집 베스트 5',
-  slug: 'gangnam-pasta-best-5',
-  content: '<p>강남역 주변에는 정말 맛있는 파스타 집이 많습니다.</p>',
-  description: '강남역 파스타 맛집을 소개합니다.\n숨겨진 보석 같은 곳들을 모았습니다.\n가격 대비 최고의 맛을 자랑합니다.',
-  category: 'delicious' as Category,
-  subCategory: 'western' as SubCategory,
-  thumbnail: 'https://media.eunminlog.site/mock-thumbnail.webp',
-  formType: 'visit' as PostFormType,
-  placeName: '파스타공방',
-  address: '서울특별시 강남구 강남대로 123',
-  pricePrefix: '메인 메뉴 평균 가격: ',
-  price: '2',
-  isMultilingual: true,
-};
-
-const MOCK_TRANSLATIONS: TranslationResult[] = [
-  { locale: 'en', title: 'Top 5 Hidden Pasta Restaurants Near Gangnam Station', content: '<p>There are many delicious pasta restaurants near Gangnam Station.</p>', description: 'Introducing pasta restaurants near Gangnam Station.\nHidden gems collected for you.\nBest taste for the price.', place_name: 'Pasta Workshop', address: '123 Gangnam-daero, Gangnam-gu, Seoul' },
-  { locale: 'ja', title: '江南駅の隠れたパスタ名店ベスト5', content: '<p>江南駅周辺には本当に美味しいパスタ屋さんがたくさんあります。</p>', description: '江南駅のパスタ名店をご紹介します。\n隠れた宝石のようなお店を集めました。\nコスパ最高の味を誇ります。', place_name: 'パスタ工房', address: 'ソウル特別市江南区江南大路123' },
-  { locale: 'zh-CN', title: '江南站隐藏意面美食店Top 5', content: '<p>江南站周围有很多好吃的意面店。</p>', description: '介绍江南站的意面美食店。\n收集了隐藏的宝石般的店铺。\n性价比最高的美味。', place_name: '意面工坊', address: '首尔特别市江南区江南大路123号' },
-  { locale: 'zh-TW', title: '江南站隱藏義大利麵美食店Top 5', content: '<p>江南站周圍有很多好吃的義大利麵店。</p>', description: '介紹江南站的義大利麵美食店。\n收集了隱藏的寶石般的店鋪。\n性價比最高的美味。', place_name: '義大利麵工坊', address: '首爾特別市江南區江南大路123號' },
-  { locale: 'id', title: 'Top 5 Restoran Pasta Tersembunyi di Stasiun Gangnam', content: '<p>Ada banyak restoran pasta yang lezat di sekitar Stasiun Gangnam.</p>', description: 'Memperkenalkan restoran pasta di Stasiun Gangnam.\nPermata tersembunyi dikumpulkan untuk Anda.\nRasa terbaik untuk harganya.', place_name: 'Pasta Workshop', address: '123 Gangnam-daero, Gangnam-gu, Seoul' },
-  { locale: 'vi', title: 'Top 5 Nhà hàng Pasta Ẩn giấu Gần Ga Gangnam', content: '<p>Xung quanh ga Gangnam có rất nhiều nhà hàng pasta ngon.</p>', description: 'Giới thiệu các nhà hàng pasta gần ga Gangnam.\nNhững viên ngọc ẩn giấu được thu thập cho bạn.\nHương vị tuyệt vời nhất với giá cả.', place_name: 'Pasta Workshop', address: '123 Gangnam-daero, Gangnam-gu, Seoul' },
-  { locale: 'th', title: 'Top 5 ร้านพาสต้าลับใกล้สถานีคังนัม', content: '<p>บริเวณสถานีคังนัมมีร้านพาสต้าอร่อยมากมาย</p>', description: 'แนะนำร้านพาสต้าใกล้สถานีคังนัม\nรวบรวมร้านเด็ดที่ซ่อนอยู่\nรสชาติดีที่สุดคุ้มราคา', place_name: 'พาสต้าเวิร์คช็อป', address: '123 คังนัมแดโร, คังนัม-กู, โซล' },
-];
-
 export default function EditPostPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
-  // TODO: getPost(id) Server Action 호출로 교체
-  const post = { ...MOCK_POST, id };
+  const [postData, setPostData] = useState<{
+    post: {
+      id: string;
+      slug: string;
+      title: string;
+      description: string;
+      content: string;
+      category: string;
+      sub_category: string;
+      thumbnail: string;
+      is_multilingual: boolean;
+      place_name: string | null;
+      address: string | null;
+      price_prefix: string | null;
+      price: number | null;
+    };
+    translations: TranslationResult[];
+  } | null>(null);
+  const [isLoadingPost, setIsLoadingPost] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    fetchPost(id)
+      .then(setPostData)
+      .catch(() => setNotFound(true))
+      .finally(() => setIsLoadingPost(false));
+  }, [id]);
+
+  if (isLoadingPost) {
+    return (
+      <div className="flex h-40 items-center justify-center text-muted-foreground">
+        게시글을 불러오는 중...
+      </div>
+    );
+  }
+
+  if (notFound || !postData) {
+    return (
+      <div className="space-y-4">
+        <Link
+          href="/posts"
+          className="inline-flex text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="size-5" />
+        </Link>
+        <p className="text-muted-foreground">게시글을 찾을 수 없습니다.</p>
+      </div>
+    );
+  }
+
+  return (
+    <EditPostForm
+      postData={postData}
+      postId={id}
+      router={router}
+      searchParams={searchParams}
+    />
+  );
+}
+
+function EditPostForm({
+  postData,
+  postId,
+  router,
+  searchParams,
+}: {
+  postData: {
+    post: {
+      id: string;
+      slug: string;
+      title: string;
+      description: string;
+      content: string;
+      category: string;
+      sub_category: string;
+      thumbnail: string;
+      is_multilingual: boolean;
+      place_name: string | null;
+      address: string | null;
+      price_prefix: string | null;
+      price: number | null;
+    };
+    translations: TranslationResult[];
+  };
+  postId: string;
+  router: ReturnType<typeof useRouter>;
+  searchParams: ReturnType<typeof useSearchParams>;
+}) {
+  const post = postData.post;
 
   const initialValues = useMemo<PostFormValues>(
     () => ({
-      formType: post.formType,
+      formType: (post.place_name ? 'visit' : 'product-review') as PostFormType,
       title: post.title,
       content: post.content,
       category: post.category,
-      subCategory: post.subCategory,
+      subCategory: post.sub_category,
       thumbnail: post.thumbnail,
       slug: post.slug,
       description: post.description,
-      placeName: post.placeName,
-      address: post.address,
-      pricePrefix: post.pricePrefix,
-      price: post.price,
+      placeName: post.place_name ?? '',
+      address: post.address ?? '',
+      pricePrefix: post.price_prefix ?? '',
+      price: post.price != null ? String(post.price) : '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- post data only changes when id changes
-    [post.id],
+    [postId],
   );
 
   const { register, control, watch, setValue, getValues, reset, trigger, setFocus, formState } =
@@ -116,7 +178,7 @@ export default function EditPostPage() {
 
   const { lastSavedAt, isSaving, saveManual, loadDraftId } = useAutoSaveDraft({
     getValues,
-    postId: id,
+    postId,
   });
 
   useEffect(() => {
@@ -132,9 +194,10 @@ export default function EditPostPage() {
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummarized, setIsSummarized] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [translationResults, setTranslationResults] = useState<TranslationResult[]>(MOCK_TRANSLATIONS);
+  const [translationResults, setTranslationResults] = useState<TranslationResult[]>(postData.translations);
   const [translationEditCompleted, setTranslationEditCompleted] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formType = watch('formType');
   const title = watch('title');
@@ -147,7 +210,7 @@ export default function EditPostPage() {
   const watchedPricePrefix = watch('pricePrefix');
   const watchedPrice = watch('price');
 
-  const isMultilingual = post.isMultilingual;
+  const isMultilingual = post.is_multilingual;
 
   const dirtyTranslationFields = useMemo(() => {
     const fields = new Set<TranslationField>();
@@ -270,10 +333,22 @@ export default function EditPostPage() {
     setShowSubmitDialog(true);
   };
 
-  const handleConfirmSubmit = () => {
-    setShowSubmitDialog(false);
-    // TODO: updatePost + saveTranslations Server Action 호출
-    toast.success('게시글이 수정되었습니다.');
+  const handleConfirmSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await updatePost({
+        id: postId,
+        formValues: getValues(),
+        translations: translationResults,
+      });
+      setShowSubmitDialog(false);
+      toast.success('게시글이 수정되었습니다.');
+      router.push('/posts');
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : '게시글 수정에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -380,6 +455,7 @@ export default function EditPostPage() {
             value={watch('slug')}
             onChange={(slug) => setValue('slug', slug, { shouldValidate: true })}
             placeholder="예: gangnam-pasta-review"
+            excludeId={postId}
           />
           {errors.slug && (
             <p className="mt-1 text-[14px] text-red-500">{errors.slug.message}</p>
@@ -514,7 +590,9 @@ export default function EditPostPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmSubmit}>확인</AlertDialogAction>
+            <AlertDialogAction onClick={handleConfirmSubmit} disabled={isSubmitting}>
+              {isSubmitting ? '수정 중...' : '확인'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Link from 'next/link';
@@ -38,6 +38,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import {
+  deletePosts,
+  fetchPosts,
+  type PostListItem,
+} from '@/features/post-management/api/actions';
+
 type SortKey = 'publishedAt' | 'updatedAt';
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
@@ -52,41 +58,6 @@ type FilterFormValues = {
   to: string;
   query: string;
 };
-
-type PostItem = {
-  id: number;
-  title: string;
-  publishedAt: string;
-  updatedAt: string;
-};
-
-const MOCK_DATA: PostItem[] = [
-  {
-    id: 1,
-    title: '강남역 숨은 파스타 맛집 베스트 5',
-    publishedAt: '2026-02-28',
-    updatedAt: '2026-03-02',
-  },
-  {
-    id: 2,
-    title: '제주도 3박 4일 여행 코스 추천',
-    publishedAt: '2026-02-25',
-    updatedAt: '2026-02-27',
-  },
-  { id: 3, title: '홍대 감성 카페 투어', publishedAt: '2026-02-22', updatedAt: '2026-02-22' },
-  { id: 4, title: '을지로 힙한 술집 모음', publishedAt: '2026-02-20', updatedAt: '2026-02-21' },
-  { id: 5, title: '부산 해운대 맛집 리스트', publishedAt: '2026-02-18', updatedAt: '2026-02-19' },
-  { id: 6, title: '성수동 브런치 카페 TOP 7', publishedAt: '2026-02-15', updatedAt: '2026-02-16' },
-  { id: 7, title: '경주 당일치기 여행 코스', publishedAt: '2026-02-12', updatedAt: '2026-02-12' },
-  { id: 8, title: '이태원 이색 레스토랑 추천', publishedAt: '2026-02-10', updatedAt: '2026-02-11' },
-  { id: 9, title: '양양 서핑 스팟 & 카페', publishedAt: '2026-02-08', updatedAt: '2026-02-08' },
-  {
-    id: 10,
-    title: '전주 한옥마을 먹거리 투어',
-    publishedAt: '2026-02-05',
-    updatedAt: '2026-02-06',
-  },
-];
 
 function getDefaultDateRange() {
   const now = new Date();
@@ -124,14 +95,49 @@ function PostsContent() {
     },
   });
 
-  const [appliedFilter, setAppliedFilter] = useState<FilterFormValues>(getValues());
   const [sortBy, setSortBy] = useState<SortKey>(
     (searchParams.get('sort') as SortKey) || 'publishedAt',
   );
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-  const [deletedIds, setDeletedIds] = useState<Set<number>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [posts, setPosts] = useState<PostListItem[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [currentFilter, setCurrentFilter] = useState<FilterFormValues>(getValues());
+  const [currentSort, setCurrentSort] = useState<SortKey>(sortBy);
+
+  const loadPosts = useCallback(
+    async (filter: FilterFormValues, sort: SortKey, p: number) => {
+      setIsLoading(true);
+      try {
+        const result = await fetchPosts({
+          page: p,
+          pageSize: PAGE_SIZE,
+          sortBy: sort,
+          from: filter.from || undefined,
+          to: filter.to || undefined,
+          search: filter.query || undefined,
+        });
+        setPosts(result.posts);
+        setTotalCount(result.totalCount);
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : '게시글 조회에 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    loadPosts(currentFilter, currentSort, page);
+  }, [loadPosts, currentFilter, currentSort, page]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const buildQueryString = useCallback((filter: FilterFormValues, sort: SortKey, p: number) => {
     const params = new URLSearchParams();
@@ -146,7 +152,8 @@ function PostsContent() {
 
   const handleSearch = () => {
     const current = getValues();
-    setAppliedFilter(current);
+    setCurrentFilter(current);
+    setCurrentSort(sortBy);
     setPage(1);
     setSelectedIds(new Set());
     router.replace(buildQueryString(current, sortBy, 1), { scroll: false });
@@ -155,49 +162,29 @@ function PostsContent() {
   const handleSortChange = (value: string) => {
     const newSort = value as SortKey;
     setSortBy(newSort);
+    setCurrentSort(newSort);
     setPage(1);
     setSelectedIds(new Set());
-    router.replace(buildQueryString(appliedFilter, newSort, 1), { scroll: false });
+    router.replace(buildQueryString(currentFilter, newSort, 1), { scroll: false });
   };
 
   const handlePageChange = (p: number) => {
     setPage(p);
     setSelectedIds(new Set());
-    router.replace(buildQueryString(appliedFilter, sortBy, p), { scroll: false });
+    router.replace(buildQueryString(currentFilter, currentSort, p), { scroll: false });
   };
 
-  const filteredData = useMemo(
-    () =>
-      MOCK_DATA.filter((post) => !deletedIds.has(post.id))
-        .filter((post) => {
-          if (appliedFilter.query) {
-            return post.title.toLowerCase().includes(appliedFilter.query.toLowerCase());
-          }
-          return true;
-        })
-        .filter((post) => {
-          if (appliedFilter.from && post.publishedAt < appliedFilter.from) return false;
-          if (appliedFilter.to && post.publishedAt > appliedFilter.to) return false;
-          return true;
-        })
-        .sort((a, b) => (a[sortBy] > b[sortBy] ? -1 : 1)),
-    [appliedFilter, sortBy, deletedIds],
-  );
-
-  const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
-  const pagedData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  const isAllSelected = pagedData.length > 0 && pagedData.every((p) => selectedIds.has(p.id));
+  const isAllSelected = posts.length > 0 && posts.every((p) => selectedIds.has(p.id));
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(pagedData.map((p) => p.id)));
+      setSelectedIds(new Set(posts.map((p) => p.id)));
     }
   };
 
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -206,16 +193,25 @@ function PostsContent() {
     });
   };
 
-  const selectedTitles = filteredData
+  const selectedTitles = posts
     .filter((p) => selectedIds.has(p.id))
     .map((p) => truncateTitle(p.title));
 
-  const handleDelete = () => {
-    // TODO: deletePosts(Array.from(selectedIds).map(String)) — DB 연동 시 활성화
-    setDeletedIds((prev) => new Set([...prev, ...selectedIds]));
-    toast.success(`${selectedIds.size}개의 게시글이 삭제되었습니다.`);
-    setSelectedIds(new Set());
-    setIsDeleteDialogOpen(false);
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const result = await deletePosts(Array.from(selectedIds));
+      if (result.success) {
+        toast.success(`${result.deletedCount}개의 게시글이 삭제되었습니다.`);
+        setSelectedIds(new Set());
+        setIsDeleteDialogOpen(false);
+        await loadPosts(currentFilter, currentSort, page);
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : '게시글 삭제에 실패했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -267,7 +263,7 @@ function PostsContent() {
                   <Checkbox
                     checked={isAllSelected}
                     onCheckedChange={toggleSelectAll}
-                    disabled={pagedData.length === 0}
+                    disabled={posts.length === 0}
                   />
                 </TableHead>
                 <TableHead className="w-[55%] font-bold text-white">게시글 제목</TableHead>
@@ -276,14 +272,20 @@ function PostsContent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pagedData.length === 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                    게시글을 불러오는 중...
+                  </TableCell>
+                </TableRow>
+              ) : posts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                     데이터가 없습니다.
                   </TableCell>
                 </TableRow>
               ) : (
-                pagedData.map((post) => (
+                posts.map((post) => (
                   <TableRow key={post.id}>
                     <TableCell className="px-4 py-3">
                       <Checkbox
@@ -296,8 +298,12 @@ function PostsContent() {
                         {post.title}
                       </Link>
                     </TableCell>
-                    <TableCell className="py-3 text-center">{post.publishedAt}</TableCell>
-                    <TableCell className="py-3 text-center">{post.updatedAt}</TableCell>
+                    <TableCell className="py-3 text-center">
+                      {post.created_at.slice(0, 10)}
+                    </TableCell>
+                    <TableCell className="py-3 text-center">
+                      {post.updated_at.slice(0, 10)}
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -326,8 +332,12 @@ function PostsContent() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDelete}>
-              삭제
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? '삭제 중...' : '삭제'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
