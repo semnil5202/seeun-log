@@ -242,7 +242,29 @@ DELETE FROM posts WHERE id = :postId;
 
 ---
 
-### 4.2 용어 추출 — `extractFlaggedTerms`
+### 4.2 슬러그 추천 — `generateSlugSuggestions`
+
+**Type:** Server Action (구현 완료)
+
+**Input:**
+
+```typescript
+{
+  text: string;                    // 한국어 카테고리명 또는 게시글 제목
+}
+```
+
+**Output:** `string[]` — 영문 slug 후보 3개
+
+**External:** OpenAI GPT-5 Nano API (`response_format: { type: 'json_object' }`)
+
+**DB:** 없음 (결과는 클라이언트 UI에서 선택/직접 입력)
+
+**사용처:** 카테고리 생성 (`/categories/new`), 게시글 작성 (`/posts/new`)
+
+---
+
+### 4.3 용어 추출 — `extractFlaggedTerms`
 
 **Type:** Server Action (구현 완료)
 
@@ -276,7 +298,7 @@ DELETE FROM posts WHERE id = :postId;
 
 ---
 
-### 4.3 번역본 생성 — `translatePost`
+### 4.4 번역본 생성 — `translatePost`
 
 **Type:** Server Action (구현 완료)
 
@@ -322,7 +344,7 @@ DELETE FROM posts WHERE id = :postId;
 
 ---
 
-### 4.4 개별 locale 재번역 — `retrySingleLocale`
+### 4.5 개별 locale 재번역 — `retrySingleLocale`
 
 **Type:** Server Action (구현 완료)
 
@@ -348,7 +370,7 @@ DELETE FROM posts WHERE id = :postId;
 
 ---
 
-### 4.5 번역 저장 — `saveTranslations`
+### 4.6 번역 저장 — `saveTranslations`
 
 **Type:** Server Action (미구현)
 
@@ -391,7 +413,7 @@ DO UPDATE SET
 
 ---
 
-### 4.6 번역 조회 — `getTranslations`
+### 4.7 번역 조회 — `getTranslations`
 
 **Type:** Server Action
 
@@ -650,7 +672,7 @@ DELETE FROM categories WHERE id = :categoryId;
 | 1    | `createPost`, `updatePost`, `getPost`                      | 3     | 미구현     |
 | 2    | `signIn`, `signOut`, `getSession`                          | 2     | 미구현     |
 | 3    | `getPresignedUrl`                                          | 4     | 미구현     |
-| 4    | `generateSummary`, `extractFlaggedTerms`                   | 3     | 구현 완료  |
+| 4    | `generateSummary`, `extractFlaggedTerms`, `generateSlugSuggestions` | 3 | 구현 완료 |
 | 5    | `translatePost`, `retrySingleLocale`                       | 3     | 구현 완료  |
 | 6    | `saveTranslations`                                         | 4     | 미구현     |
 | 7    | `listPosts`, `deletePost`                                  | 4     | 미구현     |

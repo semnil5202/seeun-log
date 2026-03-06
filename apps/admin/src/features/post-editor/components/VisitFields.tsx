@@ -1,15 +1,24 @@
 /** 체험 방문 전용 필드 — 장소, 주소, 가격. */
 
-import type { FieldErrors, UseFormRegister } from 'react-hook-form';
+import type { FocusEvent } from 'react';
+import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 
 import type { PostFormValues } from '../types/form';
 
 type VisitFieldsProps = {
   register: UseFormRegister<PostFormValues>;
   errors: FieldErrors<PostFormValues>;
+  setValue: UseFormSetValue<PostFormValues>;
 };
 
-export function VisitFields({ register, errors }: VisitFieldsProps) {
+export function VisitFields({ register, errors, setValue }: VisitFieldsProps) {
+  const handlePricePrefixBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val && !val.endsWith(' ')) {
+      setValue('pricePrefix', val + ' ');
+    }
+  };
+
   return (
     <div className="mt-8 space-y-4">
       <div>
@@ -45,7 +54,7 @@ export function VisitFields({ register, errors }: VisitFieldsProps) {
           <label className="mb-1 block text-base font-bold">가격 설명</label>
           <input
             type="text"
-            {...register('pricePrefix')}
+            {...register('pricePrefix', { onBlur: handlePricePrefixBlur })}
             placeholder="ex) 메인 메뉴 평균 가격: "
             className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
           />

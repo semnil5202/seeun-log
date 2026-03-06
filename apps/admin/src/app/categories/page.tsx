@@ -3,6 +3,7 @@
 import { Suspense, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
 
@@ -120,8 +121,10 @@ function CategoriesContent() {
 
       <div>
         <div className="mb-3">
-          <Button>
-            <Plus className="mr-1 h-4 w-4" />새 카테고리 생성
+          <Button asChild>
+            <Link href="/categories/new">
+              <Plus className="mr-1 h-4 w-4" />새 카테고리 생성
+            </Link>
           </Button>
         </div>
 

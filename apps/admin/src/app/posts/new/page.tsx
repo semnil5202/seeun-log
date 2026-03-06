@@ -32,6 +32,8 @@ import {
 import { LOCALE_FILTER_LABELS } from '@/features/translation/constants/locale';
 import { TranslationPreviewSheet } from '@/features/translation/components/TranslationPreviewSheet';
 import { TranslationSheetContainer } from '@/features/translation/containers/TranslationSheetContainer';
+import { SlugField } from '@/shared/components/slug/SlugField';
+import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
 import { LoaderIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -72,7 +74,7 @@ export default function NewPostPage() {
 
   const focusFirstEmptyField = () => {
     const values = getValues();
-    const focusable = new Set<string>(['title', 'placeName', 'address', 'price', 'description']);
+    const focusable = new Set<string>(['title', 'slug', 'placeName', 'address', 'price', 'description']);
 
     const checks: [keyof PostFormValues, boolean][] = [
       ['title', !values.title.trim()],
@@ -326,6 +328,21 @@ export default function NewPostPage() {
           )}
         </div>
 
+        <div className="mt-8">
+          <label className="mb-1 block text-base font-bold">
+            슬러그 생성 <span className="text-primary-600">*</span>
+          </label>
+          <SlugField
+            sourceText={title}
+            value={watch('slug')}
+            onChange={(slug) => setValue('slug', slug, { shouldValidate: true })}
+            placeholder="예: gangnam-pasta-review"
+          />
+          {errors.slug && (
+            <p className="mt-1 text-[14px] text-red-500">{errors.slug.message}</p>
+          )}
+        </div>
+
         <div id="field-category" className="mt-8">
           <label className="mb-1 block text-base font-bold">
             카테고리 <span className="text-primary-600">*</span>
@@ -345,22 +362,20 @@ export default function NewPostPage() {
           )}
         </div>
 
-        {formType === 'visit' && <VisitFields register={register} errors={errors} />}
+        {formType === 'visit' && <VisitFields register={register} errors={errors} setValue={setValue} />}
 
         <div className="mt-8">
           <div className="mb-1 flex items-center justify-between">
             <label className="text-base font-bold">
               3줄 요약 <span className="text-primary-600">*</span>
             </label>
-            <button
-              type="button"
+            <AiGenerateButton
               onClick={handleGenerateSummary}
-              disabled={isSummarized || isSummarizing || !!description.trim()}
-              className="inline-flex items-center gap-1.5 border border-input px-3 py-1 text-xs font-semibold shadow-xs transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isSummarized ? '요약 완료' : '요약 생성'}
-              {isSummarizing && <LoaderIcon className="size-3 animate-spin" />}
-            </button>
+              isLoading={isSummarizing}
+              isCompleted={isSummarized}
+              disabled={!watch('content').trim()}
+              hasExistingValue={!!description.trim()}
+            />
           </div>
           <Controller
             name="description"
