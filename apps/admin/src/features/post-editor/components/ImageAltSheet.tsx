@@ -104,7 +104,7 @@ export function ImageAltSheet({
                 <div className="space-y-2">
                   <div className="flex items-start gap-3">
                     <span className="shrink-0 pt-1 text-sm font-medium text-muted-foreground">
-                      썸네일
+                      1.
                     </span>
                     <img
                       src={thumbnail}
@@ -124,7 +124,7 @@ export function ImageAltSheet({
                 <div key={src} className="space-y-2">
                   <div className="flex items-start gap-3">
                     <span className="shrink-0 pt-1 text-sm font-medium text-muted-foreground">
-                      {i + 1}.
+                      {hasThumbnail ? i + 2 : i + 1}.
                     </span>
                     <img
                       src={src}

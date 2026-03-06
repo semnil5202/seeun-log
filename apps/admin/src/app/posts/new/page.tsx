@@ -292,16 +292,15 @@ function NewPostContent() {
       return;
     }
 
+    const thumbnailAltFilled = !getValues('thumbnail') || getValues('thumbnailAlt').trim();
     const srcs = extractImageSrcs(getValues('content'));
-    if (srcs.length > 0) {
-      const allFilled = srcs.every((src) => {
-        const found = imageAlts.find((a) => a.src === src);
-        return found && found.alt.trim();
-      });
-      if (!allFilled) {
-        setImageAltError(true);
-        return;
-      }
+    const contentAltsFilled = srcs.every((src) => {
+      const found = imageAlts.find((a) => a.src === src);
+      return found && found.alt.trim();
+    });
+    if (!thumbnailAltFilled || !contentAltsFilled) {
+      setImageAltError(true);
+      return;
     }
 
     handleTranslationStart();
