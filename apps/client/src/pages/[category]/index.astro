@@ -6,20 +6,21 @@ import PostCardGrid from "@/features/post-feed/components/PostCardGrid.astro";
 import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import { DEFAULT_LOCALE } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
-import { CATEGORY_SLUGS } from "@/shared/types/category";
 import type { CategorySlug } from "@/shared/types/category";
 import {
   getPaginatedPostsByCategory,
   getSponsoredPosts,
   getMultilingualCategories,
 } from "@/features/post-feed/api/posts";
+import { fetchCategorySlugs } from "@/features/post-feed/api/categories";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
 import { SITE_NAME_KO } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
-  return CATEGORY_SLUGS.map((category) => ({
+  const categorySlugs = await fetchCategorySlugs();
+  return categorySlugs.map((category) => ({
     params: { category },
     props: { category },
   }));

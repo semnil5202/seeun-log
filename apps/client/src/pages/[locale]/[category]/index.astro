@@ -7,13 +7,13 @@ import BreadcrumbJsonLd from "@/shared/components/seo/BreadcrumbJsonLd.astro";
 import { LOCALES, DEFAULT_LOCALE } from "@/shared/types/common";
 import type { Locale } from "@/shared/types/common";
 import type { LocalizedPost } from "@/shared/types/post";
-import { CATEGORY_SLUGS } from "@/shared/types/category";
 import type { CategorySlug } from "@/shared/types/category";
 import {
   getPaginatedMultilingualPostsByCategory,
   getMultilingualSponsoredPosts,
   getMultilingualCategories,
 } from "@/features/post-feed/api/posts";
+import { fetchCategorySlugs } from "@/features/post-feed/api/categories";
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
@@ -22,14 +22,17 @@ import { SITE_NAME_KO, SITE_NAME_EN } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
-  const multilingualCategorySlugs = await getMultilingualCategories();
+  const [multilingualCategorySlugs, allCategorySlugs] = await Promise.all([
+    getMultilingualCategories(),
+    fetchCategorySlugs(),
+  ]);
   const paths: {
     params: { locale: string; category: string };
     props: { locale: Locale; category: CategorySlug };
   }[] = [];
 
   for (const locale of nonDefaultLocales) {
-    for (const category of CATEGORY_SLUGS) {
+    for (const category of allCategorySlugs) {
       if (!multilingualCategorySlugs.includes(category)) continue;
       paths.push({
         params: { locale, category },

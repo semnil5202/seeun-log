@@ -1,12 +1,9 @@
 import type { Locale } from '@/shared/types/common';
-import {
-  CATEGORY_SLUGS,
-  SUB_CATEGORY_MAP,
-  type CategorySlug,
-  type CategoryNode,
-} from '@/shared/types/category';
+import { DEFAULT_LOCALE } from '@/shared/types/common';
+import type { CategoryNode } from '@/shared/types/category';
+import { fetchCategoryTree } from '@/features/post-feed/api/categories';
 
-const CATEGORY_LABELS: Record<Locale, Record<CategorySlug, string>> = {
+const CATEGORY_LABELS: Record<Locale, Record<string, string>> = {
   ko: { delicious: '맛집', cafe: '카페', travel: '여행' },
   en: { delicious: 'Food', cafe: 'Cafe', travel: 'Travel' },
   ja: { delicious: 'グルメ', cafe: 'カフェ', travel: '旅行' },
@@ -108,18 +105,31 @@ const SUB_CATEGORY_LABELS: Record<Locale, Record<string, string>> = {
   },
 };
 
-export const getCategoryLabel = (category: CategorySlug, locale: Locale): string =>
-  CATEGORY_LABELS[locale][category];
+export const getCategoryLabel = (category: string, locale: Locale): string =>
+  CATEGORY_LABELS[locale]?.[category] ?? category;
 
 export const getSubCategoryLabel = (subCategory: string, locale: Locale): string =>
-  SUB_CATEGORY_LABELS[locale][subCategory] ?? subCategory;
+  SUB_CATEGORY_LABELS[locale]?.[subCategory] ?? subCategory;
 
-export const getCategoryTree = (locale: Locale): CategoryNode[] =>
-  CATEGORY_SLUGS.map((slug) => ({
-    slug,
-    label: CATEGORY_LABELS[locale][slug],
-    subCategories: SUB_CATEGORY_MAP[slug].map((sub) => ({
-      slug: sub,
-      label: SUB_CATEGORY_LABELS[locale][sub],
+/**
+ * DB에서 카테고리 트리를 가져와 locale별 레이블로 변환한다.
+ * 한국어(DEFAULT_LOCALE)는 DB의 name 필드를 사용하고, 다국어는 레이블 맵을 사용한다.
+ */
+export const getCategoryTree = async (locale: Locale): Promise<CategoryNode[]> => {
+  const tree = await fetchCategoryTree();
+
+  return tree.map((cat) => ({
+    slug: cat.slug,
+    label:
+      locale === DEFAULT_LOCALE
+        ? cat.name
+        : (CATEGORY_LABELS[locale]?.[cat.slug] ?? cat.name),
+    subCategories: cat.subCategories.map((sub) => ({
+      slug: sub.slug,
+      label:
+        locale === DEFAULT_LOCALE
+          ? sub.name
+          : (SUB_CATEGORY_LABELS[locale]?.[sub.slug] ?? sub.name),
     })),
   }));
+};

@@ -1,13 +1,13 @@
 ---
 /** 모바일 전용 서브카테고리 수평 탭. 카테고리 페이지 상단에 하위카테고리를 나열한다. */
 
-import { SUB_CATEGORY_MAP } from "@/shared/types/category";
 import type { CategorySlug } from "@/shared/types/category";
 import { getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 import { getLocalePath } from "@/shared/lib/i18n/locales";
 import type { Locale } from "@/shared/types/common";
 import { DEFAULT_LOCALE } from "@/shared/types/common";
 import { getMultilingualSubCategories } from "@/features/post-feed/api/posts";
+import { fetchSubCategoryMap } from "@/features/post-feed/api/categories";
 
 interface Props {
   category: CategorySlug;
@@ -17,7 +17,8 @@ interface Props {
 
 const { category, activeSubCategory, locale } = Astro.props;
 
-const allSubCategories = SUB_CATEGORY_MAP[category];
+const subCategoryMap = await fetchSubCategoryMap();
+const allSubCategories = subCategoryMap[category] ?? [];
 const multilingualSubs = locale !== DEFAULT_LOCALE ? await getMultilingualSubCategories(category) : null;
 const subCategories = multilingualSubs ? allSubCategories.filter((s) => multilingualSubs.includes(s)) : allSubCategories;
 ---

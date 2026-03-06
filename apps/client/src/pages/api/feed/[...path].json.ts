@@ -2,7 +2,8 @@
 
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { type Locale, LOCALES, DEFAULT_LOCALE } from '@/shared/types/common';
-import { CATEGORY_SLUGS, SUB_CATEGORY_MAP, type CategorySlug } from '@/shared/types/category';
+import type { CategorySlug } from '@/shared/types/category';
+import { fetchSubCategoryMap } from '@/features/post-feed/api/categories';
 import {
   getPaginatedPosts,
   getPaginatedPostsByCategory,
@@ -82,11 +83,11 @@ const fetchPage = async (
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths: { params: { path: string }; props: PathProps }[] = [];
+  const subCategoryMap = await fetchSubCategoryMap();
 
   for (const locale of LOCALES) {
     const isDefault = locale === DEFAULT_LOCALE;
 
-    // all posts
     const { totalPages: allTotal } = isDefault
       ? await getPaginatedPosts(1)
       : await getPaginatedMultilingualPosts(1);
@@ -97,27 +98,25 @@ export const getStaticPaths: GetStaticPaths = async () => {
       });
     }
 
-    // category pages
-    for (const category of CATEGORY_SLUGS) {
+    for (const [category, subCategories] of Object.entries(subCategoryMap)) {
       const { totalPages: catTotal } = isDefault
-        ? await getPaginatedPostsByCategory(category, 1)
-        : await getPaginatedMultilingualPostsByCategory(category, 1);
+        ? await getPaginatedPostsByCategory(category as CategorySlug, 1)
+        : await getPaginatedMultilingualPostsByCategory(category as CategorySlug, 1);
       for (let page = 2; page <= catTotal; page++) {
         paths.push({
           params: { path: `${locale}/${category}/${page}` },
-          props: { locale, category, subCategory: null, page },
+          props: { locale, category: category as CategorySlug, subCategory: null, page },
         });
       }
 
-      // subcategory pages
-      for (const sub of SUB_CATEGORY_MAP[category]) {
+      for (const sub of subCategories) {
         const { totalPages: subTotal } = isDefault
-          ? await getPaginatedPostsBySubCategory(category, sub, 1)
-          : await getPaginatedMultilingualPostsBySubCategory(category, sub, 1);
+          ? await getPaginatedPostsBySubCategory(category as CategorySlug, sub, 1)
+          : await getPaginatedMultilingualPostsBySubCategory(category as CategorySlug, sub, 1);
         for (let page = 2; page <= subTotal; page++) {
           paths.push({
             params: { path: `${locale}/${category}/${sub}/${page}` },
-            props: { locale, category, subCategory: sub, page },
+            props: { locale, category: category as CategorySlug, subCategory: sub, page },
           });
         }
       }

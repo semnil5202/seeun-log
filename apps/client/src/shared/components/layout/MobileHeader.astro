@@ -19,7 +19,7 @@ interface Props {
 
 const { locale, path, isMultilingual = true } = Astro.props;
 
-const allCategories = getCategoryTree(locale);
+const allCategories = await getCategoryTree(locale);
 const multilingualCategorySlugs = locale !== DEFAULT_LOCALE ? await getMultilingualCategories() : null;
 const categories = multilingualCategorySlugs
   ? allCategories.filter((c) => multilingualCategorySlugs.includes(c.slug))

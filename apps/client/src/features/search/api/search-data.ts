@@ -2,7 +2,6 @@
 
 import type { LocalizedPost } from '@/shared/types/post';
 import type { Locale } from '@/shared/types/common';
-import { CATEGORY_SLUGS } from '@/shared/types/category';
 import { getCategoryLabel } from '@/shared/lib/i18n/categories';
 import { getLocalePath } from '@/shared/lib/i18n/locales';
 
@@ -56,7 +55,8 @@ export const buildSearchData = (posts: LocalizedPost[], locale: Locale): SearchB
   const placeNames = [
     ...new Set(posts.map((p) => p.translated_place_name ?? p.place_name).filter(Boolean)),
   ] as string[];
-  const categoryLabels = CATEGORY_SLUGS.map((slug) => getCategoryLabel(slug, locale));
+  const uniqueCategorySlugs = [...new Set(posts.map((p) => p.category))];
+  const categoryLabels = uniqueCategorySlugs.map((slug) => getCategoryLabel(slug, locale));
   const suggestedKeywords = [...placeNames, ...categoryLabels];
 
   return { searchData, suggestedKeywords };
