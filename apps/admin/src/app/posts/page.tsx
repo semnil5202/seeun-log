@@ -264,6 +264,7 @@ function PostsContent() {
                     checked={isAllSelected}
                     onCheckedChange={toggleSelectAll}
                     disabled={posts.length === 0}
+                    className="border-white"
                   />
                 </TableHead>
                 <TableHead className="w-[55%] font-bold text-white">게시글 제목</TableHead>

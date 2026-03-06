@@ -267,6 +267,7 @@ function CategoriesContent() {
                     checked={isAllSelected}
                     onCheckedChange={toggleSelectAll}
                     disabled={selectableItems.length === 0}
+                    className="border-white"
                   />
                 </TableHead>
                 <TableHead className="w-[18%] font-bold text-white">대분류 카테고리명</TableHead>
@@ -301,7 +302,7 @@ function CategoriesContent() {
                         />
                       )}
                     </TableCell>
-                    <TableCell className="py-3 font-bold">
+                    <TableCell className="py-3 font-medium">
                       <Link
                         href={`/categories/${group.parent.id}/edit`}
                         className="text-blue-600 underline"
