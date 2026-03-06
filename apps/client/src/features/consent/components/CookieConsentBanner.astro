@@ -1,0 +1,93 @@
+---
+/** 쿠키 동의 Sticky Footer Banner. CONSENT_REQUIRED_LOCALES에 해당하는 locale에서만 렌더링된다. */
+
+import { isConsentRequired } from "@/shared/lib/consent";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
+import { t } from "@/shared/lib/i18n/translations";
+import type { Locale } from "@/shared/types/common";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const shouldRender = isConsentRequired(locale);
+const privacyHref = getLocalePath("/privacy/", locale);
+---
+
+{shouldRender && (
+  <div
+    id="cookie-consent-banner"
+    role="dialog"
+    aria-modal="false"
+    aria-label={t("consent.ariaLabel", locale)}
+    class="fixed bottom-0 left-0 right-0 z-40 translate-y-full opacity-0 transition-all duration-300 ease-out bg-gray-800 shadow-[0_-2px_10px_rgba(0,0,0,0.15)]"
+    data-locale={locale}
+  >
+    <div class="max-w-screen-xl mx-auto px-4 lg:px-6 py-2.5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 lg:gap-6">
+        <p id="cookie-consent-desc" class="text-xs text-gray-0">
+          {t("consent.message", locale)}{" "}
+          <a
+            href={privacyHref}
+            class="text-primary-300 underline"
+          >
+            {t("consent.learnMore", locale)}
+          </a>
+        </p>
+        <div class="flex gap-2.5 shrink-0">
+          <button
+            type="button"
+            id="cookie-reject-btn"
+            class="grow lg:grow-0 px-5 py-1.5 text-xs font-medium text-gray-0 border border-gray-400 transition-colors duration-150 hover:bg-gray-700"
+          >
+            {t("consent.reject", locale)}
+          </button>
+          <button
+            type="button"
+            id="cookie-accept-btn"
+            class="grow lg:grow-0 px-5 py-1.5 text-xs font-medium text-gray-0 bg-primary-500 transition-colors duration-150 hover:bg-primary-600"
+          >
+            {t("consent.accept", locale)}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{shouldRender && (
+  <script>
+    import { getConsentState, setConsentCookie } from "@/shared/lib/consent";
+
+    const banner = document.getElementById("cookie-consent-banner");
+    if (banner && getConsentState() === "undecided") {
+      requestAnimationFrame(() => {
+        banner.classList.remove("translate-y-full", "opacity-0");
+        banner.classList.add("translate-y-0", "opacity-100");
+      });
+
+      const locale = banner.dataset.locale ?? "";
+
+      const hide = () => {
+        banner.classList.remove("translate-y-0", "opacity-100");
+        banner.classList.add("translate-y-full", "opacity-0");
+        banner.addEventListener("transitionend", () => banner.classList.add("hidden"), { once: true });
+      };
+
+      const handle = (accepted: boolean) => {
+        setConsentCookie(accepted);
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "cookie_consent", {
+            action: accepted ? "accept" : "reject",
+            content_locale: locale,
+          });
+        }
+        hide();
+      };
+
+      document.getElementById("cookie-accept-btn")?.addEventListener("click", () => handle(true));
+      document.getElementById("cookie-reject-btn")?.addEventListener("click", () => handle(false));
+    }
+  </script>
+)}

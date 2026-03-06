@@ -5,6 +5,7 @@ import Header from "@/shared/components/layout/Header.astro";
 import Footer from "@/shared/components/layout/Footer.astro";
 import Toast from "@/shared/components/ui/Toast.astro";
 import ImageLightbox from "@/shared/components/ui/ImageLightbox.astro";
+import CookieConsentBanner from "@/features/consent/components/CookieConsentBanner.astro";
 import type { Locale } from "@/shared/types/common";
 import { DEFAULT_LOCALE } from "@/shared/types/common";
 
@@ -63,6 +64,7 @@ const TEMP_NOINDEX = true;
     <Header locale={locale} path={path} isMultilingual={isMultilingual} />
     <slot />
     <Footer locale={locale} />
+    <CookieConsentBanner locale={locale} />
     <Toast />
     <ImageLightbox />
   </body>

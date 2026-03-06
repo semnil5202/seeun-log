@@ -41,6 +41,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.currency': '원',
     'place.targetCurrency': '',
     'place.copyToast': '',
+    'consent.message': '',
+    'consent.learnMore': '',
+    'consent.accept': '',
+    'consent.reject': '',
+    'consent.ariaLabel': '',
   },
   en: {
     'nav.home': 'Home',
@@ -82,6 +87,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.targetCurrency': 'USD',
     'place.copyToast':
       'Copied in original Korean for accurate location search.\nIf you need to copy in English, please copy it manually.',
+    'consent.message': 'We use cookies for personalized ads and analytics.',
+    'consent.learnMore': 'Learn more',
+    'consent.accept': 'Accept',
+    'consent.reject': 'Reject',
+    'consent.ariaLabel': 'Cookie consent',
   },
   ja: {
     'nav.home': 'ホーム',
@@ -123,6 +133,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.targetCurrency': 'JPY',
     'place.copyToast':
       '正確な位置検索のため韓国語の原文でコピーされました。\n日本語でコピーが必要な場合は、直接コピーしてください。',
+    'consent.message': 'パーソナライズ広告とアクセス分析のためにCookieを使用しています。',
+    'consent.learnMore': '詳しく見る',
+    'consent.accept': '同意する',
+    'consent.reject': '拒否する',
+    'consent.ariaLabel': 'Cookie同意',
   },
   'zh-CN': {
     'nav.home': '首页',
@@ -163,6 +178,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.currency': '韩元',
     'place.targetCurrency': 'CNY',
     'place.copyToast': '为了准确搜索位置，已复制韩语原文。\n如需复制中文，请手动复制。',
+    'consent.message': '我们使用Cookie提供个性化广告和分析服务。',
+    'consent.learnMore': '了解详情',
+    'consent.accept': '接受',
+    'consent.reject': '拒绝',
+    'consent.ariaLabel': 'Cookie同意',
   },
   'zh-TW': {
     'nav.home': '首頁',
@@ -203,6 +223,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.currency': '韓元',
     'place.targetCurrency': 'TWD',
     'place.copyToast': '為了準確搜尋位置，已複製韓語原文。\n如需複製中文，請手動複製。',
+    'consent.message': '',
+    'consent.learnMore': '',
+    'consent.accept': '',
+    'consent.reject': '',
+    'consent.ariaLabel': '',
   },
   id: {
     'nav.home': 'Beranda',
@@ -244,6 +269,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.targetCurrency': 'IDR',
     'place.copyToast':
       'Disalin dalam bahasa Korea asli untuk pencarian lokasi yang akurat.\nJika perlu menyalin dalam bahasa Indonesia, silakan salin secara manual.',
+    'consent.message': '',
+    'consent.learnMore': '',
+    'consent.accept': '',
+    'consent.reject': '',
+    'consent.ariaLabel': '',
   },
   vi: {
     'nav.home': 'Trang chủ',
@@ -285,6 +315,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.targetCurrency': 'VND',
     'place.copyToast':
       'Đã sao chép bản gốc tiếng Hàn để tìm kiếm vị trí chính xác.\nNếu cần sao chép bằng tiếng Việt, vui lòng sao chép thủ công.',
+    'consent.message': '',
+    'consent.learnMore': '',
+    'consent.accept': '',
+    'consent.reject': '',
+    'consent.ariaLabel': '',
   },
   th: {
     'nav.home': 'หน้าแรก',
@@ -326,6 +361,11 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.targetCurrency': 'THB',
     'place.copyToast':
       'คัดลอกต้นฉบับภาษาเกาหลีเพื่อค้นหาตำแหน่งได้แม่นยำ\nหากต้องการคัดลอกเป็นภาษาไทย กรุณาคัดลอกด้วยตนเอง',
+    'consent.message': 'เราใช้คุกกี้เพื่อแสดงโฆษณาที่เหมาะกับคุณและวิเคราะห์การเข้าชม',
+    'consent.learnMore': 'เรียนรู้เพิ่มเติม',
+    'consent.accept': 'ยอมรับ',
+    'consent.reject': 'ปฏิเสธ',
+    'consent.ariaLabel': 'ความยินยอมคุกกี้',
   },
 };
 
