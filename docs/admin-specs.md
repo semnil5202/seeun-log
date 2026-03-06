@@ -267,7 +267,7 @@ features/auth/
 | PE-13 | 번역 트리거 (에디터 내 번역본 생성/확인)                                              | P0       | 구현 완료            |
 | PE-14 | 저장 시 빌드 트리거 옵션                                                              | P1       | 미구현               |
 | PE-15 | 미리보기 (선택적)                                                                     | P2       | 미구현               |
-| PE-16 | 썸네일 업로드 (WebP 변환, blob URL 미리보기)                                          | P0       | 구현 완료            |
+| PE-16 | 썸네일 업로드 (WebP 변환, blob URL 미리보기) + alt 텍스트 입력                        | P0       | 구현 완료            |
 | PE-17 | 폼 검증 — react-hook-form + Zod. 버튼 클릭 시 검증 → 미입력 필드 focus + 에러 메시지  | P0       | 구현 완료            |
 | PE-18 | Loading spinner — 요약 생성, 번역본 생성하기 버튼에 LoaderIcon animate-spin 표시      | P0       | 구현 완료            |
 | PE-19 | Label 스타일 — 모든 label 검은색(`text-base font-bold`) + 필수값 `*` primary-600 표시 | P0       | 구현 완료            |
@@ -282,6 +282,7 @@ features/auth/
 | 카테고리     | select        | Y    | `category`        | 공통       | `delicious`, `cafe`, `travel`                         |
 | 서브카테고리 | select        | Y    | `sub_category`    | 공통       | 카테고리에 따라 동적 변경                             |
 | 썸네일       | 이미지 업로드 | Y    | `thumbnail`       | 공통       | WebP 변환, blob URL 미리보기                          |
+| 썸네일 alt   | text input    | Y    | `thumbnail_alt`   | 공통       | SEO용 alt 텍스트, 다국어 번역 파이프라인 연동         |
 | 협찬 여부    | toggle        | N    | `is_sponsored`    | 공통       | 기본값 `false` (미구현)                               |
 | 추천 여부    | toggle        | N    | `is_recommended`  | 공통       | 기본값 `false` (미구현)                               |
 | 다국어 제공  | toggle        | N    | `is_multilingual` | 공통       | 기본값 `true` (미구현)                                |

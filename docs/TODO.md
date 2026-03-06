@@ -40,6 +40,7 @@
 - [x] 미저장 변경사항 이탈 방지 — `beforeunload` + `<a>` 네이티브 네비게이션
 - [x] 번역 버튼 다국어 조건 — 소분류의 `is_multilingual`이 true일 때만 표시
 - [x] 이미지 alt 텍스트 관리 — ImageAltSheet UI, DB `image_alts` JSONB, 번역 파이프라인 연동
+- [x] 썸네일 alt 텍스트 — ThumbnailUpload에 alt 입력 필드 추가, DB `thumbnail_alt` 컬럼, 번역 파이프라인 연동
 - [x] 업로드 이미지 워터마크 — Canvas API로 'eunminlog' 대각선 패턴 합성
 - [x] 포스트 저장 (Server Action → Supabase `posts` INSERT)
 - [x] 포스트 편집 페이지 (`/posts/[id]/edit`) — 기존 데이터 로드 + 에디터 반영

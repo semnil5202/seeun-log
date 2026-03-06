@@ -128,7 +128,7 @@ JSON 배열 파싱 → `FlaggedTerm[]` 타입으로 변환.
 ## 3. 본문 번역 (`translatePost`)
 
 트리거: 용어 검토 완료 후 "번역 요청" 또는 flagged 용어 없을 때 자동 실행
-입력: `title`, `content` (HTML), `placeName?`, `address?`, `confirmedTerms[]`
+입력: `title`, `content` (HTML), `placeName?`, `address?`, `confirmedTerms[]`, `imageAlts?`, `thumbnailAlt?`
 출력: `TranslationResult[]` — 7개 언어 번역 결과
 
 대상 언어: `en`, `ja`, `zh-CN`, `zh-TW`, `id`, `vi`, `th`
