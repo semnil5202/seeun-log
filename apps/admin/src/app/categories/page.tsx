@@ -162,26 +162,34 @@ function CategoriesContent() {
         if (subs.length > 0) groups.push({ parent: p, children: subs });
       } else {
         const subs = children.filter((c) => c.parentSlug === p.slug);
-        if (subs.length > 0) groups.push({ parent: p, children: subs });
+        groups.push({ parent: p, children: subs });
       }
     }
 
     return groups;
   }, [appliedQuery, parents, children]);
 
-  const selectableChildren = useMemo(
-    () => groupedData.flatMap((g) => g.children).filter((c) => c.postCount === 0),
-    [groupedData],
-  );
+  const selectableItems = useMemo(() => {
+    const items: { id: string }[] = [];
+    for (const g of groupedData) {
+      if (g.children.length === 0 && g.parent.postCount === 0) {
+        items.push({ id: g.parent.id });
+      }
+      for (const c of g.children) {
+        if (c.postCount === 0) items.push({ id: c.id });
+      }
+    }
+    return items;
+  }, [groupedData]);
 
   const isAllSelected =
-    selectableChildren.length > 0 && selectableChildren.every((c) => selectedIds.has(c.id));
+    selectableItems.length > 0 && selectableItems.every((item) => selectedIds.has(item.id));
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(selectableChildren.map((c) => c.id)));
+      setSelectedIds(new Set(selectableItems.map((item) => item.id)));
     }
   };
 
@@ -194,9 +202,10 @@ function CategoriesContent() {
     });
   };
 
-  const selectedNames = children
-    .filter((c) => selectedIds.has(c.id))
-    .map((c) => truncateTitle(c.name));
+  const selectedNames = [
+    ...parents.filter((p) => selectedIds.has(p.id)).map((p) => truncateTitle(p.name)),
+    ...children.filter((c) => selectedIds.has(c.id)).map((c) => truncateTitle(c.name)),
+  ];
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -257,7 +266,7 @@ function CategoriesContent() {
                   <Checkbox
                     checked={isAllSelected}
                     onCheckedChange={toggleSelectAll}
-                    disabled={selectableChildren.length === 0}
+                    disabled={selectableItems.length === 0}
                   />
                 </TableHead>
                 <TableHead className="w-[18%] font-bold text-white">대분류 카테고리명</TableHead>
@@ -278,10 +287,19 @@ function CategoriesContent() {
                 groupedData.flatMap((group) => [
                   <TableRow key={group.parent.id} className="bg-muted/50">
                     <TableCell className="px-4 py-3">
-                      <Checkbox
-                        disabled
-                        title="하위 소분류가 존재하여 삭제할 수 없습니다"
-                      />
+                      {group.children.length > 0 ? (
+                        <Checkbox
+                          disabled
+                          title="하위 소분류가 존재하여 삭제할 수 없습니다"
+                        />
+                      ) : (
+                        <Checkbox
+                          checked={selectedIds.has(group.parent.id)}
+                          onCheckedChange={() => toggleSelect(group.parent.id)}
+                          disabled={group.parent.postCount > 0}
+                          title={group.parent.postCount > 0 ? '게시글이 포함되어 삭제할 수 없습니다' : undefined}
+                        />
+                      )}
                     </TableCell>
                     <TableCell className="py-3 font-bold">
                       <Link
