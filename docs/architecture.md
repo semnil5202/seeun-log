@@ -81,11 +81,9 @@ src/
 │   │   │   ├── PostCardGrid.astro          # 카드 그리드 + InFeedAdsense + 페이지네이션
 │   │   │   └── SponsoredCard.astro         # 협찬 포스트 카드
 │   │   ├── api/
-│   │   │   ├── posts.ts                    # 포스트 데이터 fetch (빌드 타임)
-│   │   │   └── translations.ts             # 번역 데이터 fetch (빌드 타임)
-│   │   └── mock/
-│   │       ├── posts.ts                    # mock 포스트 데이터
-│   │       └── translations.ts             # mock 번역 데이터
+│   │   │   ├── posts.ts                    # 포스트 데이터 fetch (빌드 타임, Supabase)
+│   │   │   └── translations.ts             # 번역 데이터 fetch (빌드 타임, Supabase)
+│   │   └── mock/                            # (레거시 — 현재 미사용, Supabase 직접 연동)
 │   ├── post-detail/                        # 포스트 상세 페이지
 │   │   ├── components/
 │   │   │   ├── PlaceInfoCard.astro         # 장소 정보 카드 (Schema.org LocalBusiness)

@@ -30,6 +30,10 @@ Push to main/develop
 
 환경별 시크릿 키 목록은 [`docs/secrets-reference.md`](secrets-reference.md)를 참조한다. (Git에 포함되지 않음)
 
+### 3-1. Supabase (Client 빌드 타임 DB 접속)
+
+Client SSG 빌드 시 Supabase에 접속하기 위한 시크릿. 키 목록은 [`secrets-reference.md` 섹션 2-3](secrets-reference.md#2-3-supabase-환경별)을 참조.
+
 ### 3-4. 필요한 IAM 정책
 
 배포용 IAM 사용자에게 아래 권한을 부여해야 한다:

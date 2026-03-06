@@ -43,7 +43,7 @@ import {
   type CategoryOption,
 } from '@/features/category-management/api/actions';
 import { ImageAltSheet, extractImageSrcs } from '@/features/post-editor/components/ImageAltSheet';
-import { ImageIcon, LoaderIcon, Save, Sparkles } from 'lucide-react';
+import { ChevronLeft, ImageIcon, LoaderIcon, Save, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { PostFormType, TranslationLocale } from '@/shared/types/post';
@@ -67,7 +67,14 @@ function NewPostContent() {
       mode: 'onSubmit',
     });
 
-  const { errors } = formState;
+  const { errors, isDirty } = formState;
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
 
   const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
   const [subCategoryMap, setSubCategoryMap] = useState<Record<string, CategoryOption[]>>({});
@@ -353,6 +360,12 @@ function NewPostContent() {
   return (
     <>
       <div className="mx-auto mb-6 max-w-[688px]">
+        <a
+          href="/posts"
+          className="mb-3 inline-flex text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="size-5" />
+        </a>
         <h1 className="text-xl font-bold">게시글 작성</h1>
         <p className="mt-1 text-sm text-muted-foreground">새로운 게시글을 작성합니다.</p>
       </div>

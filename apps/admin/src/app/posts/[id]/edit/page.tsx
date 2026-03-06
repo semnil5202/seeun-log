@@ -181,7 +181,14 @@ function EditPostForm({
       mode: 'onSubmit',
     });
 
-  const { errors } = formState;
+  const { errors, isDirty: isFormDirty } = formState;
+
+  useEffect(() => {
+    if (!isFormDirty) return;
+    const handler = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isFormDirty]);
 
   const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
   const [subCategoryMap, setSubCategoryMap] = useState<Record<string, CategoryOption[]>>({});
@@ -390,12 +397,12 @@ function EditPostForm({
   return (
     <>
       <div className="mx-auto mb-6 max-w-[688px]">
-        <Link
+        <a
           href="/posts"
           className="mb-3 inline-flex text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="size-5" />
-        </Link>
+        </a>
         <h1 className="text-xl font-bold">게시글 수정</h1>
         <p className="mt-1 text-sm text-muted-foreground">게시글을 수정합니다.</p>
       </div>
