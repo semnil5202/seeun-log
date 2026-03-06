@@ -40,8 +40,8 @@
 - [ ] 이미지 S3 업로드 연동 — blob URL → S3 presigned URL 방식으로 전환 (Phase 4 Media Upload 섹션 연동)
 - [ ] 이미지 크롭 기능 (react-image-crop 활용 검토)
 - [ ] 드래그앤드롭/붙여넣기 이미지 처리 (Tiptap Drop/Paste 핸들러)
-- [ ] 포스트 저장 (Server Action → Supabase `posts` INSERT)
-- [ ] 포스트 편집 페이지 (`/posts/[id]/edit`) — 기존 데이터 로드 + 에디터 반영
+- [x] 포스트 저장 (Server Action → Supabase `posts` INSERT)
+- [x] 포스트 편집 페이지 (`/posts/[id]/edit`) — 기존 데이터 로드 + 에디터 반영
 - [ ] Placeholder Extension 적용 (빈 에디터 가이드 텍스트)
 - [ ] is_sponsored / is_recommended / is_multilingual 토글
 - [ ] rating 입력 (1.0-5.0, 0.5 단위)
@@ -93,10 +93,10 @@
 - [ ] GitHub Secrets 등록: `PROD_CF_FUNCTION_NAME`, `DEV_CF_FUNCTION_NAME`
 - [ ] Supabase 빌드 타임 접속 정보 GitHub Secrets 등록 (리다이렉트 매핑 조회용)
 
-### Phase 2 (미구현)
+### Phase 2 (완료)
 
-- [ ] Supabase Auth 로그인/로그아웃 (email/password)
-- [ ] 인증 가드 (비인증 시 로그인 리다이렉트)
+- [x] Supabase Auth 로그인/로그아웃 (email/password)
+- [x] 인증 가드 (비인증 시 로그인 리다이렉트)
 
 ### Phase 3-1 — 번역 (API 연동 완료, DB 저장 미구현)
 
@@ -107,7 +107,7 @@
 - [x] 에디터 페이지 연동 — "번역본 생성하기" / "용어 검토 계속하기" / "번역본 확인하기" 버튼
 - [x] 번역 Sheet UX — 번역 완료 0.8초 자동 닫힘, Sheet 닫은 후 "용어 검토 계속하기" 재오픈
 - [x] GPT 프롬프트 설계서 작성 (`docs/gpt-prompts.md`) — 요약 생성, 용어 추출, 본문 번역 3가지 프롬프트
-- [ ] 번역 결과 저장 (Server Action → Supabase `post_translations` UPSERT)
+- [x] 번역 결과 저장 (Server Action → Supabase `post_translations` UPSERT)
 - [x] 번역 상태 관리 (locale별 진행/완료/실패 UI) — 실패 locale별 toast 알림 + TranslationPreviewSheet "다시 시도" 버튼
 - [x] 개별 locale 재번역 — `retrySingleLocale` Server Action
 
@@ -116,10 +116,10 @@
 - [x] GPT-5 Nano API 연동 — 번역+요약+용어 추출 실제 API 호출 전환 완료 (`shared/lib/openai.ts`, `OPENAI_API_KEY` env)
 - [ ] 미디어 업로드 (S3 Pre-signed URL) — 아래 Media Upload 섹션과 연동
 - [x] 게시글 목록 페이지 (`/posts`) — SearchFilter (RHF) + 테이블 (제목/발행일/수정일) + 정렬 드롭다운 + "새 글 작성" 버튼
-- [ ] 게시글 삭제 (확인 다이얼로그 포함)
+- [x] 게시글 삭제 (확인 다이얼로그 포함)
 - [ ] GitHub Actions 빌드 트리거
 - [ ] is_multilingual 토글 — 아래 i18n 섹션과 연동
-- [ ] 핵심 지표 GA4 API 연동 (mock → 실제 데이터)
+- [ ] 핵심 지표 대시보드 DB 연동 — GA4 연동 후 MOCK 데이터 교체 (옵션 A: GA4 이벤트 기반, 옵션 B: posts 테이블에 view_count/recommendation_count/comment_count 컬럼 추가)
 
 ## Client: Tiptap HTML Viewer 대응
 
