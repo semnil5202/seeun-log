@@ -65,7 +65,25 @@ export default function NewCategoryPage() {
   };
 
   const handleCreateChild = async () => {
-    if (!subParent || !subName.trim() || !subSlug.trim()) return;
+    if (!subParent) {
+      toast.error('대분류를 선택해주세요.');
+      return;
+    }
+    if (!subName.trim()) {
+      toast.error('카테고리명을 입력해주세요.');
+      return;
+    }
+    if (!subSlug.trim()) {
+      toast.error('슬러그를 입력해주세요.');
+      return;
+    }
+    if (subMultilingual) {
+      const missing = LOCALES.filter((l) => !subTranslations[l]?.trim());
+      if (missing.length > 0) {
+        toast.error('모든 다국어 카테고리명을 입력해주세요.');
+        return;
+      }
+    }
     setIsCreatingChild(true);
     try {
       await createChildCategory({
@@ -232,7 +250,7 @@ export default function NewCategoryPage() {
 
         {subMultilingual && (
           <div className="space-y-4">
-            <label className="text-sm font-medium text-muted-foreground">다국어 카테고리명</label>
+            <label className="text-sm font-bold">다국어 카테고리명</label>
             <div className="grid grid-cols-2 gap-4">
               {LOCALES.map((locale) => (
                 <div key={locale} className="space-y-1.5">
@@ -258,20 +276,17 @@ export default function NewCategoryPage() {
               type="button"
               onClick={handleTranslate}
               disabled={!subName.trim() || isTranslating}
-              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 h-9 rounded-md border border-input px-4 text-sm font-medium shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
             >
               {isTranslating ? (
                 <LoaderIcon className="size-4 animate-spin" />
               ) : (
                 <Sparkles className="size-4" />
               )}
-              AI 번역
+              AI 카테고리 번역
             </button>
           )}
-          <Button
-            disabled={!subParent || !subName.trim() || !subSlug.trim() || isCreatingChild}
-            onClick={handleCreateChild}
-          >
+          <Button disabled={isCreatingChild} onClick={handleCreateChild}>
             {isCreatingChild ? '생성 중...' : '추가'}
           </Button>
         </div>
