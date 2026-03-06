@@ -209,10 +209,17 @@ function CategoriesContent() {
                   </TableCell>
                 </TableRow>
               ) : (
-                groupedData.map((group) =>
-                  group.subCategories.map((sub, i) => (
+                groupedData.flatMap((group) => [
+                  <TableRow key={group.category} className="bg-muted/50">
+                    <TableCell className="py-3 font-bold">{group.label}</TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                  </TableRow>,
+                  ...group.subCategories.map((sub) => (
                     <TableRow key={`${group.category}-${sub.subCategory}`}>
-                      <TableCell className="py-3 font-bold">{i === 0 ? group.label : ''}</TableCell>
+                      <TableCell />
                       <TableCell className="py-3">{sub.subCategoryLabel}</TableCell>
                       <TableCell className="py-3 text-center">{sub.postCount}</TableCell>
                       <TableCell className="py-3 text-center">
@@ -221,7 +228,7 @@ function CategoriesContent() {
                       <TableCell className="py-3 text-center">{sub.createdAt}</TableCell>
                     </TableRow>
                   )),
-                )
+                ])
               )}
             </TableBody>
           </Table>
