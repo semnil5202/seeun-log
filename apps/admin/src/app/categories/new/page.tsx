@@ -23,8 +23,8 @@ import {
   createChildCategory,
   createParentCategory,
   fetchParentCategories,
-  translateCategoryName,
 } from '@/features/category-management/api/actions';
+import { translateCategoryName } from '@/features/category-management/api/client';
 
 import type { TranslationLocale } from '@/shared/types/post';
 
