@@ -78,7 +78,7 @@ export async function fetchParentCategories() {
   return (data ?? []) as { id: string; slug: string; name: string }[];
 }
 
-export type CategoryOption = { value: string; label: string };
+export type CategoryOption = { value: string; label: string; isMultilingual?: boolean };
 
 export async function fetchCategoryOptions(): Promise<{
   parents: CategoryOption[];
@@ -86,7 +86,7 @@ export async function fetchCategoryOptions(): Promise<{
 }> {
   const { data, error } = await supabaseServer
     .from('categories')
-    .select('id, slug, name, parent_id')
+    .select('id, slug, name, parent_id, is_multilingual')
     .order('sort_order');
 
   if (error) throw new Error(`카테고리 옵션 조회 실패: ${error.message}`);
@@ -109,7 +109,7 @@ export async function fetchCategoryOptions(): Promise<{
     if (c.parent_id) {
       const parentSlug = idToSlug.get(c.parent_id);
       if (parentSlug && subMap[parentSlug]) {
-        subMap[parentSlug].push({ value: c.slug, label: c.name });
+        subMap[parentSlug].push({ value: c.slug, label: c.name, isMultilingual: c.is_multilingual });
       }
     }
   }

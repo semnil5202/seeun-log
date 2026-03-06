@@ -145,7 +145,10 @@ function NewPostContent() {
   const category = watch('category');
   const subCategory = watch('subCategory');
 
-  const needsTranslation = !!(category && subCategory);
+  const isMultilingual =
+    !!(category && subCategory) &&
+    (subCategoryMap[category]?.find((opt) => opt.value === subCategory)?.isMultilingual ?? false);
+  const needsTranslation = isMultilingual;
 
   const focusFirstEmptyField = () => {
     const values = getValues();
