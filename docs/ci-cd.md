@@ -28,30 +28,7 @@ Push to main/develop
 
 ## 3. GitHub Secrets 목록
 
-### 3-1. AWS Credentials (공통)
-
-| Secret Name             | 설명                  | 비고                      |
-| ----------------------- | --------------------- | ------------------------- |
-| `AWS_ACCESS_KEY_ID`     | IAM 사용자 Access Key | S3 + CloudFront 권한 필요 |
-| `AWS_SECRET_ACCESS_KEY` | IAM 사용자 Secret Key |                           |
-
-### 3-2. CloudFront Distribution ID (환경별)
-
-| Secret Name                       | 설명                                   |
-| --------------------------------- | -------------------------------------- |
-| `PROD_CLOUDFRONT_DISTRIBUTION_ID` | Production CloudFront Distribution ID  |
-| `DEV_CLOUDFRONT_DISTRIBUTION_ID`  | Development CloudFront Distribution ID |
-
-### 3-3. Supabase (환경별, 빌드 타임 필요)
-
-> 현재는 mock 데이터로 빌드 중이므로 당장은 불필요. Supabase 연동 시 추가.
-
-| Secret Name              | 설명                               |
-| ------------------------ | ---------------------------------- |
-| `PROD_SUPABASE_URL`      | Production Supabase Project URL    |
-| `PROD_SUPABASE_ANON_KEY` | Production Supabase Anonymous Key  |
-| `DEV_SUPABASE_URL`       | Development Supabase Project URL   |
-| `DEV_SUPABASE_ANON_KEY`  | Development Supabase Anonymous Key |
+환경별 시크릿 키 목록은 [`docs/secrets-reference.md`](secrets-reference.md)를 참조한다. (Git에 포함되지 않음)
 
 ### 3-4. 필요한 IAM 정책
 
@@ -365,10 +342,7 @@ S3 배포 후, 캐시 무효화 전에 실행:
 
 ### 9-4. 추가 GitHub Secrets
 
-| Secret Name              | 설명                        |
-| ------------------------ | --------------------------- |
-| `PROD_CF_FUNCTION_NAME` | Production CF Function 이름  |
-| `DEV_CF_FUNCTION_NAME`  | Development CF Function 이름 |
+CF Function 관련 시크릿은 [`docs/secrets-reference.md`](secrets-reference.md) 섹션 2-2를 참조한다.
 
 ### 9-5. 환경 변수 분기 추가 (Step 5)
 
@@ -381,16 +355,13 @@ echo "CF_FUNCTION_NAME=${{ secrets.DEV_CF_FUNCTION_NAME }}" >> $GITHUB_ENV   # d
 ## 10. Checklist (구현 전 확인)
 
 - [ ] AWS IAM 사용자 생성 + 정책 연결 (섹션 3-4 참조)
-- [ ] GitHub Secrets 등록: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
-- [ ] GitHub Secrets 등록: `PROD_CLOUDFRONT_DISTRIBUTION_ID`, `DEV_CLOUDFRONT_DISTRIBUTION_ID`
+- [ ] GitHub Secrets 등록 — 키 목록은 [`docs/secrets-reference.md`](secrets-reference.md) 참조
 - [ ] S3 버킷 존재 확인: `prod-eunminlog-static`, `dev-eunminlog-static`
 - [ ] CloudFront OAC 설정 확인 (S3 퍼블릭 액세스 차단 상태에서 CF가 접근 가능한지)
 - [ ] CloudFront Function 연결 확인 (Viewer Request — URI를 index.html로 매핑)
 - [ ] `develop` 브랜치 생성 (현재 `main`만 존재하는 경우)
 - [ ] se 에이전트: `astro.config.mjs` SITE_URL 환경변수 대응 코드 변경
 - [ ] se 에이전트: `.github/workflows/deploy-client.yml` 파일 생성
-- [ ] GitHub Secrets 등록: `PROD_CF_FUNCTION_NAME`, `DEV_CF_FUNCTION_NAME` (리다이렉트)
 - [ ] IAM 정책 업데이트: CF Function 권한 추가 (섹션 9-3 참조)
 - [ ] CF Function 템플릿 파일 생성: `infra/cf-functions/viewer-request.js.template`
 - [ ] 리다이렉트 매핑 생성 빌드 스크립트 구현
-- [ ] Supabase 빌드 타임 접속 정보 GitHub Secrets 등록 (리다이렉트 매핑 조회용)

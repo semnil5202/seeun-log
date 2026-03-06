@@ -287,12 +287,7 @@ Step 9.5: Update CloudFront Function
 
 ### 6.3 추가 GitHub Secrets
 
-| Secret Name                          | 설명                               |
-| ------------------------------------ | ---------------------------------- |
-| `PROD_CF_FUNCTION_NAME`             | Production CF Function 이름         |
-| `DEV_CF_FUNCTION_NAME`              | Development CF Function 이름        |
-
-Supabase 접속 정보는 기존 `PROD_SUPABASE_URL`, `PROD_SUPABASE_ANON_KEY` (또는 service role key) 사용.
+CF Function 및 Supabase 관련 시크릿은 [`docs/secrets-reference.md`](secrets-reference.md)를 참조한다. (Git에 포함되지 않음)
 
 ### 6.4 수정된 전체 Step 구조
 

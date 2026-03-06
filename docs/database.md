@@ -1,6 +1,6 @@
 # Database Schema (Supabase PostgreSQL)
 
-> Last updated: 2026-03-06 (prev_slug 컬럼 추가)
+> Last updated: 2026-03-07 (post_drafts 테이블 추가)
 
 ---
 
@@ -121,7 +121,27 @@
 
 ---
 
-## 4. 인덱스 설계
+## 4. Table: `post_drafts`
+
+게시글 임시저장. `form_data` JSONB에 `PostFormValues` 전체를 저장한다. 최대 10개 제한은 application-level에서 처리.
+
+| Column      | Type                               | Description                                           |
+| ----------- | ---------------------------------- | ----------------------------------------------------- |
+| `id`        | uuid                               | PK (`gen_random_uuid()`)                              |
+| `post_id`   | uuid (FK → posts.id, nullable)     | 기존 게시글 수정 중이면 해당 포스트 참조. 새 글이면 NULL |
+| `title`     | text (default '제목 없음')          | 목록 표시용 제목                                      |
+| `form_data` | jsonb                              | `PostFormValues` 전체 (formType, title, content 등)   |
+| `created_at`| timestamptz                        | 생성일 (`now()`)                                      |
+| `updated_at`| timestamptz                        | 수정일 (`now()`)                                      |
+
+**Constraints:**
+
+- `PK(id)`
+- `FK(post_id) REFERENCES posts(id) ON DELETE SET NULL` — 원본 포스트 삭제 시 임시저장은 유지 (새 글로 전환)
+
+---
+
+## 5. 인덱스 설계
 
 ### 설계 원칙
 
@@ -129,7 +149,7 @@
 - 현재 데이터 규모(수백~수천 건)에서 과도한 인덱스는 쓰기 성능만 저하시킴
 - partial index로 선택도가 낮은 boolean 컬럼 최적화
 
-### 4.1 posts 인덱스
+### 5.1 posts 인덱스
 
 | 인덱스명                          | 컬럼/조건                                          | 용도                           | 사용 쿼리               |
 | --------------------------------- | -------------------------------------------------- | ------------------------------ | ------------------------ |
@@ -146,7 +166,7 @@
 - `title` GIN/trigram 인덱스 — 수천 건 이하에서 `ILIKE` seq scan이 GIN보다 빠름. 1만 건 이상 시 `pg_trgm` 확장 + GIN 인덱스 도입 검토
 - `is_multilingual` 단독 인덱스 — SSG 빌드에서 전체 조회 후 application-level 필터링이 더 효율적
 
-### 4.2 post_translations 인덱스
+### 5.2 post_translations 인덱스
 
 | 인덱스명                          | 컬럼/조건                    | 용도                        | 사용 쿼리                |
 | --------------------------------- | ---------------------------- | --------------------------- | ------------------------ |
@@ -154,7 +174,7 @@
 | `idx_translations_post_locale`    | `(post_id, locale)` UNIQUE  | 번역 조회/UPSERT           | getTranslations, saveTranslations |
 | `idx_translations_locale`         | `(locale)`                  | locale별 일괄 조회          | SSG 다국어 빌드          |
 
-### 4.3 categories 인덱스
+### 5.3 categories 인덱스
 
 | 인덱스명                  | 컬럼/조건          | 용도                     | 사용 쿼리          |
 | ------------------------- | ------------------ | ------------------------ | ------------------ |
@@ -162,11 +182,18 @@
 | `idx_categories_slug`     | `(slug)` UNIQUE   | URL 매핑, 조회           | SSG, Admin         |
 | `idx_categories_parent`   | `(parent_id)`     | 대분류 하위 소분류 조회  | listCategories     |
 
+### 5.4 post_drafts 인덱스
+
+| 인덱스명                          | 컬럼/조건                    | 용도                        | 사용 쿼리                |
+| --------------------------------- | ---------------------------- | --------------------------- | ------------------------ |
+| `post_drafts_pkey`                | `(id)` PK                   | 단건 조회/삭제              | getDraft, deleteDraft    |
+| `idx_post_drafts_updated_at`      | `(updated_at DESC)`          | 최신 수정순 목록            | listDrafts               |
+
 ---
 
-## 5. 쿼리 패턴 및 인덱스 매핑
+## 6. 쿼리 패턴 및 인덱스 매핑
 
-### 5.1 Admin 쿼리
+### 6.1 Admin 쿼리
 
 **게시글 목록 (최신 발행순, 기간 필터 + 검색):**
 
@@ -238,7 +265,7 @@ DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description,
 
 - 사용 인덱스: `idx_translations_post_locale` (UNIQUE constraint = conflict detection)
 
-### 5.2 SSG 빌드 쿼리 (Client Astro)
+### 6.2 SSG 빌드 쿼리 (Client Astro)
 
 **전체 포스트 조회:**
 
@@ -277,7 +304,7 @@ SELECT * FROM posts WHERE is_recommended = true ORDER BY created_at DESC;
 
 ---
 
-## 6. 스케일링 가이드
+## 7. 스케일링 가이드
 
 현재 규모(수백 건)에서는 위 설계로 충분하다. 데이터 성장 시 아래 순서로 대응한다.
 
@@ -290,7 +317,7 @@ SELECT * FROM posts WHERE is_recommended = true ORDER BY created_at DESC;
 
 ---
 
-## 7. 마이그레이션 현황
+## 8. 마이그레이션 현황
 
 | ID   | 변경 내용                                                        | 상태   | 비고                                                 |
 | ---- | ---------------------------------------------------------------- | ------ | ---------------------------------------------------- |
@@ -303,3 +330,4 @@ SELECT * FROM posts WHERE is_recommended = true ORDER BY created_at DESC;
 | M-07 | `posts` 인덱스 재설계 (partial index 추가)                       | 미적용 | idx_posts_is_sponsored, idx_posts_is_recommended 등  |
 | M-08 | `posts.prev_slug` (text nullable) ADD                            | 미적용 | 301 리다이렉트용 직전 slug 저장                      |
 | M-09 | `categories.prev_slug` (text nullable) ADD                       | 미적용 | 301 리다이렉트용 직전 slug 저장                      |
+| M-10 | `post_drafts` 테이블 생성                                        | 미적용 | JSONB form_data, 최대 10개 app-level 제한            |

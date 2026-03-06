@@ -720,15 +720,7 @@ DELETE FROM categories WHERE id = :categoryId;
 
 ## 환경변수
 
-| 변수                            | 범위    | 용도                  |
-| ------------------------------- | ------- | --------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Public  | Supabase URL          |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public  | 클라이언트 인증       |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Private | Server Action DB 접근 |
-| `OPENAI_API_KEY`                | Private | GPT-5 Nano 번역+요약  |
-| `GITHUB_TOKEN`                  | Private | 빌드 트리거           |
-| `AWS_ACCESS_KEY_ID`             | Private | S3 Pre-signed URL     |
-| `AWS_SECRET_ACCESS_KEY`         | Private | S3 Pre-signed URL     |
+환경변수 및 시크릿 키 목록은 [`docs/secrets-reference.md`](secrets-reference.md)를 참조한다. (Git에 포함되지 않음)
 
 ---
 
