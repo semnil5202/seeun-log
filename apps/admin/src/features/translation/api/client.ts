@@ -1,4 +1,4 @@
-import type { FlaggedTerm, TranslationResult } from '../types';
+import type { FlaggedTerm, ImageAlt, TranslationResult } from '../types';
 import type { TranslationLocale } from '@/shared/types/post';
 
 const TARGET_LOCALES: TranslationLocale[] = ['en', 'ja', 'zh-CN', 'zh-TW', 'id', 'vi', 'th'];
@@ -19,11 +19,12 @@ export async function fetchExtractTerms(
   content: string,
   placeName?: string,
   address?: string,
+  imageAlts?: string[],
 ): Promise<FlaggedTerm[]> {
   const res = await fetch('/api/extract-terms', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content, placeName, address }),
+    body: JSON.stringify({ content, placeName, address, imageAlts }),
   });
 
   if (!res.ok) throw new Error('용어 추출에 실패했습니다.');
@@ -39,6 +40,7 @@ type TranslateParams = {
   placeName?: string;
   address?: string;
   confirmedTerms: { original: string; confirmed: string }[];
+  imageAlts?: ImageAlt[];
 };
 
 async function fetchTranslateSingle(
@@ -70,8 +72,9 @@ export async function fetchTranslatePost(params: TranslateParams): Promise<Trans
       description: '',
       place_name: '',
       address: '',
+      image_alts: [] as TranslationResult['image_alts'],
       failed: true,
-    };
+    } satisfies TranslationResult;
   });
 }
 

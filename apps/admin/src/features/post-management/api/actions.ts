@@ -2,7 +2,7 @@
 
 import { supabaseServer } from '@/shared/lib/supabase-server';
 import type { PostFormValues } from '@/features/post-editor/types/form';
-import type { TranslationResult } from '@/features/translation/types';
+import type { ImageAlt, TranslationResult } from '@/features/translation/types';
 
 export type PostListItem = {
   id: string;
@@ -91,13 +91,16 @@ export async function fetchPost(id: string) {
       content: t.content,
       place_name: t.place_name ?? '',
       address: t.address ?? '',
+      image_alts: (t.image_alts ?? []) as ImageAlt[],
     })) as TranslationResult[],
+    imageAlts: (post.image_alts ?? []) as ImageAlt[],
   };
 }
 
 export async function createPost(params: {
   formValues: PostFormValues;
   translations: TranslationResult[];
+  imageAlts?: ImageAlt[];
   draftId?: string | null;
 }): Promise<{ id: string }> {
   const fv = params.formValues;
@@ -117,6 +120,7 @@ export async function createPost(params: {
       address: fv.address || null,
       price_prefix: fv.pricePrefix || null,
       price: fv.price ? parseInt(fv.price) : null,
+      image_alts: params.imageAlts ?? [],
     })
     .select('id')
     .single();
@@ -136,6 +140,7 @@ export async function createPost(params: {
       content: t.content,
       place_name: t.place_name || null,
       address: t.address || null,
+      image_alts: t.image_alts ?? [],
     }));
 
     const { error: transError } = await supabaseServer
@@ -156,6 +161,7 @@ export async function updatePost(params: {
   id: string;
   formValues: PostFormValues;
   translations: TranslationResult[];
+  imageAlts?: ImageAlt[];
 }): Promise<void> {
   const fv = params.formValues;
 
@@ -179,6 +185,7 @@ export async function updatePost(params: {
     address: fv.address || null,
     price_prefix: fv.pricePrefix || null,
     price: fv.price ? parseInt(fv.price) : null,
+    image_alts: params.imageAlts ?? [],
     updated_at: new Date().toISOString(),
   };
 
@@ -209,6 +216,7 @@ export async function updatePost(params: {
           content: t.content,
           place_name: t.place_name || null,
           address: t.address || null,
+          image_alts: t.image_alts ?? [],
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'post_id,locale' },

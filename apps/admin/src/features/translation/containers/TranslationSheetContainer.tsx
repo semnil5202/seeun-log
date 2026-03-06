@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import type { FlaggedTerm, TranslationResult, TranslationStatus } from '../types';
+import type { FlaggedTerm, ImageAlt, TranslationResult, TranslationStatus } from '../types';
 import { fetchTranslatePost } from '../api/client';
 import { LOCALE_FILTER_LABELS } from '../constants/locale';
 import { TermReviewList } from '../components/TermReviewList';
@@ -31,6 +31,7 @@ type TranslationSheetContainerProps = {
   description: string;
   placeName: string;
   address: string;
+  imageAlts?: ImageAlt[];
 };
 
 export function TranslationSheetContainer({
@@ -43,6 +44,7 @@ export function TranslationSheetContainer({
   description,
   placeName,
   address,
+  imageAlts,
 }: TranslationSheetContainerProps) {
   const [status, setStatus] = useState<TranslationStatus>('reviewing');
   const [confirmedTerms, setConfirmedTerms] = useState<Map<number, string>>(new Map());
@@ -73,6 +75,7 @@ export function TranslationSheetContainer({
         placeName,
         address,
         confirmedTerms: terms,
+        imageAlts,
       });
 
       const failedLocales = results.filter((r) => r.failed);

@@ -33,14 +33,17 @@ function buildSystemPrompt(locale: TranslationLocale): string {
 번역 규칙:
 1. 본문(content)은 HTML 형식입니다. 아래 HTML 태그는 절대 번역하거나 제거하지 마세요. 태그 구조와 속성을 그대로 유지하고 텍스트만 번역해주세요.
    보존 필수 태그: <p>, <br>, <strong>, <em>, <s>, <u>, <a>, <h2>, <h3>, <h4>, <h5>, <h6>, <ul>, <ol>, <li>, <blockquote>, <hr>, <img>, <table>, <thead>, <tbody>, <tr>, <th>, <td>, <div>, <span>
+   [중요] <img> 태그는 src, style 등 모든 속성값을 원본 그대로 유지해야 합니다. 속성값의 따옴표를 이스케이프(\\"나 &quot;)하거나 속성 구조를 변형하지 마세요. 입력된 <img> 태그를 수정 없이 그대로 출력하세요.
 2. 3줄 요약(description)은 plain text입니다. 줄바꿈(\\n)을 유지하고 텍스트만 번역해주세요.
 3. 확정 번역 용어가 제공되면 반드시 해당 번역을 사용해주세요.
 4. 장소명(place_name)과 주소(address)가 제공되면 ${placeRule}해주세요.
 5. 블로그의 친근한 어조를 유지하되, ${label}의 자연스러운 표현을 사용해주세요.
 6. 한국 고유 문화 용어는 의역하되 괄호 안에 원어를 병기할 수 있습니다.
+7. 이미지 alt 텍스트가 제공되면 각각 번역해주세요. 이미지 설명은 간결하고 SEO에 효과적인 표현으로 번역해주세요.
 
-응답은 반드시 JSON 객체로 작성해주세요. 형식: {"title": "...", "content": "...", "description": "...", "place_name": "...", "address": "..."}
-place_name과 address는 입력에 포함된 경우에만 응답에 포함해주세요.`;
+응답은 반드시 JSON 객체로 작성해주세요. 형식: {"title": "...", "content": "...", "description": "...", "place_name": "...", "address": "...", "image_alts": ["..."]}
+place_name과 address는 입력에 포함된 경우에만 응답에 포함해주세요.
+image_alts는 입력에 포함된 경우에만 응답에 포함하며, 입력 순서와 동일한 순서로 번역해주세요.`;
 }
 
 function parseJsonResponse(raw: string): unknown {
@@ -61,11 +64,12 @@ type TranslateBody = {
   placeName?: string;
   address?: string;
   confirmedTerms: { original: string; confirmed: string }[];
+  imageAlts?: { src: string; alt: string }[];
 };
 
 export async function POST(request: Request) {
   const body = (await request.json()) as TranslateBody;
-  const { locale, title, content, description, placeName, address, confirmedTerms } = body;
+  const { locale, title, content, description, placeName, address, confirmedTerms, imageAlts } = body;
 
   let userPrompt = `제목: ${title}\n\n본문:\n${content}\n\n3줄 요약:\n${description}`;
   if (placeName) userPrompt += `\n\n장소명: ${placeName}`;
@@ -76,6 +80,13 @@ export async function POST(request: Request) {
     for (const term of confirmedTerms) {
       userPrompt += `\n- "${term.original}" → "${term.confirmed}"`;
     }
+  }
+
+  if (imageAlts && imageAlts.length > 0) {
+    userPrompt += '\n\n이미지 alt 텍스트:';
+    imageAlts.forEach((item, i) => {
+      userPrompt += `\n- 이미지 ${i + 1}: "${item.alt}"`;
+    });
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -95,14 +106,21 @@ export async function POST(request: Request) {
     fullText += chunk.choices[0]?.delta?.content ?? '';
   }
 
-  const parsed = parseJsonResponse(fullText) as Record<string, string>;
+  const parsed = parseJsonResponse(fullText) as Record<string, unknown>;
+
+  const translatedAlts = Array.isArray(parsed.image_alts) ? (parsed.image_alts as string[]) : [];
+  const resultImageAlts = (imageAlts ?? []).map((orig, i) => ({
+    src: orig.src,
+    alt: translatedAlts[i] ?? orig.alt,
+  }));
 
   return Response.json({
     locale,
-    title: parsed.title ?? '',
-    content: parsed.content ?? '',
-    description: parsed.description ?? '',
-    place_name: parsed.place_name ?? '',
-    address: parsed.address ?? '',
+    title: (parsed.title as string) ?? '',
+    content: (parsed.content as string) ?? '',
+    description: (parsed.description as string) ?? '',
+    place_name: (parsed.place_name as string) ?? '',
+    address: (parsed.address as string) ?? '',
+    image_alts: resultImageAlts,
   });
 }

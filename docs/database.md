@@ -74,6 +74,7 @@
 | `price`           | integer (nullable)      | 가격 (원). `price_prefix + price` 형태로 표시                                       |
 | `created_at`      | timestamptz             | 작성일 (`now()`)                                                                    |
 | `prev_slug`       | text (nullable)         | 직전 slug. slug 변경 시 이전 값 저장. NULL이면 변경 이력 없음                       |
+| `image_alts`      | jsonb (default `'[]'`)  | 이미지 alt 텍스트 배열. `[{ "src": "url", "alt": "설명" }]`                         |
 | `updated_at`      | timestamptz             | 수정일 (`now()`)                                                                    |
 
 **Constraints:**
@@ -110,6 +111,7 @@
 | `content`     | text                 | 번역된 본문 (HTML)                                          |
 | `place_name`  | text (nullable)      | 번역된 장소명                                               |
 | `address`     | text (nullable)      | 번역된 주소                                                 |
+| `image_alts`  | jsonb (default `'[]'`) | 번역된 이미지 alt 텍스트 배열. `[{ "src": "url", "alt": "translated" }]` |
 | `created_at`  | timestamptz          | 번역 생성일 (`now()`)                                       |
 | `updated_at`  | timestamptz          | 번역 수정일 (`now()`)                                       |
 

@@ -24,15 +24,22 @@ const SYSTEM_PROMPT = `당신은 한국어→다국어 번역 전문가입니다
 응답은 반드시 JSON 객체로 작성해주세요. 형식: {"terms": [...]}`;
 
 export async function POST(request: Request) {
-  const { content, placeName, address } = (await request.json()) as {
+  const { content, placeName, address, imageAlts } = (await request.json()) as {
     content: string;
     placeName?: string;
     address?: string;
+    imageAlts?: string[];
   };
 
   let userPrompt = `본문:\n${content}`;
   if (placeName) userPrompt += `\n\n장소명: ${placeName}`;
   if (address) userPrompt += `\n주소: ${address}`;
+  if (imageAlts && imageAlts.length > 0) {
+    userPrompt += '\n\n이미지 alt 텍스트:';
+    imageAlts.forEach((alt, i) => {
+      userPrompt += `\n- 이미지 ${i + 1}: "${alt}"`;
+    });
+  }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 

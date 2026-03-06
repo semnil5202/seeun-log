@@ -5,6 +5,11 @@ export type FlaggedTerm = {
   suggestions: string[];
 };
 
+export type ImageAlt = {
+  src: string;
+  alt: string;
+};
+
 export type TranslationResult = {
   locale: TranslationLocale;
   title: string;
@@ -12,6 +17,7 @@ export type TranslationResult = {
   description: string;
   place_name: string;
   address: string;
+  image_alts: ImageAlt[];
   failed?: boolean;
 };
 
