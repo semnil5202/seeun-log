@@ -187,9 +187,11 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 번역 파이프라인은 GPT 호출과 DB 저장을 분리한다. GPT 호출 결과를 프리뷰에서 확인한 후 저장한다.
 
-### 4.1 요약 생성 — `generateSummary`
+> GPT 호출은 브라우저에서 OpenAI SDK로 직접 수행한다. Vercel Function 타임아웃 제약 회피를 위해 API Route를 사용하지 않는다. 환경 변수 상세: [`secrets-reference.md` 섹션 1](secrets-reference.md).
 
-**Type:** Server Action (구현 완료)
+### 4.1 요약 생성 — `streamSummary`
+
+**Type:** 브라우저 직접 호출 (`features/post-editor/api/client.ts`)
 
 **Input:**
 
@@ -208,9 +210,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ---
 
-### 4.2 슬러그 추천 — `generateSlugSuggestions`
+### 4.2 슬러그 추천 — `fetchSlugSuggestions`
 
-**Type:** Server Action (구현 완료)
+**Type:** 브라우저 직접 호출 (`features/post-editor/api/client.ts`)
 
 **Input:**
 
@@ -230,9 +232,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ---
 
-### 4.3 용어 추출 — `extractFlaggedTerms`
+### 4.3 용어 추출 — `fetchExtractTerms`
 
-**Type:** Server Action (구현 완료)
+**Type:** 브라우저 직접 호출 (`features/translation/api/client.ts`)
 
 **Input:**
 
@@ -265,9 +267,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ---
 
-### 4.4 번역본 생성 — `translatePost`
+### 4.4 번역본 생성 — `fetchTranslatePost`
 
-**Type:** Server Action (구현 완료)
+**Type:** 브라우저 직접 호출 (`features/translation/api/client.ts`)
 
 **Input:**
 
@@ -311,9 +313,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ---
 
-### 4.5 개별 locale 재번역 — `retrySingleLocale`
+### 4.5 개별 locale 재번역 — `fetchRetrySingleLocale`
 
-**Type:** Server Action (구현 완료)
+**Type:** 브라우저 직접 호출 (`features/translation/api/client.ts`)
 
 **Input:**
 

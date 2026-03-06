@@ -58,7 +58,7 @@ graph LR
 
 | App           | Framework               | 역할                      | 렌더링                                      |
 | ------------- | ----------------------- | ------------------------- | ------------------------------------------- |
-| `apps/admin`  | Next.js 15 (App Router) | 글 작성/편집, 빌드 트리거 | CSR (Server Action/API Route for 서버 로직) |
+| `apps/admin`  | Next.js 15 (App Router) | 글 작성/편집, 빌드 트리거 | CSR (Server Action for 서버 로직, GPT는 브라우저 직접 호출) |
 | `apps/client` | Astro 5                 | 공개 블로그 뷰어          | SSG                                         |
 
 ## 외부 서비스

@@ -555,7 +555,7 @@ features/post-editor/
 │   ├── usePostEditor.ts             # (미구현) 에디터 상태 관리 (content + meta + dirty 체크)
 │   └── usePostSave.ts               # (미구현) 포스트 저장 로직
 ├── lib/
-│   └── image.ts                     # ✅ toWebP() — 이미지 파일을 WebP Blob으로 변환 (Canvas API)
+│   └── image.ts                     # ✅ toWebP() — WebP 변환 + 워터마크 + 리사이징 (Canvas API, maxWidth 옵션)
 ├── api/
 │   └── actions.ts                   # ✅ Server Actions (generateSummary — GPT-5 Nano API 연동)
 ├── containers/
@@ -661,34 +661,48 @@ features/post-management/
     │                              │                           │
     ├─ 파일 선택 ─────────────────>│                           │
     │                              │                           │
-    │  1. 파일 메타 전달           │                           │
-    │     (name, type, size)       │                           │
+    │  1. WebP 변환 + 워터마크     │                           │
+    │     (Canvas API, 품질 1)     │                           │
     │                              │                           │
-    │<── 2. Pre-signed URL 반환 ───┤                           │
-    │     (PUT URL, 만료시간)      │  generatePresignedUrl()   │
+    │  2. 파일 메타 전달           │                           │
+    │     (type, size)             │                           │
+    │                              │                           │
+    │<── 3. Pre-signed URL 반환 ───┤                           │
+    │     (PUT URL, 만료시간)      │  getPresignedUrl()        │
     │                              │  ├─ UUID 파일명 생성      │
     │                              │  ├─ 형식/크기 검증        │
     │                              │  └─ PutObjectCommand      │
     │                              │                           │
-    ├─ 3. S3 직접 PUT ────────────────────────────────────────>│
-    │     (Pre-signed URL로)       │                           │
+    ├─ 4. 원본 S3 PUT ────────────────────────────────────────>│  {uuid}.webp
     │                              │                           │
-    │<─ 4. 업로드 완료 (200) ──────────────────────────────────┤
+    │  5. 리사이즈 변형 생성       │                           │
+    │     (maxWidth: 688px)        │                           │
     │                              │                           │
-    ├─ 5. CDN URL 조합             │                           │
+    │<── 6. 변형용 Pre-signed URL ─┤                           │
+    │                              │                           │
+    ├─ 7. 변형 S3 PUT ────────────────────────────────────────>│  {uuid}_688.webp
+    │                              │                           │
+    ├─ 8. CDN URL 조합             │                           │
     │     https://media.eunminlog.site/{key}                   │
     │                              │                           │
-    └─ 6. 에디터에 이미지 삽입     │                           │
+    └─ 9. 에디터에 이미지 삽입     │                           │
 ```
+
+**이미지 리사이징 전략**: 업로드 시 원본 + `_688` 리사이즈 변형 2벌을 S3에 저장. Client에서는 본문/카드에 `_688` 변형 사용, 라이트박스 확대 시에만 원본(`data-full` 속성)을 로드.
+
+| 변형         | 최대 가로 | 용도            | 파일명 패턴       |
+| ------------ | --------- | --------------- | ----------------- |
+| **original** | 제한 없음 | 라이트박스 확대 | `{uuid}.webp`     |
+| **_688**     | 688px     | 본문/카드 표시  | `{uuid}_688.webp` |
 
 #### 파일 유효성 규칙
 
 | 항목      | 제한                                                  |
 | --------- | ----------------------------------------------------- |
-| 허용 형식 | `image/jpeg`, `image/png`, `image/webp`, `image/avif` |
-| 최대 크기 | 10MB                                                  |
+| 허용 형식 | `image/jpeg`, `image/png`, `image/webp`               |
+| 최대 크기 | 20MB                                                  |
 | 파일명    | UUID v4로 대체 (원본 파일명 사용 안 함)               |
-| 키 구조   | `posts/{YYYY}/{MM}/{uuid}.{ext}`                      |
+| 키 구조   | `posts/{YYYY}/{MM}/{uuid}.webp`                       |
 
 #### CDN URL
 
@@ -773,11 +787,11 @@ features/media/
 
 #### 번역 API 호출 전략
 
-- **호출 위치**: Server Action에서 OpenAI SDK (`openai` npm 패키지) 사용. 공유 클라이언트: `shared/lib/openai.ts`.
+- **호출 위치**: 브라우저에서 OpenAI SDK (`openai` npm 패키지, `dangerouslyAllowBrowser: true`) 직접 호출. 공유 클라이언트: `shared/lib/openai.ts`. Vercel Function 타임아웃 제약 회피를 위해 API Route를 사용하지 않는다.
 - **모델**: GPT-5 Nano (`gpt-5-nano`). 번역+요약+용어 추출 모두 사용.
 - **모델 제약**: `temperature` 파라미터 미지원 (기본값 1만 사용).
 - **응답 포맷**: `response_format: { type: 'json_object' }` 사용으로 JSON 파싱 안정성 확보.
-- **API Key 보안**: `OPENAI_API_KEY` 환경 변수 (서버 전용, `NEXT_PUBLIC_` prefix 불필요). Server Action에서만 접근하므로 클라이언트 노출 없음.
+- **API Key**: 브라우저에서 직접 호출하므로 클라이언트에 노출되나, Admin은 인증된 관리자만 접근 가능하여 허용. 환경 변수 상세: [`secrets-reference.md` 섹션 1](secrets-reference.md).
 - **병렬 처리**: 7개 locale 번역을 `Promise.allSettled()`로 병렬 실행. 개별 locale 실패가 전체를 중단시키지 않음 (`TranslationResult.failed?: boolean`).
 - **번역 대상 필드**: title, description(3줄 요약), content, place_name, address. 주소(address)는 locale별 표기 방식 적용 (일본식, 중국식, 영어권 역순 등).
 - **번역 저장**: 번역 결과를 Server Action으로 `post_translations` 테이블에 upsert 예정 (미구현).
@@ -1341,7 +1355,7 @@ apps/admin/
     │   │   ├── hooks/
     │   │   │   └── useTiptapEditor.ts
     │   │   ├── lib/
-    │   │   │   └── image.ts         # toWebP() 이미지 변환
+    │   │   │   └── image.ts         # toWebP() WebP 변환 + 워터마크 + 리사이징
     │   │   ├── api/
     │   │   │   └── actions.ts       # Server Actions (generateSummary)
     │   │   ├── containers/
@@ -1642,5 +1656,5 @@ ALTER TABLE post_translations ADD COLUMN address text;
 - [ ] OpenAI API Key에 사용량 제한(Rate Limit) 및 월 비용 상한(Usage Limit) 설정
 - [ ] AWS IAM 정책 -- Pre-signed URL 생성용 최소 권한 원칙 (PutObject only on media-eunminlog bucket)
 - [ ] GitHub Token -- workflow dispatch 최소 권한 (Fine-grained Token 권장)
-- [x] OpenAI API Key 클라이언트 노출 문제 해소 — Server Action에서만 호출하므로 `OPENAI_API_KEY` (서버 전용)
+- [x] OpenAI API Key — 브라우저 직접 호출 (Admin은 인증된 관리자만 접근)
 - [ ] Admin 앱 Vercel 배포 시 접근 제한 (Vercel Authentication 또는 Supabase Auth로 충분)
