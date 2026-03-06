@@ -66,6 +66,10 @@ export default function NewCategoryPage() {
     try {
       await createParentCategory({ name: categoryName, slug: categorySlug });
       toast.success('대분류 카테고리가 생성되었습니다.');
+      setCategoryName('');
+      setCategorySlug('');
+      const updated = await fetchParentCategories();
+      setParentOptions(updated);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : '카테고리 생성에 실패했습니다.');
     } finally {
