@@ -47,6 +47,24 @@
 - [ ] rating 입력 (1.0-5.0, 0.5 단위)
 - [ ] slug 자동 생성 + 수동 편집
 
+### Phase 5-1 — SearchFilter 리팩토링 + Pagination 공유 컴포넌트
+
+- [ ] SearchFilter 컴파운드 컴포넌트 리팩토링 — `SearchFilter.DateRange` + `SearchFilter.Query` 서브 컴포넌트 분리
+- [ ] 기존 페이지 (`/`, `/posts`) SearchFilter 사용처 컴파운드 패턴으로 전환
+- [ ] Pagination 공유 컴포넌트 (`shared/components/pagination/Pagination.tsx`) — `< 1 2 3 ... >` 형태, 최대 9개 표시, `...` 클릭 시 다음 그룹, URL `page` 쿼리 연동
+- [ ] `/posts` 게시글 목록에 Pagination 적용 (pageSize 10, 테이블 하단)
+- [ ] `/` 핵심 지표에 Pagination 적용 (pageSize 10, 테이블 하단)
+
+### Phase 5-2 — 카테고리 관리 페이지
+
+- [ ] 사이드바 "카테고리 생성/수정/삭제" `href: null` → `/categories` 활성화
+- [ ] 카테고리 관리 페이지 (`/categories`) — `app/categories/page.tsx`
+- [ ] SearchFilter.Query만 사용하는 검색 필터 (기간 필터 제외)
+- [ ] 대분류-소분류 그룹 테이블 (대분류명 | 소분류명 | 포함된 글 | 다국어 지원 여부 | 생성일)
+- [ ] mock 데이터 기반 (`CATEGORY_OPTIONS`, `SUB_CATEGORY_MAP` 활용)
+- [ ] `+ 새 카테고리 생성` 버튼 (기능 미연결)
+- [ ] pageSize 100 고정 (페이지네이션 미사용)
+
 ### Phase 2 (미구현)
 
 - [ ] Supabase Auth 로그인/로그아웃 (email/password)

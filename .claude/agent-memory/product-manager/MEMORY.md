@@ -55,6 +55,10 @@
 - Admin button: cursor-pointer default, search button variant="outline"
 - Remaining: S3 upload, save action, edit page, delete, Placeholder ext, toggles (sponsored/recommended/multilingual), rating, slug auto-gen, translation DB save
 - Pending DB migrations: posts (price_prefix, price ADD + price_min, price_max DROP), post_translations (place_name, address ADD)
+- Phase 5-1 planned: SearchFilter compound component refactoring (DateRange + Query sub-components) + Pagination shared component (max 9 pages, ellipsis group navigation, URL page query)
+- Phase 5-2 planned: Category management page (`/categories`) -- group table (category/sub rows), SearchFilter.Query only, mock data, pageSize 100 (no pagination)
+- Phase 5-3 planned: Apply Pagination to `/posts` + `/` pages (pageSize 10)
+- admin-specs.md Section 4-7: category-management feature spec (CM-1~CM-4), Section 5-4: SearchFilter compound pattern, Section 5-5: Pagination spec
 
 ## Client PlaceInfoCard Changes (2026-03-05)
 
@@ -73,6 +77,7 @@
 - `docs/place-i18n-specs.md` — place_name/address i18n (2026-03-05, updated 2026-03-05): DB schema change (post_translations add place_name, address nullable), LocalizedPost type adds translated_place_name/translated_address (separate from original), PlaceInfoCard shows translation + copies Korean original, Toast on non-ko copy, JSON-LD keeps Korean original, PlaceInfoCard field labels i18n'd (place.category/name/address/price/copyToast keys), search/feed data use translated place_name. Place i18n Client-side implementation completed (all TODO items checked except DB ALTER and Admin GPT-5 Nano pipeline).
 - `docs/api-specs.md` — Admin API specs (also updated GPT-4o -> GPT-5 Nano)
 - `docs/gpt-prompts.md` — GPT prompt design doc (summary generation, term extraction, post translation)
+- `docs/cookie-consent-specs.md` — Cookie Consent + AdSense NPA 연동 (2026-03-06): CONSENT_REQUIRED_LOCALES=[en,ja,zh-CN,th], Sticky Footer Banner, NPA/PA 동적 전환, GA4 cookie_consent 이벤트, features/consent/ 구조
 
 ## Documentation Patterns
 
