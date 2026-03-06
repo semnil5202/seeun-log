@@ -47,7 +47,7 @@ const NAV_ITEMS: NavGroup[] = [
     icon: FileEdit,
     children: [
       { label: '카테고리 생성/수정/삭제', href: null },
-      { label: '게시글 작성/수정/삭제', href: '/posts/new' },
+      { label: '게시글 작성/수정/삭제', href: '/posts' },
       { label: '댓글 수정/삭제', href: null },
     ],
   },
@@ -89,7 +89,14 @@ export default function AppSidebar() {
                         {group.children.map((child) => (
                           <SidebarMenuSubItem key={child.label}>
                             {child.href ? (
-                              <SidebarMenuSubButton asChild isActive={pathname === child.href}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={
+                                  child.href === '/'
+                                    ? pathname === '/'
+                                    : pathname.startsWith(child.href)
+                                }
+                              >
                                 <Link href={child.href}>{child.label}</Link>
                               </SidebarMenuSubButton>
                             ) : (
