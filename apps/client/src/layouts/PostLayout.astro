@@ -172,9 +172,11 @@ const gaPageParams = {
 
         </article>
 
-        {locale !== DEFAULT_LOCALE && (
-          <p class="text-sm text-gray-400 mt-6">{t("post.aiTranslated", locale)}</p>
-        )}
+        <p class="text-sm text-gray-400 mt-6">
+          * {locale === DEFAULT_LOCALE
+            ? t("post.aiRefined", locale)
+            : t("post.aiTranslated", locale)}
+        </p>
 
         <NearbyPostList
           posts={nearbyLocalized}
