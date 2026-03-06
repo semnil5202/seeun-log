@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeft, LoaderIcon, Save } from 'lucide-react';
+import { ChevronLeft, ImageIcon, LoaderIcon, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { fetchDraft } from '@/features/draft/api';
@@ -47,11 +47,12 @@ import {
   TranslationEditSheet,
   type TranslationField,
 } from '@/features/translation/components/TranslationEditSheet';
+import { ImageAltSheet } from '@/features/post-editor/components/ImageAltSheet';
 import { SlugField } from '@/shared/components/slug/SlugField';
 import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
 
 import type { Category, PostFormType, SubCategory, TranslationLocale } from '@/shared/types/post';
-import type { TranslationResult } from '@/features/translation/types';
+import type { ImageAlt, TranslationResult } from '@/features/translation/types';
 
 export default function EditPostPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,6 +76,7 @@ export default function EditPostPage() {
       price: number | null;
     };
     translations: TranslationResult[];
+    imageAlts?: ImageAlt[];
   } | null>(null);
   const [isLoadingPost, setIsLoadingPost] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -141,6 +143,7 @@ function EditPostForm({
       price: number | null;
     };
     translations: TranslationResult[];
+    imageAlts?: ImageAlt[];
   };
   postId: string;
   router: ReturnType<typeof useRouter>;
@@ -176,8 +179,27 @@ function EditPostForm({
 
   const { errors } = formState;
 
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [isSummarized, setIsSummarized] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [translationResults, setTranslationResults] = useState<TranslationResult[]>(postData.translations);
+  const [translationEditCompleted, setTranslationEditCompleted] = useState(false);
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageAlts, setImageAlts] = useState<ImageAlt[]>(postData.imageAlts ?? []);
+  const [isAltSheetOpen, setIsAltSheetOpen] = useState(false);
+
+  const getTranslationData = useCallback(() => {
+    if (translationResults.length === 0) return null;
+    return { confirmedTerms: [], results: translationResults };
+  }, [translationResults]);
+
+  const getImageAltsCallback = useCallback(() => imageAlts, [imageAlts]);
+
   const { lastSavedAt, isSaving, saveManual, loadDraftId } = useAutoSaveDraft({
     getValues,
+    getTranslationData,
+    getImageAlts: getImageAltsCallback,
     postId,
   });
 
@@ -188,16 +210,14 @@ function EditPostForm({
     fetchDraft(draftParam).then((draft) => {
       reset(draft.form_data);
       loadDraftId(draft.id);
+      if (draft.translation_data) {
+        setTranslationResults(draft.translation_data.results);
+      }
+      if (draft.image_alts.length > 0) {
+        setImageAlts(draft.image_alts);
+      }
     });
   }, [searchParams, reset, loadDraftId]);
-
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [isSummarized, setIsSummarized] = useState(false);
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [translationResults, setTranslationResults] = useState<TranslationResult[]>(postData.translations);
-  const [translationEditCompleted, setTranslationEditCompleted] = useState(false);
-  const [showSubmitDialog, setShowSubmitDialog] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formType = watch('formType');
   const title = watch('title');
@@ -312,6 +332,7 @@ function EditPostForm({
       placeName: pn || undefined,
       address: addr || undefined,
       confirmedTerms: [],
+      imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
     });
     setTranslationResults((prev) => prev.map((r) => (r.locale === locale ? result : r)));
     return result;
@@ -340,6 +361,7 @@ function EditPostForm({
         id: postId,
         formValues: getValues(),
         translations: translationResults,
+        imageAlts,
       });
       setShowSubmitDialog(false);
       toast.success('게시글이 수정되었습니다.');
@@ -529,6 +551,23 @@ function EditPostForm({
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
+              onClick={() => setIsAltSheetOpen(true)}
+              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+            >
+              <ImageIcon className="size-4" />
+              이미지 alt 입력
+            </button>
+            {needsTranslation && (
+              <button
+                type="button"
+                onClick={() => setIsEditSheetOpen(true)}
+                className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+              >
+                번역본 확인하기
+              </button>
+            )}
+            <button
+              type="button"
               onClick={saveManual}
               disabled={isSaving}
               className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
@@ -540,15 +579,6 @@ function EditPostForm({
               )}
               임시저장
             </button>
-            {needsTranslation && (
-              <button
-                type="button"
-                onClick={() => setIsEditSheetOpen(true)}
-                className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
-              >
-                번역본 확인하기
-              </button>
-            )}
             <button
               type="button"
               onClick={handleSubmitClick}
@@ -565,6 +595,14 @@ function EditPostForm({
           )}
         </div>
       </div>
+
+      <ImageAltSheet
+        open={isAltSheetOpen}
+        onOpenChange={setIsAltSheetOpen}
+        content={watchedContent}
+        imageAlts={imageAlts}
+        onComplete={setImageAlts}
+      />
 
       {needsTranslation && (
         <TranslationEditSheet

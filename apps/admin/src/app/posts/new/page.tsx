@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -38,11 +38,12 @@ import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
 import { fetchDraft } from '@/features/draft/api';
 import { useAutoSaveDraft } from '@/features/draft/hooks/useAutoSaveDraft';
 import { createPost } from '@/features/post-management/api/actions';
-import { LoaderIcon, Save, Sparkles } from 'lucide-react';
+import { ImageAltSheet, extractImageSrcs } from '@/features/post-editor/components/ImageAltSheet';
+import { ImageIcon, LoaderIcon, Save, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 import type { Category, PostFormType, SubCategory, TranslationLocale } from '@/shared/types/post';
-import type { FlaggedTerm, TranslationResult } from '@/features/translation/types';
+import type { FlaggedTerm, ImageAlt, TranslationResult } from '@/features/translation/types';
 
 export default function NewPostPage() {
   return (
@@ -64,20 +65,6 @@ function NewPostContent() {
 
   const { errors } = formState;
 
-  const { draftId, lastSavedAt, isSaving, saveManual, loadDraftId } = useAutoSaveDraft({
-    getValues,
-  });
-
-  useEffect(() => {
-    const draftParam = searchParams.get('draft');
-    if (!draftParam) return;
-
-    fetchDraft(draftParam).then((draft) => {
-      reset(draft.form_data);
-      loadDraftId(draft.id);
-    });
-  }, [searchParams, reset, loadDraftId]);
-
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummarized, setIsSummarized] = useState(false);
   const [isTranslated, setIsTranslated] = useState(false);
@@ -92,6 +79,51 @@ function NewPostContent() {
   const [lastConfirmedTerms, setLastConfirmedTerms] = useState<
     { original: string; confirmed: string }[]
   >([]);
+  const [imageAlts, setImageAlts] = useState<ImageAlt[]>([]);
+  const [isAltSheetOpen, setIsAltSheetOpen] = useState(false);
+  const [imageAltError, setImageAltError] = useState(false);
+
+  const getTranslationData = useCallback(() => {
+    if (translationResults.length === 0) return null;
+    return {
+      confirmedTerms: lastConfirmedTerms.map((t) => ({
+        original: t.original,
+        translation: t.confirmed,
+      })),
+      results: translationResults,
+    };
+  }, [translationResults, lastConfirmedTerms]);
+
+  const getImageAltsCallback = useCallback(() => imageAlts, [imageAlts]);
+
+  const { draftId, lastSavedAt, isSaving, saveManual, loadDraftId } = useAutoSaveDraft({
+    getValues,
+    getTranslationData,
+    getImageAlts: getImageAltsCallback,
+  });
+
+  useEffect(() => {
+    const draftParam = searchParams.get('draft');
+    if (!draftParam) return;
+
+    fetchDraft(draftParam).then((draft) => {
+      reset(draft.form_data);
+      loadDraftId(draft.id);
+      if (draft.translation_data) {
+        setTranslationResults(draft.translation_data.results);
+        setLastConfirmedTerms(
+          draft.translation_data.confirmedTerms.map((t) => ({
+            original: t.original,
+            confirmed: t.translation,
+          })),
+        );
+        setIsTranslated(true);
+      }
+      if (draft.image_alts.length > 0) {
+        setImageAlts(draft.image_alts);
+      }
+    });
+  }, [searchParams, reset, loadDraftId]);
 
   const formType = watch('formType');
   const title = watch('title');
@@ -180,7 +212,8 @@ function NewPostContent() {
     try {
       const { title: t, content: c, description: d, placeName: pn, address: addr } = getValues();
 
-      const terms = await fetchExtractTerms(c, pn || undefined, addr || undefined);
+      const altTexts = imageAlts.length > 0 ? imageAlts.map((a) => a.alt) : undefined;
+      const terms = await fetchExtractTerms(c, pn || undefined, addr || undefined, altTexts);
 
       if (terms.length === 0) {
         const params = {
@@ -190,6 +223,7 @@ function NewPostContent() {
           placeName: pn || undefined,
           address: addr || undefined,
           confirmedTerms: [] as { original: string; confirmed: string }[],
+          imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
         };
         const results = await fetchTranslatePost(params);
         setLastConfirmedTerms([]);
@@ -217,6 +251,7 @@ function NewPostContent() {
 
   const handleTranslateClick = async () => {
     if (isExtracting) return;
+    setImageAltError(false);
 
     const valid = await trigger();
     if (!valid) {
@@ -224,11 +259,24 @@ function NewPostContent() {
       return;
     }
 
+    const srcs = extractImageSrcs(getValues('content'));
+    if (srcs.length > 0) {
+      const allFilled = srcs.every((src) => {
+        const found = imageAlts.find((a) => a.src === src);
+        return found && found.alt.trim();
+      });
+      if (!allFilled) {
+        setImageAltError(true);
+        return;
+      }
+    }
+
     handleTranslationStart();
   };
 
   const handleSubmitClick = async () => {
     setTranslationError(false);
+    setImageAltError(false);
 
     const valid = await trigger();
     if (!valid) {
@@ -246,6 +294,7 @@ function NewPostContent() {
       await createPost({
         formValues: getValues(),
         translations: translationResults,
+        imageAlts,
         draftId: draftId,
       });
       toast.success('게시글이 작성되었습니다.');
@@ -278,6 +327,7 @@ function NewPostContent() {
       placeName: pn || undefined,
       address: addr || undefined,
       confirmedTerms: lastConfirmedTerms,
+      imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
     });
     setTranslationResults((prev) => prev.map((r) => (r.locale === locale ? result : r)));
     return result;
@@ -456,16 +506,11 @@ function NewPostContent() {
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
-              onClick={saveManual}
-              disabled={isSaving}
-              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
+              onClick={() => setIsAltSheetOpen(true)}
+              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
             >
-              {isSaving ? (
-                <LoaderIcon className="size-4 animate-spin" />
-              ) : (
-                <Save className="size-4" />
-              )}
-              임시저장
+              <ImageIcon className="size-4" />
+              이미지 alt 입력
             </button>
             {needsTranslation && !isTranslated && flaggedTerms.length === 0 && (
               <button
@@ -501,6 +546,19 @@ function NewPostContent() {
             )}
             <button
               type="button"
+              onClick={saveManual}
+              disabled={isSaving}
+              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
+            >
+              {isSaving ? (
+                <LoaderIcon className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
+              임시저장
+            </button>
+            <button
+              type="button"
               onClick={handleSubmitClick}
               disabled={isSubmitting}
               className="h-10 bg-primary-600 px-5 text-sm font-bold text-white shadow-xs transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -508,11 +566,22 @@ function NewPostContent() {
               {isSubmitting ? '작성 중...' : '작성 완료'}
             </button>
           </div>
+          {imageAltError && (
+            <p className="mt-2 text-end text-[14px] text-red-500">이미지 alt 입력이 먼저 필요합니다.</p>
+          )}
           {translationError && (
             <p className="mt-2 text-end text-[14px] text-red-500">번역본 생성이 먼저 필요합니다.</p>
           )}
         </div>
       </div>
+
+      <ImageAltSheet
+        open={isAltSheetOpen}
+        onOpenChange={setIsAltSheetOpen}
+        content={watch('content')}
+        imageAlts={imageAlts}
+        onComplete={setImageAlts}
+      />
 
       <TranslationSheetContainer
         open={isSheetOpen}
@@ -524,6 +593,7 @@ function NewPostContent() {
         description={description}
         placeName={watch('placeName')}
         address={watch('address')}
+        imageAlts={imageAlts}
       />
 
       <TranslationPreviewSheet
