@@ -17,17 +17,21 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { CATEGORY_OPTIONS } from '@/features/post-editor/constants/category';
-
 import type { Category, SubCategory } from '@/shared/types/post';
 
 type QueryFormValues = {
   query: string;
 };
 
+type CategoryRow = {
+  category: Category;
+  label: string;
+  postCount: number;
+  createdAt: string;
+};
+
 type SubCategoryRow = {
   category: Category;
-  categoryLabel: string;
   subCategory: SubCategory;
   subCategoryLabel: string;
   postCount: number;
@@ -35,88 +39,22 @@ type SubCategoryRow = {
   createdAt: string;
 };
 
-const MOCK_DATA: SubCategoryRow[] = [
-  {
-    category: 'delicious',
-    categoryLabel: '맛집',
-    subCategory: 'korean',
-    subCategoryLabel: '한식',
-    postCount: 12,
-    isMultilingual: true,
-    createdAt: '2026-01-10',
-  },
-  {
-    category: 'delicious',
-    categoryLabel: '맛집',
-    subCategory: 'western',
-    subCategoryLabel: '양식',
-    postCount: 8,
-    isMultilingual: true,
-    createdAt: '2026-01-10',
-  },
-  {
-    category: 'delicious',
-    categoryLabel: '맛집',
-    subCategory: 'japanese',
-    subCategoryLabel: '일식',
-    postCount: 5,
-    isMultilingual: true,
-    createdAt: '2026-01-10',
-  },
-  {
-    category: 'delicious',
-    categoryLabel: '맛집',
-    subCategory: 'pub',
-    subCategoryLabel: '주점',
-    postCount: 3,
-    isMultilingual: false,
-    createdAt: '2026-01-15',
-  },
-  {
-    category: 'cafe',
-    categoryLabel: '카페',
-    subCategory: 'hotplace',
-    subCategoryLabel: '핫플',
-    postCount: 7,
-    isMultilingual: true,
-    createdAt: '2026-01-10',
-  },
-  {
-    category: 'cafe',
-    categoryLabel: '카페',
-    subCategory: 'study',
-    subCategoryLabel: '카공',
-    postCount: 4,
-    isMultilingual: true,
-    createdAt: '2026-01-12',
-  },
-  {
-    category: 'travel',
-    categoryLabel: '여행',
-    subCategory: 'domestic',
-    subCategoryLabel: '국내',
-    postCount: 10,
-    isMultilingual: true,
-    createdAt: '2026-01-10',
-  },
-  {
-    category: 'travel',
-    categoryLabel: '여행',
-    subCategory: 'overseas',
-    subCategoryLabel: '해외',
-    postCount: 6,
-    isMultilingual: true,
-    createdAt: '2026-01-10',
-  },
-  {
-    category: 'travel',
-    categoryLabel: '여행',
-    subCategory: 'accommodation',
-    subCategoryLabel: '숙소',
-    postCount: 2,
-    isMultilingual: false,
-    createdAt: '2026-01-20',
-  },
+const MOCK_CATEGORIES: CategoryRow[] = [
+  { category: 'delicious', label: '맛집', postCount: 28, createdAt: '2026-01-05' },
+  { category: 'cafe', label: '카페', postCount: 11, createdAt: '2026-01-05' },
+  { category: 'travel', label: '여행', postCount: 18, createdAt: '2026-01-05' },
+];
+
+const MOCK_SUB_CATEGORIES: SubCategoryRow[] = [
+  { category: 'delicious', subCategory: 'korean', subCategoryLabel: '한식', postCount: 12, isMultilingual: true, createdAt: '2026-01-10' },
+  { category: 'delicious', subCategory: 'western', subCategoryLabel: '양식', postCount: 8, isMultilingual: true, createdAt: '2026-01-10' },
+  { category: 'delicious', subCategory: 'japanese', subCategoryLabel: '일식', postCount: 5, isMultilingual: true, createdAt: '2026-01-10' },
+  { category: 'delicious', subCategory: 'pub', subCategoryLabel: '주점', postCount: 3, isMultilingual: false, createdAt: '2026-01-15' },
+  { category: 'cafe', subCategory: 'hotplace', subCategoryLabel: '핫플', postCount: 7, isMultilingual: true, createdAt: '2026-01-10' },
+  { category: 'cafe', subCategory: 'study', subCategoryLabel: '카공', postCount: 4, isMultilingual: true, createdAt: '2026-01-12' },
+  { category: 'travel', subCategory: 'domestic', subCategoryLabel: '국내', postCount: 10, isMultilingual: true, createdAt: '2026-01-10' },
+  { category: 'travel', subCategory: 'overseas', subCategoryLabel: '해외', postCount: 6, isMultilingual: true, createdAt: '2026-01-10' },
+  { category: 'travel', subCategory: 'accommodation', subCategoryLabel: '숙소', postCount: 2, isMultilingual: false, createdAt: '2026-01-20' },
 ];
 
 export default function CategoriesPage() {
@@ -149,23 +87,20 @@ function CategoriesContent() {
   };
 
   const groupedData = useMemo(() => {
-    const filtered = appliedQuery
-      ? MOCK_DATA.filter(
-          (row) =>
-            row.categoryLabel.includes(appliedQuery) || row.subCategoryLabel.includes(appliedQuery),
-        )
-      : MOCK_DATA;
-
     const groups: {
-      category: Category;
-      label: string;
+      category: CategoryRow;
       subCategories: SubCategoryRow[];
     }[] = [];
 
-    for (const opt of CATEGORY_OPTIONS) {
-      const subs = filtered.filter((r) => r.category === opt.value);
-      if (subs.length > 0) {
-        groups.push({ category: opt.value, label: opt.label, subCategories: subs });
+    for (const cat of MOCK_CATEGORIES) {
+      if (appliedQuery && !cat.label.includes(appliedQuery)) {
+        const subs = MOCK_SUB_CATEGORIES.filter(
+          (r) => r.category === cat.category && r.subCategoryLabel.includes(appliedQuery),
+        );
+        if (subs.length > 0) groups.push({ category: cat, subCategories: subs });
+      } else {
+        const subs = MOCK_SUB_CATEGORIES.filter((r) => r.category === cat.category);
+        if (subs.length > 0) groups.push({ category: cat, subCategories: subs });
       }
     }
 
@@ -210,15 +145,15 @@ function CategoriesContent() {
                 </TableRow>
               ) : (
                 groupedData.flatMap((group) => [
-                  <TableRow key={group.category} className="bg-muted/50">
-                    <TableCell className="py-3 font-bold">{group.label}</TableCell>
+                  <TableRow key={group.category.category} className="bg-muted/50">
+                    <TableCell className="py-3 font-bold">{group.category.label}</TableCell>
                     <TableCell />
+                    <TableCell className="py-3 text-center">{group.category.postCount}</TableCell>
                     <TableCell />
-                    <TableCell />
-                    <TableCell />
+                    <TableCell className="py-3 text-center">{group.category.createdAt}</TableCell>
                   </TableRow>,
                   ...group.subCategories.map((sub) => (
-                    <TableRow key={`${group.category}-${sub.subCategory}`}>
+                    <TableRow key={`${group.category.category}-${sub.subCategory}`}>
                       <TableCell />
                       <TableCell className="py-3">{sub.subCategoryLabel}</TableCell>
                       <TableCell className="py-3 text-center">{sub.postCount}</TableCell>
