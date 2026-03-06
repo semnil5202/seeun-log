@@ -36,6 +36,7 @@ export default function NewCategoryPage() {
   const [categoryName, setCategoryName] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
   const [isCreatingParent, setIsCreatingParent] = useState(false);
+  const [parentErrors, setParentErrors] = useState<Record<string, string>>({});
 
   const [subParent, setSubParent] = useState('');
   const [subName, setSubName] = useState('');
@@ -44,6 +45,7 @@ export default function NewCategoryPage() {
   const [subTranslations, setSubTranslations] = useState<Record<string, string>>({});
   const [isTranslating, setIsTranslating] = useState(false);
   const [isCreatingChild, setIsCreatingChild] = useState(false);
+  const [childErrors, setChildErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchParentCategories()
@@ -52,14 +54,14 @@ export default function NewCategoryPage() {
   }, []);
 
   const handleCreateParent = async () => {
-    if (!categoryName.trim()) {
-      toast.error('카테고리명을 입력해주세요.');
+    const errors: Record<string, string> = {};
+    if (!categoryName.trim()) errors.name = '카테고리명을 입력해주세요.';
+    if (!categorySlug.trim()) errors.slug = '슬러그를 입력해주세요.';
+    if (Object.keys(errors).length > 0) {
+      setParentErrors(errors);
       return;
     }
-    if (!categorySlug.trim()) {
-      toast.error('슬러그를 입력해주세요.');
-      return;
-    }
+    setParentErrors({});
     setIsCreatingParent(true);
     try {
       await createParentCategory({ name: categoryName, slug: categorySlug });
@@ -72,25 +74,19 @@ export default function NewCategoryPage() {
   };
 
   const handleCreateChild = async () => {
-    if (!subParent) {
-      toast.error('대분류를 선택해주세요.');
-      return;
-    }
-    if (!subName.trim()) {
-      toast.error('카테고리명을 입력해주세요.');
-      return;
-    }
-    if (!subSlug.trim()) {
-      toast.error('슬러그를 입력해주세요.');
-      return;
-    }
+    const errors: Record<string, string> = {};
+    if (!subParent) errors.parent = '대분류를 선택해주세요.';
+    if (!subName.trim()) errors.name = '카테고리명을 입력해주세요.';
+    if (!subSlug.trim()) errors.slug = '슬러그를 입력해주세요.';
     if (subMultilingual) {
       const missing = LOCALES.filter((l) => !subTranslations[l]?.trim());
-      if (missing.length > 0) {
-        toast.error('모든 다국어 카테고리명을 입력해주세요.');
-        return;
-      }
+      if (missing.length > 0) errors.translations = '모든 다국어 카테고리명을 입력해주세요.';
     }
+    if (Object.keys(errors).length > 0) {
+      setChildErrors(errors);
+      return;
+    }
+    setChildErrors({});
     setIsCreatingChild(true);
     try {
       await createChildCategory({
@@ -150,8 +146,14 @@ export default function NewCategoryPage() {
             <Input
               placeholder="예: 맛집"
               value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              onChange={(e) => {
+                setCategoryName(e.target.value);
+                if (parentErrors.name) setParentErrors((prev) => ({ ...prev, name: '' }));
+              }}
             />
+            {parentErrors.name && (
+              <p className="text-xs text-red-500">{parentErrors.name}</p>
+            )}
           </div>
         </div>
 
@@ -162,10 +164,16 @@ export default function NewCategoryPage() {
           <SlugField
             sourceText={categoryName}
             value={categorySlug}
-            onChange={setCategorySlug}
+            onChange={(v) => {
+              setCategorySlug(v);
+              if (parentErrors.slug) setParentErrors((prev) => ({ ...prev, slug: '' }));
+            }}
             placeholder="예: delicious"
             table="categories"
           />
+          {parentErrors.slug && (
+            <p className="text-xs text-red-500">{parentErrors.slug}</p>
+          )}
           <p className="text-xs text-muted-foreground">
             * 슬러그는 SEO에 직접 반영되는 요소입니다. 신중하게 선택해주세요.
           </p>
@@ -188,7 +196,13 @@ export default function NewCategoryPage() {
             <label className="text-sm font-medium text-muted-foreground">
               대분류 <span className="text-primary-600">*</span>
             </label>
-            <Select value={subParent} onValueChange={setSubParent}>
+            <Select
+              value={subParent}
+              onValueChange={(v) => {
+                setSubParent(v);
+                if (childErrors.parent) setChildErrors((prev) => ({ ...prev, parent: '' }));
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="선택" />
               </SelectTrigger>
@@ -200,6 +214,9 @@ export default function NewCategoryPage() {
                 ))}
               </SelectContent>
             </Select>
+            {childErrors.parent && (
+              <p className="text-xs text-red-500">{childErrors.parent}</p>
+            )}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-muted-foreground">
@@ -208,8 +225,14 @@ export default function NewCategoryPage() {
             <Input
               placeholder="예: 한식"
               value={subName}
-              onChange={(e) => setSubName(e.target.value)}
+              onChange={(e) => {
+                setSubName(e.target.value);
+                if (childErrors.name) setChildErrors((prev) => ({ ...prev, name: '' }));
+              }}
             />
+            {childErrors.name && (
+              <p className="text-xs text-red-500">{childErrors.name}</p>
+            )}
           </div>
         </div>
 
@@ -220,10 +243,16 @@ export default function NewCategoryPage() {
           <SlugField
             sourceText={subName}
             value={subSlug}
-            onChange={setSubSlug}
+            onChange={(v) => {
+              setSubSlug(v);
+              if (childErrors.slug) setChildErrors((prev) => ({ ...prev, slug: '' }));
+            }}
             placeholder="예: korean"
             table="categories"
           />
+          {childErrors.slug && (
+            <p className="text-xs text-red-500">{childErrors.slug}</p>
+          )}
           <p className="text-xs text-muted-foreground">
             * 슬러그는 SEO에 직접 반영되는 요소입니다. 신중하게 선택해주세요.
           </p>
@@ -271,6 +300,9 @@ export default function NewCategoryPage() {
                 </div>
               ))}
             </div>
+            {childErrors.translations && (
+              <p className="text-xs text-red-500">{childErrors.translations}</p>
+            )}
           </div>
         )}
 
