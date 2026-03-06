@@ -57,7 +57,8 @@ const nearbyLocalized = await Promise.all(
 
 const subCategoryHref = getLocalePath(`/${post.category}/${post.sub_category}/`, locale);
 const publishDate = formatDate(post.created_at, locale);
-const contentWithAds = insertInArticleAds(post.content);
+// TODO: 애드센스 되돌리기 — insertInArticleAds(post.content)
+const contentWithAds = post.content;
 const blogPosting = buildBlogPostingSchema(post, canonical);
 const reviewSchema = buildReviewSchema(post);
 const sponsoredLabel = t("post.sponsored", locale);
@@ -95,7 +96,7 @@ const gaPageParams = {
 
       <main class="min-w-0 py-6">
 
-        <FixedAdsense variant="post-top" />
+        {/* TODO: 애드센스 되돌리기 — <FixedAdsense variant="post-top" /> */}
 
         <article itemscope itemtype="https://schema.org/BlogPosting">
 
