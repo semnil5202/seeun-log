@@ -1,7 +1,10 @@
 'use server';
 
 import { supabaseServer } from '@/shared/lib/supabase-server';
+import { openai } from '@/shared/lib/openai';
 import { triggerClientBuild } from '@/features/build-trigger/api/actions';
+
+import type { TranslationLocale } from '@/shared/types/post';
 
 export type CategoryWithCount = {
   id: string;
@@ -155,11 +158,52 @@ export async function createParentCategory(params: { name: string; slug: string 
   return { id: data!.id as string };
 }
 
+export async function translateCategoryName(
+  name: string,
+): Promise<Record<TranslationLocale, string>> {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4.1-nano',
+    temperature: 0.3,
+    response_format: { type: 'json_object' },
+    messages: [
+      {
+        role: 'system',
+        content:
+          '한국어 카테고리명을 각 언어로 간결하게 번역하세요. 반드시 JSON 형식으로 반환: { "en": "...", "ja": "...", "zh-CN": "...", "zh-TW": "...", "id": "...", "vi": "...", "th": "..." }',
+      },
+      { role: 'user', content: name },
+    ],
+  });
+
+  const text = response.choices[0]?.message?.content;
+  if (!text) throw new Error('번역 결과가 비어있습니다.');
+
+  return JSON.parse(text) as Record<TranslationLocale, string>;
+}
+
+async function saveCategoryTranslations(
+  categoryId: string,
+  translations: Record<string, string>,
+) {
+  const rows = Object.entries(translations).map(([locale, name]) => ({
+    category_id: categoryId,
+    locale,
+    name,
+  }));
+
+  const { error } = await supabaseServer
+    .from('category_translations')
+    .upsert(rows, { onConflict: 'category_id,locale' });
+
+  if (error) throw new Error(`카테고리 번역 저장 실패: ${error.message}`);
+}
+
 export async function createChildCategory(params: {
   parentSlug: string;
   name: string;
   slug: string;
   isMultilingual: boolean;
+  translations?: Record<string, string>;
 }) {
   const { data: parent, error: parentError } = await supabaseServer
     .from('categories')
@@ -194,6 +238,10 @@ export async function createChildCategory(params: {
   if (error) {
     if (error.code === '23505') throw new Error('이미 사용 중인 슬러그입니다.');
     throw new Error(`카테고리 생성 실패: ${error.message}`);
+  }
+
+  if (params.isMultilingual && params.translations && Object.keys(params.translations).length > 0) {
+    await saveCategoryTranslations(data!.id, params.translations);
   }
 
   try {

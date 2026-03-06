@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, LoaderIcon, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -17,12 +17,18 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { SlugField } from '@/shared/components/slug/SlugField';
+import { LOCALE_LABELS } from '@/features/translation/constants/locale';
 
 import {
   createChildCategory,
   createParentCategory,
   fetchParentCategories,
+  translateCategoryName,
 } from '@/features/category-management/api/actions';
+
+import type { TranslationLocale } from '@/shared/types/post';
+
+const LOCALES = Object.keys(LOCALE_LABELS) as TranslationLocale[];
 
 export default function NewCategoryPage() {
   const [parentOptions, setParentOptions] = useState<{ slug: string; name: string }[]>([]);
@@ -35,6 +41,8 @@ export default function NewCategoryPage() {
   const [subName, setSubName] = useState('');
   const [subSlug, setSubSlug] = useState('');
   const [subMultilingual, setSubMultilingual] = useState(false);
+  const [subTranslations, setSubTranslations] = useState<Record<string, string>>({});
+  const [isTranslating, setIsTranslating] = useState(false);
   const [isCreatingChild, setIsCreatingChild] = useState(false);
 
   useEffect(() => {
@@ -65,12 +73,29 @@ export default function NewCategoryPage() {
         name: subName,
         slug: subSlug,
         isMultilingual: subMultilingual,
+        translations:
+          subMultilingual && Object.keys(subTranslations).length > 0
+            ? subTranslations
+            : undefined,
       });
       toast.success('소분류 카테고리가 생성되었습니다.');
     } catch (e) {
       toast.error(e instanceof Error ? e.message : '카테고리 생성에 실패했습니다.');
     } finally {
       setIsCreatingChild(false);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (!subName.trim()) return;
+    setIsTranslating(true);
+    try {
+      const result = await translateCategoryName(subName);
+      setSubTranslations(result);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : '번역에 실패했습니다.');
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -182,27 +207,67 @@ export default function NewCategoryPage() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="multilingual-check"
-              className="size-4 cursor-pointer accent-primary-600"
-              checked={subMultilingual}
-              onChange={(e) => {
-                setSubMultilingual(e.target.checked);
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="multilingual-check"
+            className="size-4 cursor-pointer accent-primary-600"
+            checked={subMultilingual}
+            onChange={(e) => {
+              setSubMultilingual(e.target.checked);
+              if (e.target.checked) {
                 toast.info(
                   '한 번 설정하면 현재는 변경이 불가합니다. 추후 변경 기능이 지원될 예정입니다.',
                 );
-              }}
-            />
-            <label
-              htmlFor="multilingual-check"
-              className="cursor-pointer text-sm font-medium text-muted-foreground"
-            >
-              다국어 지원
-            </label>
+              }
+            }}
+          />
+          <label
+            htmlFor="multilingual-check"
+            className="cursor-pointer text-sm font-medium text-muted-foreground"
+          >
+            다국어 지원
+          </label>
+        </div>
+
+        {subMultilingual && (
+          <div className="space-y-4">
+            <label className="text-sm font-medium text-muted-foreground">다국어 카테고리명</label>
+            <div className="grid grid-cols-2 gap-4">
+              {LOCALES.map((locale) => (
+                <div key={locale} className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">
+                    {locale} ({LOCALE_LABELS[locale]})
+                  </label>
+                  <Input
+                    placeholder={LOCALE_LABELS[locale]}
+                    value={subTranslations[locale] ?? ''}
+                    onChange={(e) =>
+                      setSubTranslations((prev) => ({ ...prev, [locale]: e.target.value }))
+                    }
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+        )}
+
+        <div className="flex justify-end gap-2">
+          {subMultilingual && (
+            <button
+              type="button"
+              onClick={handleTranslate}
+              disabled={!subName.trim() || isTranslating}
+              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
+            >
+              {isTranslating ? (
+                <LoaderIcon className="size-4 animate-spin" />
+              ) : (
+                <Sparkles className="size-4" />
+              )}
+              AI 번역
+            </button>
+          )}
           <Button
             disabled={!subParent || !subName.trim() || !subSlug.trim() || isCreatingChild}
             onClick={handleCreateChild}
