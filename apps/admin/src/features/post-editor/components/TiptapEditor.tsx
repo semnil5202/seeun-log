@@ -13,11 +13,17 @@ export function TiptapEditor({ editor, placeholder }: TiptapEditorProps) {
   const [hasContent, setHasContent] = useState(false);
 
   useEffect(() => {
-    setHasContent(!editor.isEmpty || editor.state.doc.childCount > 1 || !editor.state.doc.firstChild?.type.isTextblock || editor.state.doc.firstChild?.type.name !== 'paragraph');
+    setHasContent(
+      !editor.isEmpty ||
+        editor.state.doc.childCount > 1 ||
+        !editor.state.doc.firstChild?.type.isTextblock ||
+        editor.state.doc.firstChild?.type.name !== 'paragraph',
+    );
 
     const handleUpdate = () => {
       const doc = editor.state.doc;
-      const isDefaultEmpty = editor.isEmpty && doc.childCount === 1 && doc.firstChild?.type.name === 'paragraph';
+      const isDefaultEmpty =
+        editor.isEmpty && doc.childCount === 1 && doc.firstChild?.type.name === 'paragraph';
       setHasContent(!isDefaultEmpty);
     };
 

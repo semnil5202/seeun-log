@@ -217,23 +217,21 @@ export async function updatePost(params: {
 
   const successfulTranslations = params.translations.filter((t) => !t.failed);
   for (const t of successfulTranslations) {
-    const { error: upsertError } = await supabaseServer
-      .from('post_translations')
-      .upsert(
-        {
-          post_id: params.id,
-          locale: t.locale,
-          title: t.title,
-          description: t.description,
-          content: t.content,
-          place_name: t.place_name || null,
-          address: t.address || null,
-          image_alts: t.image_alts ?? [],
-          thumbnail_alt: t.thumbnail_alt || null,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'post_id,locale' },
-      );
+    const { error: upsertError } = await supabaseServer.from('post_translations').upsert(
+      {
+        post_id: params.id,
+        locale: t.locale,
+        title: t.title,
+        description: t.description,
+        content: t.content,
+        place_name: t.place_name || null,
+        address: t.address || null,
+        image_alts: t.image_alts ?? [],
+        thumbnail_alt: t.thumbnail_alt || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'post_id,locale' },
+    );
 
     if (upsertError) throw new Error(`번역 저장 실패 (${t.locale}): ${upsertError.message}`);
   }

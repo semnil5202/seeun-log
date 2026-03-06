@@ -54,7 +54,10 @@ export async function checkSlugDuplicate(
   table: 'posts' | 'categories',
   excludeId?: string,
 ): Promise<boolean> {
-  let query = supabaseServer.from(table).select('id', { count: 'exact', head: true }).eq('slug', slug);
+  let query = supabaseServer
+    .from(table)
+    .select('id', { count: 'exact', head: true })
+    .eq('slug', slug);
 
   if (excludeId) {
     query = query.neq('id', excludeId);

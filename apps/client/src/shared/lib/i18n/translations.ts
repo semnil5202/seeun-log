@@ -32,7 +32,8 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'i18n.viewInKorean': '한국어로 보기',
     'feed.empty': '이 카테고리는 한국어 콘텐츠만 준비되어 있습니다.',
     'post.aiTranslated': '이 글은 AI를 사용하여 번역되었습니다.',
-    'post.aiRefined': '이 글은 실제 경험을 바탕으로 작성되었으며, 일부 문장 표현만 AI 도구를 활용해 다듬었습니다.',
+    'post.aiRefined':
+      '이 글은 실제 경험을 바탕으로 작성되었으며, 일부 문장 표현만 AI 도구를 활용해 다듬었습니다.',
     'profile.sponsorInquiry': '협찬 문의',
     'footer.sponsorInquiry': '협찬 문의',
     'place.category': '카테고리',

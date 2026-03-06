@@ -22,8 +22,7 @@ function buildSystemPrompt(locale: TranslationLocale): string {
     placeRule = '카타카나 또는 한자 표기. 주소는 일본식 순서(도도부현→시구정촌→번지)로 표기';
   else if (locale === 'zh-CN' || locale === 'zh-TW')
     placeRule = '한자 표기. 주소는 중국식 순서(성/시→구→도로→번호)로 표기';
-  else if (locale === 'th')
-    placeRule = '태국 문자 음차 또는 원어 유지. 주소는 태국식 순서로 표기';
+  else if (locale === 'th') placeRule = '태국 문자 음차 또는 원어 유지. 주소는 태국식 순서로 표기';
   else if (locale === 'en')
     placeRule = '로마자 표기. 주소는 영어권 순서(번지→도로→구→시→국가)로 역순 표기';
   else placeRule = '로마자 표기. 주소는 해당 언어권의 자연스러운 순서로 표기';
@@ -72,7 +71,17 @@ type TranslateBody = {
 
 export async function POST(request: Request) {
   const body = (await request.json()) as TranslateBody;
-  const { locale, title, content, description, placeName, address, confirmedTerms, imageAlts, thumbnailAlt } = body;
+  const {
+    locale,
+    title,
+    content,
+    description,
+    placeName,
+    address,
+    confirmedTerms,
+    imageAlts,
+    thumbnailAlt,
+  } = body;
 
   let userPrompt = `제목: ${title}\n\n본문:\n${content}\n\n3줄 요약:\n${description}`;
   if (placeName) userPrompt += `\n\n장소명: ${placeName}`;

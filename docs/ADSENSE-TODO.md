@@ -8,17 +8,17 @@
 
 ## 광고 컴포넌트 (수정 없이 재활용 가능)
 
-| 컴포넌트 | 경로 | 역할 |
-| --- | --- | --- |
-| `FixedAdsense` | `src/shared/components/ad/FixedAdsense.astro` | 고정 위치 광고 (post-top, sidebar) |
+| 컴포넌트        | 경로                                           | 역할                                |
+| --------------- | ---------------------------------------------- | ----------------------------------- |
+| `FixedAdsense`  | `src/shared/components/ad/FixedAdsense.astro`  | 고정 위치 광고 (post-top, sidebar)  |
 | `InFeedAdsense` | `src/shared/components/ad/InFeedAdsense.astro` | 인피드 광고 (피드 리스트, 사이드바) |
 
 현재 이 컴포넌트들은 **가짜 플레이스홀더**(회색 박스 + 텍스트)를 렌더링한다. 심사 완료 후 내부 HTML을 실제 애드센스 `<ins>` 태그로 교체해야 한다.
 
 ## 광고 트래킹 (수정 없이 재활용 가능)
 
-| 파일 | 역할 |
-| --- | --- |
+| 파일                                     | 역할                                                                 |
+| ---------------------------------------- | -------------------------------------------------------------------- |
 | `src/shared/lib/analytics/ad-tracker.ts` | `data-ad-slot` 요소에 대한 impression/view/click 이벤트를 GA4로 전송 |
 
 `data-ad-slot`, `data-ad-format`, `data-ad-position` 속성이 광고 요소에 있으면 자동으로 트래킹한다. 실제 애드센스 코드에도 이 속성들을 유지하면 된다.
@@ -30,7 +30,11 @@
 `src/layouts/Layout.astro`의 `<head>` 안에 애드센스 스크립트를 추가한다:
 
 ```html
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+  crossorigin="anonymous"
+></script>
 ```
 
 `ca-pub-XXXXXXXXXXXXXXXX`를 실제 퍼블리셔 ID로 교체한다.
@@ -107,11 +111,11 @@
 
 아래 5곳에서 TODO 주석을 해제한다:
 
-| 파일 | 위치 | 복원 내용 |
-| --- | --- | --- |
-| `src/layouts/PostLayout.astro` (frontmatter) | ~60행 | `insertInArticleAds(post.content)` 호출 복원 |
-| `src/layouts/PostLayout.astro` (template) | ~98행 | `<FixedAdsense variant="post-top" />` 주석 해제 |
-| `src/shared/components/layout/RightSidebar.astro` | ~24행 | `<FixedAdsense variant="sidebar" />` 주석 해제 |
+| 파일                                                   | 위치  | 복원 내용                                            |
+| ------------------------------------------------------ | ----- | ---------------------------------------------------- |
+| `src/layouts/PostLayout.astro` (frontmatter)           | ~60행 | `insertInArticleAds(post.content)` 호출 복원         |
+| `src/layouts/PostLayout.astro` (template)              | ~98행 | `<FixedAdsense variant="post-top" />` 주석 해제      |
+| `src/shared/components/layout/RightSidebar.astro`      | ~24행 | `<FixedAdsense variant="sidebar" />` 주석 해제       |
 | `src/features/post-feed/components/PostCardGrid.astro` | ~48행 | `<InFeedAdsense ...>` 주석 해제, `return null;` 제거 |
 | `src/shared/components/layout/SponsoredPostList.astro` | ~34행 | `<InFeedAdsense class="h-[104px] my-4" />` 주석 해제 |
 
@@ -129,13 +133,13 @@ const AD_PLACEHOLDER = `\n\n<div class="not-prose w-full mx-auto my-8" role="com
 
 ## 광고 지면 요약
 
-| 지면 | 위치 | 크기 | 노출 조건 |
-| --- | --- | --- | --- |
-| Post Top | 포스트 상단 (본문 위) | 모바일 300x50 / PC 468x60 | 모든 포스트 상세 |
-| Sidebar | 우측 사이드바 상단 | 300x250 | PC(lg+)만 |
-| In-Feed | 피드 리스트 index 1, 3 | 반응형 (aspect 7/3) | 메인/카테고리/서브카테고리 피드 |
-| In-Feed (Sponsored) | 추천 포스트 리스트 중간 | 높이 104px | 추천 포스트 2개 이하 아래 |
-| In-Article | 포스트 본문 H2 경계 | 반응형 fluid | H2가 3개 이상인 포스트 |
+| 지면                | 위치                    | 크기                      | 노출 조건                       |
+| ------------------- | ----------------------- | ------------------------- | ------------------------------- |
+| Post Top            | 포스트 상단 (본문 위)   | 모바일 300x50 / PC 468x60 | 모든 포스트 상세                |
+| Sidebar             | 우측 사이드바 상단      | 300x250                   | PC(lg+)만                       |
+| In-Feed             | 피드 리스트 index 1, 3  | 반응형 (aspect 7/3)       | 메인/카테고리/서브카테고리 피드 |
+| In-Feed (Sponsored) | 추천 포스트 리스트 중간 | 높이 104px                | 추천 포스트 2개 이하 아래       |
+| In-Article          | 포스트 본문 H2 경계     | 반응형 fluid              | H2가 3개 이상인 포스트          |
 
 ## 교체해야 할 값
 

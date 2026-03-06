@@ -69,7 +69,8 @@ export function TranslationEditSheet({
   const selectedTranslation =
     selected !== 'ko' ? translations.find((tr) => tr.locale === selected) : null;
 
-  const allDirtyTranslated = dirtyFields.size === 0 || TARGET_LOCALES.every((l) => retranslatedLocales.has(l));
+  const allDirtyTranslated =
+    dirtyFields.size === 0 || TARGET_LOCALES.every((l) => retranslatedLocales.has(l));
 
   const handleRetranslate = async (locale: TranslationLocale) => {
     setRetranslating((prev) => ({ ...prev, [locale]: true }));
@@ -85,7 +86,9 @@ export function TranslationEditSheet({
     setBulkRetranslating(true);
     try {
       const results = await Promise.allSettled(
-        TARGET_LOCALES.filter((l) => !retranslatedLocales.has(l)).map((locale) => onRetranslateLocale(locale)),
+        TARGET_LOCALES.filter((l) => !retranslatedLocales.has(l)).map((locale) =>
+          onRetranslateLocale(locale),
+        ),
       );
 
       const newSet = new Set(retranslatedLocales);
@@ -104,11 +107,7 @@ export function TranslationEditSheet({
     onOpenChange(false);
   };
 
-  const renderField = (
-    field: TranslationField,
-    value: string,
-    locale: TranslationLocale,
-  ) => {
+  const renderField = (field: TranslationField, value: string, locale: TranslationLocale) => {
     const isDirty = dirtyFields.has(field);
     const isLocaleRetranslated = retranslatedLocales.has(locale);
     const isRetranslating = retranslating[locale] || bulkRetranslating;
@@ -259,10 +258,22 @@ export function TranslationEditSheet({
               <>
                 {renderField('title', selectedTranslation.title, selected as TranslationLocale)}
                 {selectedTranslation.place_name &&
-                  renderField('place_name', selectedTranslation.place_name, selected as TranslationLocale)}
+                  renderField(
+                    'place_name',
+                    selectedTranslation.place_name,
+                    selected as TranslationLocale,
+                  )}
                 {selectedTranslation.address &&
-                  renderField('address', selectedTranslation.address, selected as TranslationLocale)}
-                {renderField('description', selectedTranslation.description, selected as TranslationLocale)}
+                  renderField(
+                    'address',
+                    selectedTranslation.address,
+                    selected as TranslationLocale,
+                  )}
+                {renderField(
+                  'description',
+                  selectedTranslation.description,
+                  selected as TranslationLocale,
+                )}
                 {renderField('content', selectedTranslation.content, selected as TranslationLocale)}
               </>
             ) : (

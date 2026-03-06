@@ -97,9 +97,7 @@ export function ImageAltSheet({
 
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {!hasAnyItem ? (
-            <p className="py-12 text-center text-sm text-muted-foreground">
-              이미지가 없습니다.
-            </p>
+            <p className="py-12 text-center text-sm text-muted-foreground">이미지가 없습니다.</p>
           ) : (
             <div className="space-y-6">
               {hasThumbnail && (

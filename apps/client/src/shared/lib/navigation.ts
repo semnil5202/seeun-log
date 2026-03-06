@@ -17,8 +17,7 @@ export const getActiveSegments = (
   const segments = pathname.split('/').filter(Boolean);
   if (locale !== DEFAULT_LOCALE && segments[0] === locale) segments.shift();
   const first = segments[0];
-  const activeCategory =
-    first && !LOCALES.includes(first as Locale) ? first : null;
+  const activeCategory = first && !LOCALES.includes(first as Locale) ? first : null;
   const activeSubCategory = activeCategory && segments[1] ? segments[1] : null;
   return { activeCategory, activeSubCategory };
 };

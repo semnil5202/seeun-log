@@ -121,8 +121,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     sub_category: string;
     created_at: string;
     updated_at: string;
-  }[];
-  total: number;                // 페이지네이션용 총 건수
+  }
+  [];
+  total: number; // 페이지네이션용 총 건수
   page: number;
   pageSize: number;
 }
@@ -195,7 +196,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 ```typescript
 {
   title: string;
-  content: string;               // Tiptap HTML
+  content: string; // Tiptap HTML
 }
 ```
 
@@ -215,7 +216,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ```typescript
 {
-  text: string;                    // 한국어 카테고리명 또는 게시글 제목
+  text: string; // 한국어 카테고리명 또는 게시글 제목
 }
 ```
 
@@ -250,10 +251,11 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 ```typescript
 {
   terms: {
-    original: string;            // 원문 용어
-    context: string;             // 사용 맥락
-    suggestion: string;          // 번역 가이드
-  }[];
+    original: string; // 원문 용어
+    context: string; // 사용 맥락
+    suggestion: string; // 번역 가이드
+  }
+  [];
 }
 ```
 
@@ -428,7 +430,8 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     recommendations: number;
     comments: number;
     publishedAt: string;
-  }[];
+  }
+  [];
   total: number;
   page: number;
   pageSize: number;
@@ -467,8 +470,9 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     sort_order: number;
     is_multilingual: boolean;
     created_at: string;
-    post_count: number;          // 해당 카테고리에 포함된 게시글 수
-  }[];
+    post_count: number; // 해당 카테고리에 포함된 게시글 수
+  }
+  [];
 }
 ```
 
@@ -522,7 +526,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
     sort_order: number;
     is_multilingual: boolean;
     created_at: string;
-  };
+  }
 }
 ```
 
@@ -584,15 +588,15 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ## 구현 우선순위
 
-| 순서 | API                                                        | Phase | 상태       |
-| ---- | ---------------------------------------------------------- | ----- | ---------- |
-| 1    | `createPost`, `updatePost`, `getPost`                      | 3     | 미구현     |
-| 2    | `signIn`, `signOut`, `getSession`                          | 2     | 미구현     |
-| 3    | `getPresignedUrl`                                          | 4     | 미구현     |
-| 4    | `generateSummary`, `extractFlaggedTerms`, `generateSlugSuggestions` | 3 | 구현 완료 |
-| 5    | `translatePost`, `retrySingleLocale`                       | 3     | 구현 완료  |
-| 6    | `saveTranslations`                                         | 4     | 미구현     |
-| 7    | `listPosts`, `deletePost`                                  | 4     | 미구현     |
-| 8    | `triggerBuild`                                             | 4     | 미구현     |
-| 9    | `getPostMetrics` (GA4 연동)                                | 4     | mock       |
-| 10   | `listCategories`, `createCategory`, `getCategory`, `updateCategory`, `deleteCategory` | 5 | 미구현 |
+| 순서 | API                                                                                   | Phase | 상태      |
+| ---- | ------------------------------------------------------------------------------------- | ----- | --------- |
+| 1    | `createPost`, `updatePost`, `getPost`                                                 | 3     | 미구현    |
+| 2    | `signIn`, `signOut`, `getSession`                                                     | 2     | 미구현    |
+| 3    | `getPresignedUrl`                                                                     | 4     | 미구현    |
+| 4    | `generateSummary`, `extractFlaggedTerms`, `generateSlugSuggestions`                   | 3     | 구현 완료 |
+| 5    | `translatePost`, `retrySingleLocale`                                                  | 3     | 구현 완료 |
+| 6    | `saveTranslations`                                                                    | 4     | 미구현    |
+| 7    | `listPosts`, `deletePost`                                                             | 4     | 미구현    |
+| 8    | `triggerBuild`                                                                        | 4     | 미구현    |
+| 9    | `getPostMetrics` (GA4 연동)                                                           | 4     | mock      |
+| 10   | `listCategories`, `createCategory`, `getCategory`, `updateCategory`, `deleteCategory` | 5     | 미구현    |

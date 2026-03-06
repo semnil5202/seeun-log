@@ -38,11 +38,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import {
-  deletePosts,
-  fetchPosts,
-  type PostListItem,
-} from '@/features/post-management/api/actions';
+import { deletePosts, fetchPosts, type PostListItem } from '@/features/post-management/api/actions';
 
 type SortKey = 'publishedAt' | 'updatedAt';
 
@@ -110,28 +106,25 @@ function PostsContent() {
   const [currentFilter, setCurrentFilter] = useState<FilterFormValues>(getValues());
   const [currentSort, setCurrentSort] = useState<SortKey>(sortBy);
 
-  const loadPosts = useCallback(
-    async (filter: FilterFormValues, sort: SortKey, p: number) => {
-      setIsLoading(true);
-      try {
-        const result = await fetchPosts({
-          page: p,
-          pageSize: PAGE_SIZE,
-          sortBy: sort,
-          from: filter.from || undefined,
-          to: filter.to || undefined,
-          search: filter.query || undefined,
-        });
-        setPosts(result.posts);
-        setTotalCount(result.totalCount);
-      } catch (e) {
-        toast.error(e instanceof Error ? e.message : '게시글 조회에 실패했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [],
-  );
+  const loadPosts = useCallback(async (filter: FilterFormValues, sort: SortKey, p: number) => {
+    setIsLoading(true);
+    try {
+      const result = await fetchPosts({
+        page: p,
+        pageSize: PAGE_SIZE,
+        sortBy: sort,
+        from: filter.from || undefined,
+        to: filter.to || undefined,
+        search: filter.query || undefined,
+      });
+      setPosts(result.posts);
+      setTotalCount(result.totalCount);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : '게시글 조회에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadPosts(currentFilter, currentSort, page);
@@ -333,11 +326,7 @@ function PostsContent() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
+            <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? '삭제 중...' : '삭제'}
             </AlertDialogAction>
           </AlertDialogFooter>

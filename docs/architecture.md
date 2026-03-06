@@ -180,12 +180,12 @@ src/
 
 ## Admin 배포 환경
 
-| 환경       | 도메인                              | Git 브랜치 | 비고               |
-| ---------- | ----------------------------------- | ---------- | ------------------ |
-| Local      | `https://local-admin.eunminlog.site:4322` | —          | mkcert HTTPS       |
-| Preview    | `https://cms-e-dev.vercel.app`      | develop    | Vercel Preview     |
-| Production | `https://cms-e-prod.vercel.app`     | main       | Vercel Production  |
-| Custom     | `https://admin.eunminlog.site`      | main       | 커스텀 도메인 (Production) |
+| 환경       | 도메인                                    | Git 브랜치 | 비고                       |
+| ---------- | ----------------------------------------- | ---------- | -------------------------- |
+| Local      | `https://local-admin.eunminlog.site:4322` | —          | mkcert HTTPS               |
+| Preview    | `https://cms-e-dev.vercel.app`            | develop    | Vercel Preview             |
+| Production | `https://cms-e-prod.vercel.app`           | main       | Vercel Production          |
+| Custom     | `https://admin.eunminlog.site`            | main       | 커스텀 도메인 (Production) |
 
 ## 공유 패키지
 

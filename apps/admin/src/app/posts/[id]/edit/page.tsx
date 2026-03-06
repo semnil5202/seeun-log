@@ -104,10 +104,7 @@ export default function EditPostPage() {
   if (notFound || !postData) {
     return (
       <div className="space-y-4">
-        <Link
-          href="/posts"
-          className="inline-flex text-muted-foreground hover:text-foreground"
-        >
+        <Link href="/posts" className="inline-flex text-muted-foreground hover:text-foreground">
           <ChevronLeft className="size-5" />
         </Link>
         <p className="text-muted-foreground">게시글을 찾을 수 없습니다.</p>
@@ -116,12 +113,7 @@ export default function EditPostPage() {
   }
 
   return (
-    <EditPostForm
-      postData={postData}
-      postId={id}
-      router={router}
-      searchParams={searchParams}
-    />
+    <EditPostForm postData={postData} postId={id} router={router} searchParams={searchParams} />
   );
 }
 
@@ -206,7 +198,9 @@ function EditPostForm({
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummarized, setIsSummarized] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
-  const [translationResults, setTranslationResults] = useState<TranslationResult[]>(postData.translations);
+  const [translationResults, setTranslationResults] = useState<TranslationResult[]>(
+    postData.translations,
+  );
   const [translationEditCompleted, setTranslationEditCompleted] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -266,7 +260,8 @@ function EditPostForm({
     return fields;
   }, [title, watchedContent, description, watchedPlaceName, watchedAddress, initialValues]);
 
-  const isDirty = dirtyTranslationFields.size > 0 ||
+  const isDirty =
+    dirtyTranslationFields.size > 0 ||
     watch('slug') !== initialValues.slug ||
     category !== initialValues.category ||
     subCategory !== initialValues.subCategory ||
@@ -280,7 +275,14 @@ function EditPostForm({
 
   const focusFirstEmptyField = () => {
     const values = getValues();
-    const focusable = new Set<string>(['title', 'slug', 'placeName', 'address', 'price', 'description']);
+    const focusable = new Set<string>([
+      'title',
+      'slug',
+      'placeName',
+      'address',
+      'price',
+      'description',
+    ]);
 
     const checks: [keyof PostFormValues, boolean][] = [
       ['title', !values.title.trim()],
@@ -402,10 +404,7 @@ function EditPostForm({
   return (
     <>
       <div className="mx-auto mb-6 max-w-[688px]">
-        <a
-          href="/posts"
-          className="mb-3 inline-flex text-muted-foreground hover:text-foreground"
-        >
+        <a href="/posts" className="mb-3 inline-flex text-muted-foreground hover:text-foreground">
           <ChevronLeft className="size-5" />
         </a>
         <h1 className="text-xl font-bold">게시글 수정</h1>
@@ -508,9 +507,7 @@ function EditPostForm({
             placeholder="예: gangnam-pasta-review"
             excludeId={postId}
           />
-          {errors.slug && (
-            <p className="mt-1 text-[14px] text-red-500">{errors.slug.message}</p>
-          )}
+          {errors.slug && <p className="mt-1 text-[14px] text-red-500">{errors.slug.message}</p>}
         </div>
 
         <div id="field-category" className="mt-8">
@@ -534,7 +531,9 @@ function EditPostForm({
           )}
         </div>
 
-        {formType === 'visit' && <VisitFields register={register} errors={errors} setValue={setValue} />}
+        {formType === 'visit' && (
+          <VisitFields register={register} errors={errors} setValue={setValue} />
+        )}
 
         <div className="mt-8">
           <div className="mb-1 flex items-center justify-between">
@@ -576,7 +575,8 @@ function EditPostForm({
         <div className="mt-10">
           {lastSavedAt && (
             <p className="mb-2 text-end text-xs text-muted-foreground">
-              마지막 임시저장: {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+              마지막 임시저장:{' '}
+              {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
           <div className="flex items-center justify-end gap-3">
@@ -635,7 +635,9 @@ function EditPostForm({
         onComplete={setImageAlts}
         thumbnail={watch('thumbnail') || null}
         thumbnailAlt={watch('thumbnailAlt')}
-        onThumbnailAltChange={(alt) => setValue('thumbnailAlt', alt, { shouldValidate: !!errors.thumbnailAlt })}
+        onThumbnailAltChange={(alt) =>
+          setValue('thumbnailAlt', alt, { shouldValidate: !!errors.thumbnailAlt })
+        }
       />
 
       {needsTranslation && (

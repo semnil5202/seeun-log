@@ -120,10 +120,7 @@ export const getCategoryTree = async (locale: Locale): Promise<CategoryNode[]> =
 
   return tree.map((cat) => ({
     slug: cat.slug,
-    label:
-      locale === DEFAULT_LOCALE
-        ? cat.name
-        : (CATEGORY_LABELS[locale]?.[cat.slug] ?? cat.name),
+    label: locale === DEFAULT_LOCALE ? cat.name : (CATEGORY_LABELS[locale]?.[cat.slug] ?? cat.name),
     subCategories: cat.subCategories.map((sub) => ({
       slug: sub.slug,
       label:

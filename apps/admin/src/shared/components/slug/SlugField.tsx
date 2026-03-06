@@ -91,9 +91,7 @@ export function SlugField({
         />
       </div>
 
-      {isDuplicate && (
-        <p className="text-[14px] text-red-500">이미 사용 중인 슬러그입니다.</p>
-      )}
+      {isDuplicate && <p className="text-[14px] text-red-500">이미 사용 중인 슬러그입니다.</p>}
 
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-1.5">

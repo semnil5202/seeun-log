@@ -11,10 +11,7 @@ type ThumbnailUploadProps = {
   onThumbnailChange: (url: string | null) => void;
 };
 
-export function ThumbnailUpload({
-  thumbnail,
-  onThumbnailChange,
-}: ThumbnailUploadProps) {
+export function ThumbnailUpload({ thumbnail, onThumbnailChange }: ThumbnailUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, isUploading } = useImageUpload();
 

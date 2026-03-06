@@ -147,11 +147,7 @@ function ParentCategoryEdit({ data }: { data: CategoryData }) {
             <label className="text-sm font-medium text-muted-foreground">
               카테고리명 <span className="text-primary-600">*</span>
             </label>
-            <Input
-              placeholder="예: 맛집"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input placeholder="예: 맛집" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
         </div>
 
@@ -295,11 +291,7 @@ function ChildCategoryEdit({ data }: { data: CategoryData }) {
             <label className="text-sm font-medium text-muted-foreground">
               카테고리명 <span className="text-primary-600">*</span>
             </label>
-            <Input
-              placeholder="예: 한식"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input placeholder="예: 한식" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
         </div>
 

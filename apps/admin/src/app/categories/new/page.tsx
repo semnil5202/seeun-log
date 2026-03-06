@@ -95,9 +95,7 @@ export default function NewCategoryPage() {
         slug: subSlug,
         isMultilingual: subMultilingual,
         translations:
-          subMultilingual && Object.keys(subTranslations).length > 0
-            ? subTranslations
-            : undefined,
+          subMultilingual && Object.keys(subTranslations).length > 0 ? subTranslations : undefined,
       });
       toast.success('소분류 카테고리가 생성되었습니다.');
     } catch (e) {
@@ -151,9 +149,7 @@ export default function NewCategoryPage() {
                 if (parentErrors.name) setParentErrors((prev) => ({ ...prev, name: '' }));
               }}
             />
-            {parentErrors.name && (
-              <p className="text-xs text-red-500">{parentErrors.name}</p>
-            )}
+            {parentErrors.name && <p className="text-xs text-red-500">{parentErrors.name}</p>}
           </div>
         </div>
 
@@ -171,9 +167,7 @@ export default function NewCategoryPage() {
             placeholder="예: delicious"
             table="categories"
           />
-          {parentErrors.slug && (
-            <p className="text-xs text-red-500">{parentErrors.slug}</p>
-          )}
+          {parentErrors.slug && <p className="text-xs text-red-500">{parentErrors.slug}</p>}
           <p className="text-xs text-muted-foreground">
             * 슬러그는 SEO에 직접 반영되는 요소입니다. 신중하게 선택해주세요.
           </p>
@@ -214,9 +208,7 @@ export default function NewCategoryPage() {
                 ))}
               </SelectContent>
             </Select>
-            {childErrors.parent && (
-              <p className="text-xs text-red-500">{childErrors.parent}</p>
-            )}
+            {childErrors.parent && <p className="text-xs text-red-500">{childErrors.parent}</p>}
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-muted-foreground">
@@ -230,9 +222,7 @@ export default function NewCategoryPage() {
                 if (childErrors.name) setChildErrors((prev) => ({ ...prev, name: '' }));
               }}
             />
-            {childErrors.name && (
-              <p className="text-xs text-red-500">{childErrors.name}</p>
-            )}
+            {childErrors.name && <p className="text-xs text-red-500">{childErrors.name}</p>}
           </div>
         </div>
 
@@ -250,9 +240,7 @@ export default function NewCategoryPage() {
             placeholder="예: korean"
             table="categories"
           />
-          {childErrors.slug && (
-            <p className="text-xs text-red-500">{childErrors.slug}</p>
-          )}
+          {childErrors.slug && <p className="text-xs text-red-500">{childErrors.slug}</p>}
           <p className="text-xs text-muted-foreground">
             * 슬러그는 SEO에 직접 반영되는 요소입니다. 신중하게 선택해주세요.
           </p>

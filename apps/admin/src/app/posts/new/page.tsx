@@ -159,7 +159,14 @@ function NewPostContent() {
 
   const focusFirstEmptyField = () => {
     const values = getValues();
-    const focusable = new Set<string>(['title', 'slug', 'placeName', 'address', 'price', 'description']);
+    const focusable = new Set<string>([
+      'title',
+      'slug',
+      'placeName',
+      'address',
+      'price',
+      'description',
+    ]);
 
     const checks: [keyof PostFormValues, boolean][] = [
       ['title', !values.title.trim()],
@@ -363,10 +370,7 @@ function NewPostContent() {
   return (
     <>
       <div className="mx-auto mb-6 max-w-[688px]">
-        <a
-          href="/posts"
-          className="mb-3 inline-flex text-muted-foreground hover:text-foreground"
-        >
+        <a href="/posts" className="mb-3 inline-flex text-muted-foreground hover:text-foreground">
           <ChevronLeft className="size-5" />
         </a>
         <h1 className="text-xl font-bold">게시글 작성</h1>
@@ -468,9 +472,7 @@ function NewPostContent() {
             onChange={(slug) => setValue('slug', slug, { shouldValidate: true })}
             placeholder="예: gangnam-pasta-review"
           />
-          {errors.slug && (
-            <p className="mt-1 text-[14px] text-red-500">{errors.slug.message}</p>
-          )}
+          {errors.slug && <p className="mt-1 text-[14px] text-red-500">{errors.slug.message}</p>}
           <p className="mt-1 text-xs text-muted-foreground">
             * 슬러그는 SEO에 직접 반영되는 요소입니다. 신중하게 선택해주세요.
           </p>
@@ -497,7 +499,9 @@ function NewPostContent() {
           )}
         </div>
 
-        {formType === 'visit' && <VisitFields register={register} errors={errors} setValue={setValue} />}
+        {formType === 'visit' && (
+          <VisitFields register={register} errors={errors} setValue={setValue} />
+        )}
 
         <div className="mt-8">
           <div className="mb-1 flex items-center justify-between">
@@ -538,7 +542,8 @@ function NewPostContent() {
         <div className="mt-10">
           {lastSavedAt && (
             <p className="mb-2 text-end text-xs text-muted-foreground">
-              마지막 임시저장: {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+              마지막 임시저장:{' '}
+              {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
           <div className="flex items-center justify-end gap-3">
@@ -605,7 +610,9 @@ function NewPostContent() {
             </button>
           </div>
           {imageAltError && (
-            <p className="mt-2 text-end text-[14px] text-red-500">이미지 alt 입력이 먼저 필요합니다.</p>
+            <p className="mt-2 text-end text-[14px] text-red-500">
+              이미지 alt 입력이 먼저 필요합니다.
+            </p>
           )}
           {translationError && (
             <p className="mt-2 text-end text-[14px] text-red-500">번역본 생성이 먼저 필요합니다.</p>
@@ -621,7 +628,9 @@ function NewPostContent() {
         onComplete={setImageAlts}
         thumbnail={watch('thumbnail') || null}
         thumbnailAlt={watch('thumbnailAlt')}
-        onThumbnailAltChange={(alt) => setValue('thumbnailAlt', alt, { shouldValidate: !!errors.thumbnailAlt })}
+        onThumbnailAltChange={(alt) =>
+          setValue('thumbnailAlt', alt, { shouldValidate: !!errors.thumbnailAlt })
+        }
       />
 
       <TranslationSheetContainer

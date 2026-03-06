@@ -492,7 +492,7 @@ GA4 관리 콘솔에서 다음 커스텀 디멘션을 등록해야 한다.
 | Ad Slot              | Event | `ad_slot`              | 광고 슬롯 식별자                   |
 | Ad Format            | Event | `ad_format`            | 광고 포맷                          |
 | Ad Position          | Event | `ad_position`          | 광고 배치 위치                     |
-| Consent Action       | Event | `action`               | 쿠키 동의 수락/거부               |
+| Consent Action       | Event | `action`               | 쿠키 동의 수락/거부                |
 
 > GA4 무료 계정은 이벤트 범위 커스텀 디멘션 50개, 커스텀 메트릭 50개까지 등록 가능하다. 위 10개는 한도 내에 충분히 들어간다.
 

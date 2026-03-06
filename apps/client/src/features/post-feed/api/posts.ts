@@ -58,10 +58,7 @@ export const getSponsoredPosts = async (
   category?: CategorySlug,
   subCategory?: string,
 ): Promise<Post[]> => {
-  let query = supabase
-    .from('posts')
-    .select(POST_COLUMNS)
-    .eq('is_recommended', true);
+  let query = supabase.from('posts').select(POST_COLUMNS).eq('is_recommended', true);
 
   if (category) query = query.eq('category', category);
   if (category && subCategory) query = query.eq('sub_category', subCategory);
@@ -92,9 +89,7 @@ export const getMultilingualSponsoredPosts = async (
 };
 
 export const getPostCount = async (): Promise<number> => {
-  const { count, error } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true });
+  const { count, error } = await supabase.from('posts').select('*', { count: 'exact', head: true });
 
   if (error) throw new Error(`getPostCount failed: ${error.message}`);
   return count ?? 0;
@@ -122,7 +117,8 @@ export const getPaginatedMultilingualPosts = async (
     .select('*', { count: 'exact', head: true })
     .eq('is_multilingual', true);
 
-  if (countError) throw new Error(`getPaginatedMultilingualPosts count failed: ${countError.message}`);
+  if (countError)
+    throw new Error(`getPaginatedMultilingualPosts count failed: ${countError.message}`);
 
   const { data, error } = await supabase
     .from('posts')
@@ -152,7 +148,8 @@ export const getPaginatedMultilingualPostsByCategory = async (
     .eq('is_multilingual', true)
     .eq('category', category);
 
-  if (countError) throw new Error(`getPaginatedMultilingualPostsByCategory count failed: ${countError.message}`);
+  if (countError)
+    throw new Error(`getPaginatedMultilingualPostsByCategory count failed: ${countError.message}`);
 
   const { data, error } = await supabase
     .from('posts')
@@ -185,7 +182,10 @@ export const getPaginatedMultilingualPostsBySubCategory = async (
     .eq('category', category)
     .eq('sub_category', subCategory);
 
-  if (countError) throw new Error(`getPaginatedMultilingualPostsBySubCategory count failed: ${countError.message}`);
+  if (countError)
+    throw new Error(
+      `getPaginatedMultilingualPostsBySubCategory count failed: ${countError.message}`,
+    );
 
   const { data, error } = await supabase
     .from('posts')
@@ -242,7 +242,8 @@ export const getPaginatedPostsByCategory = async (
     .select('*', { count: 'exact', head: true })
     .eq('category', category);
 
-  if (countError) throw new Error(`getPaginatedPostsByCategory count failed: ${countError.message}`);
+  if (countError)
+    throw new Error(`getPaginatedPostsByCategory count failed: ${countError.message}`);
 
   const { data, error } = await supabase
     .from('posts')
@@ -273,7 +274,8 @@ export const getPaginatedPostsBySubCategory = async (
     .eq('category', category)
     .eq('sub_category', subCategory);
 
-  if (countError) throw new Error(`getPaginatedPostsBySubCategory count failed: ${countError.message}`);
+  if (countError)
+    throw new Error(`getPaginatedPostsBySubCategory count failed: ${countError.message}`);
 
   const { data, error } = await supabase
     .from('posts')

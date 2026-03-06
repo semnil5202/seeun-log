@@ -249,17 +249,17 @@ on:
       - 'packages/tsconfig/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/deploy-client.yml'
-  workflow_dispatch:  # Admin Server Action에서 호출
+  workflow_dispatch: # Admin Server Action에서 호출
 ```
 
 **`workflow_dispatch`에 `inputs`를 두지 않는 이유**: Admin이 `ref` 파라미터(main/develop)로 대상 브랜치를 지정하여 호출하므로, 워크플로우 측에서 별도 input을 받을 필요가 없다. 기존 Step 5의 `github.ref_name` 분기가 `workflow_dispatch`에서도 동일하게 동작한다.
 
 #### 트리거 주체별 동작
 
-| 트리거       | 발생 조건                                          | 브랜치 결정           |
-| ------------ | -------------------------------------------------- | --------------------- |
-| `push`       | client 관련 파일이 포함된 커밋이 main/develop에 push | push된 브랜치         |
-| `workflow_dispatch` | Admin Server Action에서 API 호출              | API body의 `ref` 값   |
+| 트리거              | 발생 조건                                            | 브랜치 결정         |
+| ------------------- | ---------------------------------------------------- | ------------------- |
+| `push`              | client 관련 파일이 포함된 커밋이 main/develop에 push | push된 브랜치       |
+| `workflow_dispatch` | Admin Server Action에서 API 호출                     | API body의 `ref` 값 |
 
 #### 중복 빌드 가능성
 
@@ -277,12 +277,12 @@ concurrency:
 
 Admin(Next.js)이 Vercel에 배포되어 있으므로, Vercel 프로젝트 환경변수에 아래 값을 설정해야 한다:
 
-| 환경변수             | 설명                                                      |
-| -------------------- | --------------------------------------------------------- |
-| `GITHUB_PAT`         | Fine-grained PAT (`actions:write` 권한)                   |
-| `GITHUB_REPO_OWNER`  | 리포지토리 소유자                                         |
-| `GITHUB_REPO_NAME`   | 리포지토리 이름                                           |
-| `GITHUB_WORKFLOW_ID` | 워크플로우 파일명 (`deploy-client.yml`)                   |
+| 환경변수             | 설명                                    |
+| -------------------- | --------------------------------------- |
+| `GITHUB_PAT`         | Fine-grained PAT (`actions:write` 권한) |
+| `GITHUB_REPO_OWNER`  | 리포지토리 소유자                       |
+| `GITHUB_REPO_NAME`   | 리포지토리 이름                         |
+| `GITHUB_WORKFLOW_ID` | 워크플로우 파일명 (`deploy-client.yml`) |
 
 `VERCEL_ENV`는 Vercel이 자동 주입하므로 별도 설정 불필요.
 

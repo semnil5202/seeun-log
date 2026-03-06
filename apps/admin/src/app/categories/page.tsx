@@ -289,16 +289,17 @@ function CategoriesContent() {
                   <TableRow key={group.parent.id} className="bg-muted/50">
                     <TableCell className="px-4 py-3">
                       {group.children.length > 0 ? (
-                        <Checkbox
-                          disabled
-                          title="하위 소분류가 존재하여 삭제할 수 없습니다"
-                        />
+                        <Checkbox disabled title="하위 소분류가 존재하여 삭제할 수 없습니다" />
                       ) : (
                         <Checkbox
                           checked={selectedIds.has(group.parent.id)}
                           onCheckedChange={() => toggleSelect(group.parent.id)}
                           disabled={group.parent.postCount > 0}
-                          title={group.parent.postCount > 0 ? '게시글이 포함되어 삭제할 수 없습니다' : undefined}
+                          title={
+                            group.parent.postCount > 0
+                              ? '게시글이 포함되어 삭제할 수 없습니다'
+                              : undefined
+                          }
                         />
                       )}
                     </TableCell>
@@ -369,11 +370,7 @@ function CategoriesContent() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
+            <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
               {isDeleting ? '삭제 중...' : '삭제'}
             </AlertDialogAction>
           </AlertDialogFooter>

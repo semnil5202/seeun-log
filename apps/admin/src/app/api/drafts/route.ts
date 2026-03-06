@@ -71,7 +71,10 @@ export async function POST(request: Request) {
       await supabaseServer
         .from('post_drafts')
         .delete()
-        .in('id', oldest.map((d) => d.id));
+        .in(
+          'id',
+          oldest.map((d) => d.id),
+        );
     }
   }
 

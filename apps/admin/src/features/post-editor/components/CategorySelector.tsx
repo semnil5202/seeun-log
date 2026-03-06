@@ -42,11 +42,7 @@ export function CategorySelector({
         </SelectContent>
       </Select>
 
-      <Select
-        value={subCategory}
-        onValueChange={onSubCategoryChange}
-        disabled={!category}
-      >
+      <Select value={subCategory} onValueChange={onSubCategoryChange} disabled={!category}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="소분류" />
         </SelectTrigger>

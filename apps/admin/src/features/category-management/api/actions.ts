@@ -52,11 +52,7 @@ export async function fetchCategories(): Promise<CategoryWithCount[]> {
 }
 
 export async function fetchCategory(id: string) {
-  const { data, error } = await supabaseServer
-    .from('categories')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const { data, error } = await supabaseServer.from('categories').select('*').eq('id', id).single();
 
   if (error) throw new Error(`카테고리 조회 실패: ${error.message}`);
 
@@ -113,7 +109,11 @@ export async function fetchCategoryOptions(): Promise<{
     if (c.parent_id) {
       const parentSlug = idToSlug.get(c.parent_id);
       if (parentSlug && subMap[parentSlug]) {
-        subMap[parentSlug].push({ value: c.slug, label: c.name, isMultilingual: c.is_multilingual });
+        subMap[parentSlug].push({
+          value: c.slug,
+          label: c.name,
+          isMultilingual: c.is_multilingual,
+        });
       }
     }
   }
@@ -181,10 +181,7 @@ export async function translateCategoryName(
   return JSON.parse(text) as Record<TranslationLocale, string>;
 }
 
-async function saveCategoryTranslations(
-  categoryId: string,
-  translations: Record<string, string>,
-) {
+async function saveCategoryTranslations(categoryId: string, translations: Record<string, string>) {
   const rows = Object.entries(translations).map(([locale, name]) => ({
     category_id: categoryId,
     locale,

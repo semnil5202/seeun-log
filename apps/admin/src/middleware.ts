@@ -12,7 +12,9 @@ export async function middleware(request: NextRequest) {
   }
 
   const { supabase, response } = createSupabaseMiddlewareClient(request);
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     const loginUrl = new URL('/login', request.url);

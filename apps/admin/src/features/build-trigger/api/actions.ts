@@ -11,7 +11,9 @@ export async function triggerClientBuild(): Promise<void> {
   const workflowId = process.env.GITHUB_WORKFLOW_ID;
 
   if (!pat || !owner || !repo || !workflowId) {
-    console.error('[build-trigger] 환경변수 누락: GITHUB_PAT, GITHUB_REPO_OWNER, GITHUB_REPO_NAME, GITHUB_WORKFLOW_ID 확인 필요');
+    console.error(
+      '[build-trigger] 환경변수 누락: GITHUB_PAT, GITHUB_REPO_OWNER, GITHUB_REPO_NAME, GITHUB_WORKFLOW_ID 확인 필요',
+    );
     return;
   }
 
