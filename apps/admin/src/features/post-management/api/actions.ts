@@ -3,6 +3,7 @@
 import { supabaseServer } from '@/shared/lib/supabase-server';
 import type { PostFormValues } from '@/features/post-editor/types/form';
 import type { ImageAlt, TranslationResult } from '@/features/translation/types';
+import { triggerClientBuild } from '@/features/build-trigger/api/actions';
 
 export type PostListItem = {
   id: string;
@@ -154,6 +155,12 @@ export async function createPost(params: {
     await supabaseServer.from('post_drafts').delete().eq('id', params.draftId);
   }
 
+  try {
+    await triggerClientBuild();
+  } catch {
+    // silent: 빌드 트리거 실패는 저장 결과에 영향을 주지 않음
+  }
+
   return { id: post!.id as string };
 }
 
@@ -223,6 +230,12 @@ export async function updatePost(params: {
       );
 
     if (upsertError) throw new Error(`번역 저장 실패 (${t.locale}): ${upsertError.message}`);
+  }
+
+  try {
+    await triggerClientBuild();
+  } catch {
+    // silent: 빌드 트리거 실패는 저장 결과에 영향을 주지 않음
   }
 }
 

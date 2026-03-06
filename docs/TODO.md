@@ -128,7 +128,27 @@
 - [x] 미디어 업로드 (S3 Pre-signed URL) — 아래 Media Upload 섹션과 연동
 - [x] 게시글 목록 페이지 (`/posts`) — SearchFilter (RHF) + 테이블 (제목/발행일/수정일) + 정렬 드롭다운 + "새 글 작성" 버튼
 - [x] 게시글 삭제 (확인 다이얼로그 포함)
-- [ ] GitHub Actions 빌드 트리거
+- [ ] GitHub Actions 빌드 자동 트리거 — 아래 세부 항목 참조
+
+### build-trigger — GitHub Actions 자동 트리거
+
+> 상세 스펙: [`docs/admin-specs.md`](admin-specs.md) Section 4-6
+
+**인프라 설정:**
+
+- [ ] GitHub PAT 생성 (Fine-grained, `actions:write` 권한, eunminlog 리포지토리만)
+- [ ] Vercel 환경변수 등록: `GITHUB_PAT`, `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME`, `GITHUB_WORKFLOW_ID`
+- [ ] `deploy-client.yml`에 `workflow_dispatch` 트리거 추가
+
+**Admin 구현:**
+
+- [ ] `features/build-trigger/api/actions.ts` — `triggerClientBuild()` Server Action 구현 (환경 자동 판별, Silent 에러 처리)
+- [ ] `features/post-management/api/actions.ts` — `createPost` 성공 후 `triggerClientBuild()` 호출 추가
+- [ ] `features/post-management/api/actions.ts` — `updatePost` 성공 후 `triggerClientBuild()` 호출 추가
+- [ ] `features/category-management/api/actions.ts` — `createParentCategory` 성공 후 `triggerClientBuild()` 호출 추가
+- [ ] `features/category-management/api/actions.ts` — `createChildCategory` 성공 후 `triggerClientBuild()` 호출 추가
+- [ ] `features/category-management/api/actions.ts` — `updateCategory` 성공 후 `triggerClientBuild()` 호출 추가
+- [ ] `features/category-management/api/actions.ts` — `deleteCategories` 성공 후 `triggerClientBuild()` 호출 추가
 - [ ] is_multilingual 토글 — 아래 i18n 섹션과 연동
 - [ ] 핵심 지표 대시보드 DB 연동 — GA4 연동 후 MOCK 데이터 교체 (옵션 A: GA4 이벤트 기반, 옵션 B: posts 테이블에 view_count/recommendation_count/comment_count 컬럼 추가)
 

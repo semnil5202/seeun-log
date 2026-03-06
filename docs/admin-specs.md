@@ -134,7 +134,7 @@ RootLayout (app/layout.tsx)
 | `post-management` | 포스트 목록, 삭제, 발행 상태 관리      | `/posts`                         | 목록 구현 완료 (삭제 미구현)                                                         |
 | `media`           | 이미지 업로드, Pre-signed URL          | 에디터 내 사용                   | 구현 완료 (S3 presigned URL + WebP 변환 + CDN URL)                                   |
 | `translation`     | GPT-5 Nano 다국어 번역 (API 연동 완료) | 에디터 내 사용                   | 구현 완료 (고유명사 추출 + 번역 + 미리보기 + 실패 fallback + 재시도). DB 저장 미연동 |
-| `build-trigger`   | GitHub Actions 빌드 트리거             | 대시보드/에디터 내 사용          | 미구현                                                                               |
+| `build-trigger`   | GitHub Actions 빌드 자동 트리거        | UI 없음 (Server Action 내부 호출) | 미구현                                                                               |
 
 > **Note**: `metrics`는 현재 `app/page.tsx`에 직접 구현되어 있으며, 복잡도가 높아지면 `features/metrics/`로 분리 예정. 현재는 shared SearchFilter와 shadcn Table/Select를 사용하는 단일 페이지.
 
@@ -866,32 +866,56 @@ features/translation/
 
 ### 4-6. build-trigger
 
+> Date: 2026-03-07
+
+#### 설계 방침
+
+- **자동 트리거**: 게시글 작성/수정, 카테고리 생성/수정/삭제 성공 시 Server Action 내부에서 자동으로 빌드 트리거. 별도 UI 버튼 없음.
+- **Silent 실패**: 빌드 트리거 실패 시 사용자에게 알리지 않음. 게시글/카테고리 저장 자체는 성공한 상태이므로 혼란 방지. 트리거 실패는 `console.error`로 서버 로그에만 기록.
+- **환경 자동 판별**: Admin 배포 환경(Vercel)에 따라 트리거 대상 브랜치를 자동 결정. 수동 환경 선택 UI 없음.
+
 #### 기능 요구사항
 
-| ID   | 요구사항                                       | 우선순위 |
-| ---- | ---------------------------------------------- | -------- |
-| BT-1 | GitHub Actions `workflow_dispatch` API 호출    | P0       |
-| BT-2 | 빌드 트리거 버튼 (대시보드, 에디터 저장 후)    | P0       |
-| BT-3 | 빌드 대상 환경 선택 (production / development) | P1       |
-| BT-4 | 트리거 결과 표시 (성공/실패)                   | P0       |
-| BT-5 | 빌드 상태 조회 (GitHub Actions Run 상태)       | P2       |
+| ID   | 요구사항                                                       | 우선순위 | 비고                                     |
+| ---- | -------------------------------------------------------------- | -------- | ---------------------------------------- |
+| BT-1 | GitHub Actions `workflow_dispatch` API 호출 유틸 함수          | P0       | `triggerClientBuild()` Server Action     |
+| BT-2 | 게시글 작성/수정 성공 시 자동 트리거                           | P0       | `createPost`, `updatePost` 내부에서 호출 |
+| BT-3 | 카테고리 생성/수정/삭제 성공 시 자동 트리거                    | P0       | `createParentCategory`, `createChildCategory`, `updateCategory`, `deleteCategories` 내부에서 호출 |
+| BT-4 | 트리거 실패 시 Silent 처리 (서버 로그만 기록)                  | P0       | 사용자에게 에러 표시하지 않음            |
+| BT-5 | 환경 자동 판별 (`VERCEL_ENV` → 브랜치 매핑)                    | P0       | production → `main`, 그 외 → `develop`   |
 
 #### 빌드 트리거 Flow
 
 ```
-[브라우저]              [Server Action]              [GitHub API]
-    │                        │                           │
-    ├─ 빌드 트리거 클릭 ───>│                           │
-    │                        │                           │
-    │                        ├─ POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
-    │                        │  ├─ ref: main 또는 develop │
-    │                        │  └─ Authorization: Bearer {GITHUB_TOKEN}
-    │                        │                           │
-    │<── 트리거 결과 ────────┤                           │
-    │    (204 No Content = 성공)                         │
-    │                                                    │
-    └─ UI 상태 업데이트                                  │
+[브라우저]              [Server Action]                         [GitHub API]
+    │                        │                                       │
+    ├─ "작성완료" 클릭 ────>│                                       │
+    │                        ├─ DB INSERT/UPDATE (게시글 저장)       │
+    │                        │                                       │
+    │                        ├─ triggerClientBuild()                  │
+    │                        │  ├─ POST /repos/.../dispatches        │
+    │                        │  ├─ ref: main 또는 develop (자동)     │
+    │                        │  └─ Authorization: Bearer {PAT}       │
+    │                        │                                       │
+    │                        │  ※ 204 = 성공, 그 외 = console.error  │
+    │                        │  ※ 트리거 실패해도 게시글 저장은 유지 │
+    │                        │                                       │
+    │<── 저장 성공 응답 ────┤                                       │
+    │    (기존 성공 toast)   │                                       │
 ```
+
+**핵심 원칙**: `triggerClientBuild()`는 fire-and-forget이 아니라 await하되, 실패 시 예외를 throw하지 않는다. DB 저장 성공 후 호출하므로 트리거 실패가 저장 결과에 영향을 주지 않는다.
+
+#### 트리거 호출 위치 (기존 Server Action에 추가)
+
+| Server Action             | 파일 위치                                       | 트리거 시점         |
+| ------------------------- | ----------------------------------------------- | ------------------- |
+| `createPost`              | `features/post-management/api/actions.ts`       | DB INSERT 성공 후   |
+| `updatePost`              | `features/post-management/api/actions.ts`       | DB UPDATE 성공 후   |
+| `createParentCategory`    | `features/category-management/api/actions.ts`   | DB INSERT 성공 후   |
+| `createChildCategory`     | `features/category-management/api/actions.ts`   | DB INSERT 성공 후   |
+| `updateCategory`          | `features/category-management/api/actions.ts`   | DB UPDATE 성공 후   |
+| `deleteCategories`        | `features/category-management/api/actions.ts`   | DB DELETE 성공 후   |
 
 #### GitHub API 설정
 
@@ -899,31 +923,83 @@ features/translation/
 | ------------ | ---------------------------------------------------------------------------------------- |
 | API Endpoint | `https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches` |
 | Method       | POST                                                                                     |
-| Auth         | `Authorization: Bearer {GITHUB_TOKEN}`                                                   |
+| Auth         | `Authorization: Bearer {GITHUB_PAT}`                                                     |
 | Body         | `{ "ref": "main" }` 또는 `{ "ref": "develop" }`                                          |
 | 성공 응답    | 204 No Content                                                                           |
 
-- `GITHUB_TOKEN`은 Server Action에서만 접근. 환경 변수로 관리. (`GITHUB_TOKEN` -- workflow dispatch 권한이 있는 Personal Access Token 또는 Fine-grained Token)
+#### 환경변수 (Admin App — Vercel)
 
-#### Server Action vs CSR 구분
+| 환경변수                 | 설명                                                              | 설정 위치   |
+| ------------------------ | ----------------------------------------------------------------- | ----------- |
+| `GITHUB_PAT`             | GitHub Personal Access Token (Fine-grained, `actions:write` 권한) | Vercel 환경변수 |
+| `GITHUB_REPO_OWNER`      | GitHub 리포지토리 소유자 (예: `username`)                         | Vercel 환경변수 |
+| `GITHUB_REPO_NAME`       | GitHub 리포지토리 이름 (예: `eunminlog`)                          | Vercel 환경변수 |
+| `GITHUB_WORKFLOW_ID`     | 워크플로우 파일명 (예: `deploy-client.yml`)                       | Vercel 환경변수 |
+| `VERCEL_ENV`             | Vercel 자동 주입 (`production` / `preview` / `development`)       | 자동         |
 
-| 작업                          | 처리 위치     | 이유              |
-| ----------------------------- | ------------- | ----------------- |
-| 빌드 트리거 (GitHub API 호출) | Server Action | GitHub Token 보호 |
-| 빌드 상태 조회                | Server Action | GitHub Token 보호 |
-| 트리거 버튼 UI                | CSR           | UI 인터랙션       |
+**`GITHUB_PAT` 대신 `GITHUB_TOKEN`을 사용하지 않는 이유**: Vercel 환경에서 `GITHUB_TOKEN`은 Vercel 자체가 사용하는 예약 변수와 혼동될 수 있다. 명시적으로 `GITHUB_PAT` (Personal Access Token)으로 네이밍한다.
+
+**GitHub PAT 권한 요구사항** (Fine-grained Token):
+- Repository access: `eunminlog` 리포지토리만 선택
+- Repository permissions: `Actions` → Read and write (workflow_dispatch 호출에 필요)
+
+#### 환경-브랜치 매핑
+
+| `VERCEL_ENV` 값  | 트리거 대상 브랜치 | Client 배포 환경      |
+| ----------------- | ------------------- | --------------------- |
+| `production`      | `main`              | `www.eunminlog.site`  |
+| `preview`         | `develop`           | `dev.eunminlog.site`  |
+| `development`     | `develop`           | `dev.eunminlog.site`  |
+| 미설정 (로컬)     | 트리거 스킵         | -                     |
+
+**로컬 개발 환경**: `VERCEL_ENV`가 설정되지 않은 로컬 환경에서는 빌드 트리거를 스킵한다. 로컬에서 게시글을 저장해도 빌드가 실행되지 않는다.
+
+#### `triggerClientBuild()` 구현 가이드
+
+```
+함수 시그니처: triggerClientBuild(): Promise<void>
+
+1. VERCEL_ENV가 미설정이면 early return (로컬 환경 스킵)
+2. GITHUB_PAT, GITHUB_REPO_OWNER, GITHUB_REPO_NAME, GITHUB_WORKFLOW_ID 환경변수 확인
+   - 하나라도 없으면 console.error + return (throw하지 않음)
+3. VERCEL_ENV → ref 매핑 (production → "main", 그 외 → "develop")
+4. fetch() 호출:
+   - URL: https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches
+   - Method: POST
+   - Headers: Authorization: Bearer {GITHUB_PAT}, Accept: application/vnd.github+json, X-GitHub-Api-Version: 2022-11-28
+   - Body: { "ref": "{branch}" }
+5. 응답 확인:
+   - 204: 성공 (로그 불필요)
+   - 그 외: console.error로 상태코드 + 응답 본문 기록
+6. catch: 네트워크 에러 등 → console.error로 기록, throw하지 않음
+```
+
+#### 에러 처리 전략
+
+| 실패 유형                | 처리 방식                                              |
+| ------------------------ | ------------------------------------------------------ |
+| 환경변수 미설정          | `console.error` + return (로컬 환경에서는 정상 동작)   |
+| GitHub API 4xx/5xx       | `console.error`로 상태코드 + 응답 기록, throw하지 않음 |
+| 네트워크 에러 (fetch 실패) | `console.error`로 에러 기록, throw하지 않음           |
+| PAT 만료/권한 부족 (401/403) | `console.error`로 기록. 개발자가 Vercel 로그에서 확인 |
 
 #### 폴더 구조
 
 ```
 features/build-trigger/
-├── components/
-│   └── BuildTriggerButton.tsx  # 빌드 트리거 버튼 (환경 선택 포함)
-├── hooks/
-│   └── useBuildTrigger.ts      # 트리거 호출 + 상태 관리
 └── api/
-    └── build-actions.ts        # Server Action (triggerBuild, getBuildStatus)
+    └── actions.ts              # triggerClientBuild() Server Action
 ```
+
+기존 설계에서 `components/`, `hooks/` 폴더를 제거한다. 자동 트리거 방식이므로 UI 컴포넌트와 클라이언트 훅이 불필요하다. `triggerClientBuild()` 단일 함수만 제공하며, 기존 Server Action들이 이 함수를 import하여 호출한다.
+
+#### feature 간 import 예외
+
+`triggerClientBuild()`는 `features/build-trigger/api/actions.ts`에 위치하지만, `features/post-management/`와 `features/category-management/`의 Server Action에서 직접 import한다. 이는 feature 간 직접 import 금지 원칙의 예외이다.
+
+**예외 허용 근거**: `triggerClientBuild()`를 `shared/`로 옮기면 GitHub API 호출이라는 build-trigger 도메인 로직이 shared에 섞인다. 빌드 트리거는 명확히 `build-trigger` 도메인에 속하므로, cross-feature import를 허용하는 것이 구조적으로 더 명확하다.
+
+**대안**: 이 예외가 불편하면 `shared/lib/build-trigger.ts`로 옮기는 것도 가능하다. 단, 이 경우 `features/build-trigger/` 폴더 자체가 불필요해진다.
 
 ---
 
@@ -1388,12 +1464,8 @@ src/features/
 │   └── constants/
 │       └── locales.ts
 └── build-trigger/
-    ├── components/
-    │   └── BuildTriggerButton.tsx
-    ├── hooks/
-    │   └── useBuildTrigger.ts
     └── api/
-        └── build-actions.ts
+        └── actions.ts              # triggerClientBuild()
 ```
 
 ---
@@ -1500,7 +1572,7 @@ src/features/
 | 5-3   | post-management     | `/posts` + `/` 페이지에 Pagination 적용 (pageSize 10, URL `page` 쿼리 연동)                          | P0       | 미착수                                                           |
 | 6     | post-editor         | 포스트 편집 (기존 데이터 로드 + 수정)                                                                | P0       | 미착수                                                           |
 | 7     | translation (완성)  | 번역 결과 DB 저장 (post_translations UPSERT)                                                         | P0       | 미착수                                                           |
-| 8     | build-trigger       | GitHub Actions 트리거, 환경 선택                                                                     | P1       | 미착수                                                           |
+| 8     | build-trigger       | GitHub Actions 자동 트리거 (`triggerClientBuild()` + 기존 Server Action 연동)                        | P1       | 미착수                                                           |
 | 9     | post-editor         | 이미지 순서 변경, rating 입력                                                                        | P1       | 미착수                                                           |
 | 10    | post-management     | 필터링, 검색                                                                                         | P2       | 미착수                                                           |
 | 11    | metrics             | GA4 API 연동 (mock → 실제 데이터)                                                                    | P2       | 미착수                                                           |

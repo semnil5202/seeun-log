@@ -1,6 +1,7 @@
 'use server';
 
 import { supabaseServer } from '@/shared/lib/supabase-server';
+import { triggerClientBuild } from '@/features/build-trigger/api/actions';
 
 export type CategoryWithCount = {
   id: string;
@@ -145,6 +146,12 @@ export async function createParentCategory(params: { name: string; slug: string 
     throw new Error(`카테고리 생성 실패: ${error.message}`);
   }
 
+  try {
+    await triggerClientBuild();
+  } catch {
+    // silent: 빌드 트리거 실패는 저장 결과에 영향을 주지 않음
+  }
+
   return { id: data!.id as string };
 }
 
@@ -187,6 +194,12 @@ export async function createChildCategory(params: {
   if (error) {
     if (error.code === '23505') throw new Error('이미 사용 중인 슬러그입니다.');
     throw new Error(`카테고리 생성 실패: ${error.message}`);
+  }
+
+  try {
+    await triggerClientBuild();
+  } catch {
+    // silent: 빌드 트리거 실패는 저장 결과에 영향을 주지 않음
   }
 
   return { id: data!.id as string };
@@ -239,6 +252,12 @@ export async function updateCategory(params: {
       .update({ [column]: params.slug, updated_at: new Date().toISOString() })
       .eq(column, existing.slug);
   }
+
+  try {
+    await triggerClientBuild();
+  } catch {
+    // silent: 빌드 트리거 실패는 저장 결과에 영향을 주지 않음
+  }
 }
 
 export async function deleteCategories(ids: string[]) {
@@ -282,6 +301,12 @@ export async function deleteCategories(ids: string[]) {
     .in('id', ids);
 
   if (error) throw new Error(`카테고리 삭제 실패: ${error.message}`);
+
+  try {
+    await triggerClientBuild();
+  } catch {
+    // silent: 빌드 트리거 실패는 저장 결과에 영향을 주지 않음
+  }
 
   return { success: true, deletedCount: count ?? 0 };
 }

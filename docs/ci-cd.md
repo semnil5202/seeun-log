@@ -253,22 +253,63 @@ export default defineConfig({
 
 현재는 GitHub Actions의 pnpm store 캐싱만 사용. 빌드 빈도가 높아지면 Turbo Remote Cache(Vercel 또는 self-hosted)를 도입하여 빌드 결과물 자체를 캐싱할 수 있다.
 
-### 빌드 트리거 최적화 (향후)
+### Admin → GitHub Actions 빌드 트리거 (workflow_dispatch)
 
-현재 설계: main/develop에 push할 때마다 빌드. 향후 admin에서 "게시" 버튼을 누를 때 GitHub API로 workflow_dispatch를 호출하는 방식으로 전환 가능 (architecture.md의 "Node.js Logic이 GitHub Actions에 빌드 트리거 API 호출" 참조).
+> Date: 2026-03-07 (확정)
+> 상세 Admin 측 스펙: [`docs/admin-specs.md`](admin-specs.md) Section 4-6
+
+Admin에서 게시글 작성/수정, 카테고리 변경 시 Server Action 내부에서 GitHub API `workflow_dispatch`를 호출하여 Client SSG 빌드를 자동 트리거한다.
+
+#### Workflow 트리거 변경
+
+기존 `push` 트리거에 `workflow_dispatch`를 추가한다. `push`와 `workflow_dispatch`는 독립적으로 동작하며 양쪽 모두 빌드를 실행할 수 있다.
 
 ```yaml
 on:
   push:
     branches: [main, develop]
-  workflow_dispatch: # Admin에서 수동 트리거 (향후)
-    inputs:
-      environment:
-        description: 'Target environment'
-        required: true
-        type: choice
-        options: [production, development]
+    paths:
+      - 'apps/client/**'
+      - 'packages/config/**'
+      - 'packages/tsconfig/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-client.yml'
+  workflow_dispatch:  # Admin Server Action에서 호출
 ```
+
+**`workflow_dispatch`에 `inputs`를 두지 않는 이유**: Admin이 `ref` 파라미터(main/develop)로 대상 브랜치를 지정하여 호출하므로, 워크플로우 측에서 별도 input을 받을 필요가 없다. 기존 Step 5의 `github.ref_name` 분기가 `workflow_dispatch`에서도 동일하게 동작한다.
+
+#### 트리거 주체별 동작
+
+| 트리거       | 발생 조건                                          | 브랜치 결정           |
+| ------------ | -------------------------------------------------- | --------------------- |
+| `push`       | client 관련 파일이 포함된 커밋이 main/develop에 push | push된 브랜치         |
+| `workflow_dispatch` | Admin Server Action에서 API 호출              | API body의 `ref` 값   |
+
+#### 중복 빌드 가능성
+
+Admin에서 게시글을 저장하면 `workflow_dispatch`로 빌드가 트리거된다. 동시에 client 코드를 push하면 `push` 트리거로도 빌드가 실행될 수 있다. GitHub Actions는 동일 워크플로우의 concurrent run을 허용하므로 두 빌드가 병렬 실행된다. 이는 SSG 특성상 문제가 되지 않는다 (마지막 빌드의 S3 sync가 최종 상태를 반영).
+
+향후 빌드 빈도가 높아지면 `concurrency` 옵션으로 동시 실행을 제한할 수 있다:
+
+```yaml
+concurrency:
+  group: deploy-client-${{ github.ref }}
+  cancel-in-progress: true
+```
+
+#### Admin 측 환경변수 (Vercel)
+
+Admin(Next.js)이 Vercel에 배포되어 있으므로, Vercel 프로젝트 환경변수에 아래 값을 설정해야 한다:
+
+| 환경변수             | 설명                                                      |
+| -------------------- | --------------------------------------------------------- |
+| `GITHUB_PAT`         | Fine-grained PAT (`actions:write` 권한)                   |
+| `GITHUB_REPO_OWNER`  | 리포지토리 소유자                                         |
+| `GITHUB_REPO_NAME`   | 리포지토리 이름                                           |
+| `GITHUB_WORKFLOW_ID` | 워크플로우 파일명 (`deploy-client.yml`)                   |
+
+`VERCEL_ENV`는 Vercel이 자동 주입하므로 별도 설정 불필요.
 
 ### Path Filter (적용 완료)
 
