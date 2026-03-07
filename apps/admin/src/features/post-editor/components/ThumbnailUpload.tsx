@@ -1,6 +1,7 @@
 'use client';
 
 import { type ChangeEvent, useRef } from 'react';
+import { X } from 'lucide-react';
 
 import { useImageUpload } from '@/features/media/hooks/useImageUpload';
 
@@ -46,7 +47,7 @@ export function ThumbnailUpload({ thumbnail, onThumbnailChange }: ThumbnailUploa
             onClick={handleDelete}
             className="absolute top-2 right-2 flex size-6 cursor-pointer items-center justify-center bg-black/50 text-white"
           >
-            ✕
+            <X className="size-4" />
           </button>
         </div>
       ) : (
