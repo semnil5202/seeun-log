@@ -7,7 +7,7 @@ import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
 import type { Locale } from "@/shared/types/common";
 import { DEFAULT_LOCALE } from "@/shared/types/common";
-import { getMultilingualSubCategories } from "@/features/post-feed/api/posts";
+import { getActiveSubCategorySlugs, getMultilingualSubCategories } from "@/features/post-feed/api/posts";
 import { fetchSubCategoryMap } from "@/features/post-feed/api/categories";
 
 interface Props {
@@ -20,8 +20,10 @@ const { category, activeSubCategory, locale } = Astro.props;
 
 const subCategoryMap = await fetchSubCategoryMap();
 const allSubCategories = subCategoryMap[category] ?? [];
-const multilingualSubs = locale !== DEFAULT_LOCALE ? await getMultilingualSubCategories(category) : null;
-const subCategories = multilingualSubs ? allSubCategories.filter((s) => multilingualSubs.includes(s)) : allSubCategories;
+const activeSubs = locale !== DEFAULT_LOCALE
+  ? await getMultilingualSubCategories(category)
+  : await getActiveSubCategorySlugs(category);
+const subCategories = allSubCategories.filter((s) => activeSubs.includes(s));
 ---
 
 <nav aria-label={t("a11y.subCategoryNav", locale)} class="block lg:hidden -mx-4 mb-4 border-b border-gray-200">

@@ -12,21 +12,22 @@ import {
   getSponsoredPosts,
   getMultilingualSubCategories,
 } from "@/features/post-feed/api/posts";
-import { fetchSubCategoryMap } from "@/features/post-feed/api/categories";
+import { getActiveCategorySlugs, getActiveSubCategorySlugs } from "@/features/post-feed/api/posts";
 import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
 import { SITE_NAME_KO } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
-  const subCategoryMap = await fetchSubCategoryMap();
+  const activeCategorySlugs = await getActiveCategorySlugs();
   const paths: { params: { category: string; sub_category: string }; props: { category: CategorySlug; sub_category: string } }[] = [];
 
-  for (const [category, subCategories] of Object.entries(subCategoryMap)) {
-    for (const sub_category of subCategories) {
+  for (const category of activeCategorySlugs) {
+    const activeSubSlugs = await getActiveSubCategorySlugs(category);
+    for (const sub_category of activeSubSlugs) {
       paths.push({
         params: { category, sub_category },
-        props: { category, sub_category },
+        props: { category: category as CategorySlug, sub_category },
       });
     }
   }

@@ -1,5 +1,4 @@
-import type { Locale } from '@/shared/types/common';
-import { DEFAULT_LOCALE } from '@/shared/types/common';
+import { type Locale, DEFAULT_LOCALE } from '@/shared/types/common';
 import type { CategoryNode } from '@/shared/types/category';
 import { fetchCategoryTree, type CategoryTreeNode } from '@/features/post-feed/api/categories';
 

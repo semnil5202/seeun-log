@@ -12,14 +12,14 @@ import {
   getSponsoredPosts,
   getMultilingualCategories,
 } from "@/features/post-feed/api/posts";
-import { fetchCategorySlugs } from "@/features/post-feed/api/categories";
+import { getActiveCategorySlugs } from "@/features/post-feed/api/posts";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
 import SubCategoryTabs from "@/shared/components/navigation/SubCategoryTabs.astro";
 import { SITE_NAME_KO } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
-  const categorySlugs = await fetchCategorySlugs();
+  const categorySlugs = await getActiveCategorySlugs();
   return categorySlugs.map((category) => ({
     params: { category },
     props: { category },

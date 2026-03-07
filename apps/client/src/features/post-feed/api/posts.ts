@@ -293,6 +293,27 @@ export const getPaginatedPostsBySubCategory = async (
   };
 };
 
+export const getActiveCategorySlugs = async (): Promise<CategorySlug[]> => {
+  const { data, error } = await supabase.from('posts').select('category');
+
+  if (error) throw new Error(`getActiveCategorySlugs failed: ${error.message}`);
+
+  const categorySet = new Set((data as { category: string }[]).map((p) => p.category));
+  return Array.from(categorySet) as CategorySlug[];
+};
+
+export const getActiveSubCategorySlugs = async (category: CategorySlug): Promise<string[]> => {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('sub_category')
+    .eq('category', category);
+
+  if (error) throw new Error(`getActiveSubCategorySlugs failed: ${error.message}`);
+
+  const subCategorySet = new Set((data as { sub_category: string }[]).map((p) => p.sub_category));
+  return Array.from(subCategorySet);
+};
+
 export const getMultilingualCategories = async (): Promise<CategorySlug[]> => {
   const { data, error } = await supabase
     .from('posts')

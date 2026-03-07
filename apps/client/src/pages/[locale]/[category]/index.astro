@@ -13,7 +13,6 @@ import {
   getMultilingualSponsoredPosts,
   getMultilingualCategories,
 } from "@/features/post-feed/api/posts";
-import { fetchCategorySlugs } from "@/features/post-feed/api/categories";
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
@@ -22,18 +21,14 @@ import { SITE_NAME_KO, SITE_NAME_EN } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
-  const [multilingualCategorySlugs, allCategorySlugs] = await Promise.all([
-    getMultilingualCategories(),
-    fetchCategorySlugs(),
-  ]);
+  const multilingualCategorySlugs = await getMultilingualCategories();
   const paths: {
     params: { locale: string; category: string };
     props: { locale: Locale; category: CategorySlug };
   }[] = [];
 
   for (const locale of nonDefaultLocales) {
-    for (const category of allCategorySlugs) {
-      if (!multilingualCategorySlugs.includes(category)) continue;
+    for (const category of multilingualCategorySlugs) {
       paths.push({
         params: { locale, category },
         props: { locale, category },

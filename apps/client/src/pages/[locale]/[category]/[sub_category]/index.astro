@@ -14,7 +14,6 @@ import {
   getMultilingualCategories,
   getMultilingualSubCategories,
 } from "@/features/post-feed/api/posts";
-import { fetchSubCategoryMap } from "@/features/post-feed/api/categories";
 import { getLocalizedPost } from "@/features/post-feed/api/translations";
 import { getCategoryLabel, getSubCategoryLabel } from "@/shared/lib/i18n/categories";
 import { t } from "@/shared/lib/i18n/translations";
@@ -23,24 +22,19 @@ import { SITE_NAME_KO, SITE_NAME_EN } from "@eunminlog/config/site";
 
 export const getStaticPaths = async () => {
   const nonDefaultLocales = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
-  const [multilingualCategorySlugs, subCategoryMap] = await Promise.all([
-    getMultilingualCategories(),
-    fetchSubCategoryMap(),
-  ]);
+  const multilingualCategorySlugs = await getMultilingualCategories();
   const paths: {
     params: { locale: string; category: string; sub_category: string };
     props: { locale: Locale; category: CategorySlug; sub_category: string };
   }[] = [];
 
   for (const locale of nonDefaultLocales) {
-    for (const [category, subCategories] of Object.entries(subCategoryMap)) {
-      if (!multilingualCategorySlugs.includes(category)) continue;
+    for (const category of multilingualCategorySlugs) {
       const multilingualSubCategorySlugs = await getMultilingualSubCategories(category);
-      for (const sub_category of subCategories) {
-        if (!multilingualSubCategorySlugs.includes(sub_category)) continue;
+      for (const sub_category of multilingualSubCategorySlugs) {
         paths.push({
           params: { locale, category, sub_category },
-          props: { locale, category, sub_category },
+          props: { locale, category: category as CategorySlug, sub_category },
         });
       }
     }
