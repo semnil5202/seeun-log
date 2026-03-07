@@ -7,7 +7,7 @@ export async function streamSummary(
   onChunk: (text: string) => void,
 ): Promise<string> {
   const stream = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    model: 'gpt-5-mini',
     stream: true,
     messages: [
       { role: 'system', content: SUMMARY_SYSTEM_PROMPT },
@@ -29,7 +29,7 @@ export async function streamSummary(
 
 export async function fetchSlugSuggestions(text: string): Promise<string[]> {
   const stream = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     stream: true,
     messages: [

@@ -27,7 +27,7 @@ export async function fetchExtractTerms(
   }
 
   const stream = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     stream: true,
     messages: [
@@ -124,7 +124,7 @@ async function fetchTranslateSingle(
   }
 
   const stream = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    model: 'gpt-5-mini',
     response_format: { type: 'json_object' },
     stream: true,
     messages: [
