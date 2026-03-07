@@ -15,7 +15,7 @@ import { CustomResizableImage } from './image';
 
 const HEADING_STYLES: Record<Level, string> = {
   1: '',
-  2: 'font-size: 22px; line-height: 30px; font-weight: 600; color: #111827; margin: 1rem 0 0.5rem 0;',
+  2: 'font-size: 24px; line-height: 32px; font-weight: 600; color: #111827; margin: 1.125rem 0 0.5rem 0;',
   3: 'font-size: 20px; line-height: 28px; font-weight: 600; color: #111827; margin: 0.875rem 0 0.5rem 0;',
   4: 'font-size: 18px; line-height: 26px; font-weight: 600; color: #111827; margin: 0.75rem 0 0.5rem 0;',
   5: 'font-size: 16px; line-height: 24px; font-weight: 600; color: #111827; margin: 0.625rem 0 0.5rem 0;',
