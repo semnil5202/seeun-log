@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ClipboardCopyIcon, CheckIcon, RefreshCwIcon } from 'lucide-react';
+import { RefreshCwIcon } from 'lucide-react';
 
 import {
   Sheet,
@@ -14,7 +14,6 @@ import {
 import type { TranslationLocale } from '@/shared/types/post';
 import type { ImageAlt, TranslationResult } from '../types';
 import { LOCALE_FILTER_LABELS } from '../constants/locale';
-import { buildTranslateSystemPrompt } from '@/shared/constants/prompts';
 
 type FilterLocale = 'ko' | TranslationLocale;
 
@@ -33,36 +32,6 @@ type TranslationPreviewSheetProps = {
   onRetryLocale?: (locale: TranslationLocale) => Promise<TranslationResult>;
   onRetryAll?: () => Promise<void>;
 };
-
-function PromptCopyButton({ html, locale }: { html: string; locale: TranslationLocale }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    const prompt = buildTranslateSystemPrompt(locale);
-    const text = `[시스템 프롬프트]\n${prompt}\n\n[HTML 본문]\n${html}`;
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-    >
-      {copied ? (
-        <>
-          <CheckIcon className="size-3" /> 복사됨
-        </>
-      ) : (
-        <>
-          <ClipboardCopyIcon className="size-3" /> 프롬프트 및 HTML 복사
-        </>
-      )}
-    </button>
-  );
-}
 
 export function TranslationPreviewSheet({
   open,
@@ -206,10 +175,7 @@ export function TranslationPreviewSheet({
                   </div>
                 )}
                 <div className="py-5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-semibold text-muted-foreground">본문</label>
-                    <PromptCopyButton html={selectedTranslation.content} locale={selected as TranslationLocale} />
-                  </div>
+                  <label className="text-sm font-semibold text-muted-foreground">본문</label>
                   <div
                     className="prose prose-sm mt-1 max-w-none"
                     dangerouslySetInnerHTML={{ __html: selectedTranslation.content }}

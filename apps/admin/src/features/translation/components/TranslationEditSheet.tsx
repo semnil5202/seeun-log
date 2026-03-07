@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ClipboardCopyIcon, CheckIcon, LoaderIcon, RefreshCwIcon, Sparkles } from 'lucide-react';
+import { LoaderIcon, RefreshCwIcon, Sparkles } from 'lucide-react';
 
 import {
   Sheet,
@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 import type { TranslationLocale } from '@/shared/types/post';
 import type { ImageAlt, TranslationResult } from '../types';
 import { LOCALE_FILTER_LABELS } from '../constants/locale';
-import { buildTranslateSystemPrompt } from '@/shared/constants/prompts';
 
 type TranslationField = 'title' | 'content' | 'description' | 'place_name' | 'address';
 
@@ -51,36 +50,6 @@ type TranslationEditSheetProps = {
 };
 
 export type { TranslationField };
-
-function PromptCopyButton({ html, locale }: { html: string; locale: TranslationLocale }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    const prompt = buildTranslateSystemPrompt(locale);
-    const text = `[시스템 프롬프트]\n${prompt}\n\n[HTML 본문]\n${html}`;
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-    >
-      {copied ? (
-        <>
-          <CheckIcon className="size-3" /> 복사됨
-        </>
-      ) : (
-        <>
-          <ClipboardCopyIcon className="size-3" /> 프롬프트 및 HTML 복사
-        </>
-      )}
-    </button>
-  );
-}
 
 export function TranslationEditSheet({
   open,
@@ -182,9 +151,6 @@ export function TranslationEditSheet({
             )}
           </div>
           <div className="flex items-center gap-2">
-            {field === 'content' && (
-              <PromptCopyButton html={value} locale={locale} />
-            )}
             {showRetranslateBtn && (
               <button
                 type="button"
