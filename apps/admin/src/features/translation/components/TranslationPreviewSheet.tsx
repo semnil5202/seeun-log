@@ -219,7 +219,7 @@ export function TranslationPreviewSheet({
                   className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
                 >
                   <RefreshCwIcon className={`size-3.5 ${retrying ? 'animate-spin' : ''}`} />
-                  이 언어만 재번역
+                  이 언어만 AI 재번역
                 </button>
               )}
               {onRetryAll && (
@@ -230,7 +230,7 @@ export function TranslationPreviewSheet({
                   className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
                 >
                   <RefreshCwIcon className={`size-3.5 ${retryingAll ? 'animate-spin' : ''}`} />
-                  전체 언어 재번역
+                  전체 언어 AI 재번역
                 </button>
               )}
             </div>

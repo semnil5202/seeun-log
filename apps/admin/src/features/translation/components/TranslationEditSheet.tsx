@@ -348,7 +348,7 @@ export function TranslationEditSheet({
                 className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
               >
                 <RefreshCwIcon className={`size-3.5 ${retranslating[selected] ? 'animate-spin' : ''}`} />
-                이 언어만 재번역
+                이 언어만 AI 재번역
               </button>
               <button
                 type="button"
@@ -357,7 +357,7 @@ export function TranslationEditSheet({
                 className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
               >
                 <RefreshCwIcon className={`size-3.5 ${retryingAll ? 'animate-spin' : ''}`} />
-                전체 언어 재번역
+                전체 언어 AI 재번역
               </button>
             </div>
           )}
@@ -377,7 +377,7 @@ export function TranslationEditSheet({
                 ) : (
                   <Sparkles className="size-4" />
                 )}
-                AI 모든 언어 번역 요청
+                모든 언어 수정 부분 AI 번역 요청
               </button>
             )}
             <Button disabled={!allDirtyTranslated} onClick={handleComplete}>
