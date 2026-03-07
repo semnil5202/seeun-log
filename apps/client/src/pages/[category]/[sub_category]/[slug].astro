@@ -42,8 +42,8 @@ if (!post) {
 
 const localizedPost: LocalizedPost = { ...post, locale };
 
-const categoryLabel = getCategoryLabel(category, locale);
-const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
+const categoryLabel = await getCategoryLabel(category, locale);
+const subCategoryLabel = await getSubCategoryLabel(sub_category, locale);
 const canonical = `/${category}/${sub_category}/${slug}/`;
 const path = `/${category}/${sub_category}/${slug}/`;
 

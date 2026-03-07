@@ -37,7 +37,7 @@ const sponsoredLocalized: LocalizedPost[] = await Promise.all(
   sponsored.map((p) => getLocalizedPost(p, locale))
 );
 
-const { searchData, suggestedKeywords } = buildSearchData(localizedPosts, locale);
+const { searchData, suggestedKeywords } = await buildSearchData(localizedPosts, locale);
 
 const canonical = `/${locale}/search/`;
 const path = "/search/";

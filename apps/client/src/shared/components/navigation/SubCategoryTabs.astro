@@ -40,7 +40,7 @@ const subCategories = multilingualSubs ? allSubCategories.filter((s) => multilin
             ]}
             aria-current={isActive ? "true" : undefined}
           >
-            {getSubCategoryLabel(sub, locale)}
+            {await getSubCategoryLabel(sub, locale)}
           </a>
           {index < subCategories.length - 1 && (
             <span class="text-gray-300 select-none" aria-hidden="true">|</span>

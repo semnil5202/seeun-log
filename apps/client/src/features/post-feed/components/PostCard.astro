@@ -22,7 +22,7 @@ const isLcp = index === 0;
 const postPath = `/${post.category}/${post.sub_category}/${post.slug}/`;
 const localizedHref = getLocalePath(postPath, locale);
 
-const categoryLabel = getCategoryLabel(post.category, locale);
+const categoryLabel = await getCategoryLabel(post.category, locale);
 const dateStr = new Date(post.created_at).toLocaleDateString(locale, {
   year: "numeric",
   month: "long",

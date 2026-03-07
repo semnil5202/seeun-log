@@ -67,8 +67,8 @@ const sponsoredLocalized: LocalizedPost[] = await Promise.all(
   sponsored.map((p) => getLocalizedPost(p, locale))
 );
 
-const categoryLabel = getCategoryLabel(category, locale);
-const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
+const categoryLabel = await getCategoryLabel(category, locale);
+const subCategoryLabel = await getSubCategoryLabel(sub_category, locale);
 const homeLabel = t("nav.home", locale);
 
 const canonical = `/${locale}/${category}/${sub_category}/`;

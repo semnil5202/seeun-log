@@ -50,7 +50,7 @@ const buildFeedPostData = async (post: Post, locale: Locale): Promise<FeedPostDa
     thumbnail: post.thumbnail,
     thumbnailAlt: localized.thumbnail_alt ?? localized.title,
     href: getLocalePath(postPath, locale),
-    categoryLabel: getCategoryLabel(post.category, locale),
+    categoryLabel: await getCategoryLabel(post.category, locale),
     dateStr: new Date(post.created_at).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',

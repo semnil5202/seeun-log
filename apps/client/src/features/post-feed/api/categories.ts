@@ -11,28 +11,54 @@ type CategoryRow = {
   is_multilingual: boolean;
 };
 
+type CategoryTranslationRow = {
+  category_id: string;
+  locale: string;
+  name: string;
+};
+
 export type CategoryTreeNode = {
   slug: string;
   name: string;
-  subCategories: { slug: string; name: string; isMultilingual: boolean }[];
+  translations: Record<string, string>;
+  subCategories: { slug: string; name: string; isMultilingual: boolean; translations: Record<string, string> }[];
 };
 
 export const fetchCategoryTree = async (): Promise<CategoryTreeNode[]> => {
-  const { data, error } = await supabase
-    .from('categories')
-    .select('id, slug, name, parent_id, sort_order, is_multilingual')
-    .order('sort_order');
+  const [catResult, transResult] = await Promise.all([
+    supabase
+      .from('categories')
+      .select('id, slug, name, parent_id, sort_order, is_multilingual')
+      .order('sort_order'),
+    supabase
+      .from('category_translations')
+      .select('category_id, locale, name'),
+  ]);
 
-  if (error) throw new Error(`fetchCategoryTree failed: ${error.message}`);
+  if (catResult.error) throw new Error(`fetchCategoryTree failed: ${catResult.error.message}`);
+  if (transResult.error) throw new Error(`fetchCategoryTranslations failed: ${transResult.error.message}`);
 
-  const rows = (data ?? []) as CategoryRow[];
+  const rows = (catResult.data ?? []) as CategoryRow[];
+  const transRows = (transResult.data ?? []) as CategoryTranslationRow[];
+
+  const transMap = new Map<string, Record<string, string>>();
+  for (const t of transRows) {
+    if (!transMap.has(t.category_id)) transMap.set(t.category_id, {});
+    transMap.get(t.category_id)![t.locale] = t.name;
+  }
+
   const idToSlug = new Map<string, string>();
   for (const row of rows) idToSlug.set(row.id, row.slug);
 
   const parentMap = new Map<string, CategoryTreeNode>();
   for (const row of rows) {
     if (!row.parent_id) {
-      parentMap.set(row.slug, { slug: row.slug, name: row.name, subCategories: [] });
+      parentMap.set(row.slug, {
+        slug: row.slug,
+        name: row.name,
+        translations: transMap.get(row.id) ?? {},
+        subCategories: [],
+      });
     }
   }
 
@@ -44,6 +70,7 @@ export const fetchCategoryTree = async (): Promise<CategoryTreeNode[]> => {
           slug: row.slug,
           name: row.name,
           isMultilingual: row.is_multilingual,
+          translations: transMap.get(row.id) ?? {},
         });
       }
     }

@@ -20,7 +20,7 @@ const [allPosts, sponsored] = await Promise.all([
 const localizedPosts: LocalizedPost[] = allPosts.map((p) => ({ ...p, locale }));
 const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, locale }));
 
-const { searchData, suggestedKeywords } = buildSearchData(localizedPosts, locale);
+const { searchData, suggestedKeywords } = await buildSearchData(localizedPosts, locale);
 
 const placeholderText = t("search.placeholder", locale);
 const noResultsText = t("search.noResults", locale);

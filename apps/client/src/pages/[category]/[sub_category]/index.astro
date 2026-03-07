@@ -53,8 +53,8 @@ const isMultilingual = multilingualSubCategories.includes(sub_category);
 const posts: LocalizedPost[] = rawPosts.map((p) => ({ ...p, translated_place_name: null, translated_address: null, locale }));
 const sponsoredLocalized: LocalizedPost[] = sponsored.map((p) => ({ ...p, translated_place_name: null, translated_address: null, locale }));
 
-const categoryLabel = getCategoryLabel(category, locale);
-const subCategoryLabel = getSubCategoryLabel(sub_category, locale);
+const categoryLabel = await getCategoryLabel(category, locale);
+const subCategoryLabel = await getSubCategoryLabel(sub_category, locale);
 const canonical = `/${category}/${sub_category}/`;
 const path = `/${category}/${sub_category}/`;
 
