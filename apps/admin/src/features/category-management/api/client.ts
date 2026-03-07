@@ -7,7 +7,6 @@ export async function translateCategoryName(
 ): Promise<Record<TranslationLocale, string>> {
   const response = await openai.chat.completions.create({
     model: 'gpt-5-mini',
-    temperature: 0.3,
     response_format: { type: 'json_object' },
     messages: [
       { role: 'system', content: CATEGORY_TRANSLATE_SYSTEM_PROMPT },
