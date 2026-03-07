@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LoaderIcon } from 'lucide-react';
+import { RefreshCwIcon } from 'lucide-react';
 
 import {
   Sheet,
@@ -28,6 +28,7 @@ type TranslationPreviewSheetProps = {
   originalAddress?: string;
   translations: TranslationResult[];
   onRetryLocale?: (locale: TranslationLocale) => Promise<TranslationResult>;
+  onRetryAll?: () => Promise<void>;
 };
 
 export function TranslationPreviewSheet({
@@ -39,9 +40,11 @@ export function TranslationPreviewSheet({
   originalAddress,
   translations,
   onRetryLocale,
+  onRetryAll,
 }: TranslationPreviewSheetProps) {
   const [selected, setSelected] = useState<FilterLocale>('en');
   const [retrying, setRetrying] = useState(false);
+  const [retryingAll, setRetryingAll] = useState(false);
 
   const selectedTranslation =
     selected !== 'ko' ? translations.find((tr) => tr.locale === selected) : null;
@@ -53,6 +56,16 @@ export function TranslationPreviewSheet({
       await onRetryLocale(selected);
     } finally {
       setRetrying(false);
+    }
+  };
+
+  const handleRetryAll = async () => {
+    if (!onRetryAll || retryingAll) return;
+    setRetryingAll(true);
+    try {
+      await onRetryAll();
+    } finally {
+      setRetryingAll(false);
     }
   };
 
@@ -116,15 +129,6 @@ export function TranslationPreviewSheet({
                 <p className="text-sm text-destructive">
                   {LOCALE_FILTER_LABELS[selected]} 번역에 실패했습니다.
                 </p>
-                <button
-                  type="button"
-                  onClick={handleRetry}
-                  disabled={retrying}
-                  className="inline-flex items-center gap-1.5 h-9 border border-input px-4 text-sm shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
-                >
-                  다시 시도
-                  {retrying && <LoaderIcon className="size-3 animate-spin" />}
-                </button>
               </div>
             ) : selectedTranslation ? (
               <>
@@ -156,6 +160,33 @@ export function TranslationPreviewSheet({
               <p className="text-sm text-muted-foreground">번역 데이터가 없습니다.</p>
             )}
           </div>
+
+          {selected !== 'ko' && (
+            <div className="mt-[40px] flex items-center gap-3">
+              {onRetryLocale && (
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  disabled={retrying || retryingAll}
+                  className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                >
+                  <RefreshCwIcon className={`size-3.5 ${retrying ? 'animate-spin' : ''}`} />
+                  이 언어만 재번역
+                </button>
+              )}
+              {onRetryAll && (
+                <button
+                  type="button"
+                  onClick={handleRetryAll}
+                  disabled={retryingAll || retrying}
+                  className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                >
+                  <RefreshCwIcon className={`size-3.5 ${retryingAll ? 'animate-spin' : ''}`} />
+                  전체 언어 재번역
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </SheetContent>
     </Sheet>

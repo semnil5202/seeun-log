@@ -46,7 +46,7 @@ import {
   TITLE_MAX_LENGTH,
   type PostFormValues,
 } from '@/features/post-editor/types/form';
-import { fetchRetrySingleLocale } from '@/features/translation/api/client';
+import { fetchRetrySingleLocale, fetchTranslatePost } from '@/features/translation/api/client';
 import {
   TranslationEditSheet,
   type TranslationField,
@@ -365,6 +365,21 @@ function EditPostForm({
     return result;
   };
 
+  const handleRetryAll = async () => {
+    const { title: t, content: c, description: d, placeName: pn, address: addr } = getValues();
+    const results = await fetchTranslatePost({
+      title: t,
+      content: c,
+      description: d,
+      placeName: pn || undefined,
+      address: addr || undefined,
+      confirmedTerms: [],
+      imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
+      thumbnailAlt: getValues('thumbnailAlt') || undefined,
+    });
+    setTranslationResults(results);
+  };
+
   const handleTranslationEditComplete = () => {
     setTranslationEditCompleted(true);
   };
@@ -651,6 +666,7 @@ function EditPostForm({
           translations={translationResults}
           dirtyFields={dirtyTranslationFields}
           onRetranslateLocale={handleRetranslateLocale}
+          onRetryAll={handleRetryAll}
           onTranslationEditComplete={handleTranslationEditComplete}
         />
       )}

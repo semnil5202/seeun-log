@@ -365,6 +365,21 @@ function NewPostContent() {
     return result;
   };
 
+  const handleRetryAll = async () => {
+    const { title: t, content: c, description: d, placeName: pn, address: addr } = getValues();
+    const results = await fetchTranslatePost({
+      title: t,
+      content: c,
+      description: d,
+      placeName: pn || undefined,
+      address: addr || undefined,
+      confirmedTerms: lastConfirmedTerms,
+      imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
+      thumbnailAlt: getValues('thumbnailAlt') || undefined,
+    });
+    setTranslationResults(results);
+  };
+
   return (
     <>
       <div className="mx-auto mb-6 max-w-[688px]">
@@ -654,6 +669,7 @@ function NewPostContent() {
         originalAddress={watch('address') || undefined}
         translations={translationResults}
         onRetryLocale={handleRetryLocale}
+        onRetryAll={handleRetryAll}
       />
     </>
   );

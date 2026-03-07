@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LoaderIcon, Sparkles } from 'lucide-react';
+import { LoaderIcon, RefreshCwIcon, Sparkles } from 'lucide-react';
 
 import {
   Sheet,
@@ -43,6 +43,7 @@ type TranslationEditSheetProps = {
   translations: TranslationResult[];
   dirtyFields: Set<TranslationField>;
   onRetranslateLocale: (locale: TranslationLocale) => Promise<TranslationResult>;
+  onRetryAll?: () => Promise<void>;
   onTranslationEditComplete: () => void;
 };
 
@@ -59,12 +60,14 @@ export function TranslationEditSheet({
   translations,
   dirtyFields,
   onRetranslateLocale,
+  onRetryAll,
   onTranslationEditComplete,
 }: TranslationEditSheetProps) {
   const [selected, setSelected] = useState<FilterLocale>('en');
   const [retranslating, setRetranslating] = useState<Record<string, boolean>>({});
   const [retranslatedLocales, setRetranslatedLocales] = useState<Set<TranslationLocale>>(new Set());
   const [bulkRetranslating, setBulkRetranslating] = useState(false);
+  const [retryingAll, setRetryingAll] = useState(false);
 
   const selectedTranslation =
     selected !== 'ko' ? translations.find((tr) => tr.locale === selected) : null;
@@ -99,6 +102,17 @@ export function TranslationEditSheet({
       setRetranslatedLocales(newSet);
     } finally {
       setBulkRetranslating(false);
+    }
+  };
+
+  const handleRetryAll = async () => {
+    if (!onRetryAll || retryingAll) return;
+    setRetryingAll(true);
+    try {
+      await onRetryAll();
+      setRetranslatedLocales(new Set(TARGET_LOCALES));
+    } finally {
+      setRetryingAll(false);
     }
   };
 
@@ -280,6 +294,29 @@ export function TranslationEditSheet({
               <p className="text-sm text-muted-foreground">번역 데이터가 없습니다.</p>
             )}
           </div>
+
+          {selected !== 'ko' && onRetryAll && (
+            <div className="mt-[40px] flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => handleRetranslate(selected as TranslationLocale)}
+                disabled={retranslating[selected] || bulkRetranslating || retryingAll}
+                className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+              >
+                <RefreshCwIcon className={`size-3.5 ${retranslating[selected] ? 'animate-spin' : ''}`} />
+                이 언어만 재번역
+              </button>
+              <button
+                type="button"
+                onClick={handleRetryAll}
+                disabled={retryingAll || bulkRetranslating}
+                className="inline-flex items-center gap-1.5 h-9 bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+              >
+                <RefreshCwIcon className={`size-3.5 ${retryingAll ? 'animate-spin' : ''}`} />
+                전체 언어 재번역
+              </button>
+            </div>
+          )}
         </div>
 
         {dirtyFields.size > 0 && (
