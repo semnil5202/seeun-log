@@ -1,13 +1,22 @@
 'use client';
 
-import type { ComponentProps } from 'react';
+import { createContext, useCallback, useContext, useRef, type ComponentProps } from 'react';
 import { XIcon } from 'lucide-react';
 import { Dialog as SheetPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/utils';
 
-function Sheet({ ...props }: ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+const SheetSwipeContext = createContext<((open: boolean) => void) | undefined>(undefined);
+
+function Sheet({
+  onOpenChange,
+  ...props
+}: ComponentProps<typeof SheetPrimitive.Root>) {
+  return (
+    <SheetSwipeContext value={onOpenChange}>
+      <SheetPrimitive.Root data-slot="sheet" onOpenChange={onOpenChange} {...props} />
+    </SheetSwipeContext>
+  );
 }
 
 function SheetTrigger({ ...props }: ComponentProps<typeof SheetPrimitive.Trigger>) {
@@ -35,6 +44,104 @@ function SheetOverlay({ className, ...props }: ComponentProps<typeof SheetPrimit
   );
 }
 
+const SWIPE_THRESHOLD_RATIO = 0.3;
+
+function useSheetSwipe(
+  side: 'top' | 'right' | 'bottom' | 'left',
+  onClose: (() => void) | undefined,
+) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const startX = useRef(0);
+  const isDragging = useRef(false);
+
+  const isHorizontal = side === 'left' || side === 'right';
+
+  const onTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isHorizontal) return;
+      startX.current = e.touches[0].clientX;
+      isDragging.current = false;
+    },
+    [isHorizontal],
+  );
+
+  const onTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isHorizontal || !contentRef.current) return;
+
+      const deltaX = e.touches[0].clientX - startX.current;
+      const isValidDirection = side === 'right' ? deltaX > 0 : deltaX < 0;
+
+      if (!isValidDirection) {
+        if (isDragging.current) {
+          contentRef.current.style.transform = '';
+          contentRef.current.style.transition = '';
+          if (overlayRef.current) overlayRef.current.style.opacity = '';
+          isDragging.current = false;
+        }
+        return;
+      }
+
+      isDragging.current = true;
+      const absDelta = Math.abs(deltaX);
+
+      contentRef.current.style.transition = 'none';
+      contentRef.current.style.transform = `translateX(${deltaX}px)`;
+
+      if (overlayRef.current) {
+        const width = contentRef.current.offsetWidth;
+        const progress = Math.min(absDelta / width, 1);
+        overlayRef.current.style.opacity = String(1 - progress);
+      }
+    },
+    [isHorizontal, side],
+  );
+
+  const onTouchEnd = useCallback(() => {
+    if (!isHorizontal || !isDragging.current || !contentRef.current) return;
+
+    const el = contentRef.current;
+    const width = el.offsetWidth;
+    const currentTransform = el.style.transform;
+    const match = currentTransform.match(/translateX\((.+?)px\)/);
+    const absDelta = match ? Math.abs(parseFloat(match[1])) : 0;
+
+    if (absDelta > width * SWIPE_THRESHOLD_RATIO) {
+      el.style.transition = 'transform 200ms ease-out';
+      el.style.transform = `translateX(${side === 'right' ? '100%' : '-100%'})`;
+      if (overlayRef.current) {
+        overlayRef.current.style.transition = 'opacity 200ms ease-out';
+        overlayRef.current.style.opacity = '0';
+      }
+      setTimeout(() => {
+        onClose?.();
+        el.style.transform = '';
+        el.style.transition = '';
+        if (overlayRef.current) {
+          overlayRef.current.style.opacity = '';
+          overlayRef.current.style.transition = '';
+        }
+      }, 200);
+    } else {
+      el.style.transition = 'transform 200ms ease-out';
+      el.style.transform = '';
+      if (overlayRef.current) {
+        overlayRef.current.style.transition = 'opacity 200ms ease-out';
+        overlayRef.current.style.opacity = '';
+      }
+      setTimeout(() => {
+        el.style.transition = '';
+        if (overlayRef.current) overlayRef.current.style.transition = '';
+      }, 200);
+    }
+
+    isDragging.current = false;
+  }, [isHorizontal, side, onClose]);
+
+  return { contentRef, overlayRef, onTouchStart, onTouchMove, onTouchEnd };
+}
+
 function SheetContent({
   className,
   children,
@@ -45,11 +152,26 @@ function SheetContent({
   side?: 'top' | 'right' | 'bottom' | 'left';
   showCloseButton?: boolean;
 }) {
+  const onOpenChange = useContext(SheetSwipeContext);
+
+  const handleClose = useCallback(() => {
+    onOpenChange?.(false);
+  }, [onOpenChange]);
+
+  const { contentRef, overlayRef, onTouchStart, onTouchMove, onTouchEnd } = useSheetSwipe(
+    side,
+    handleClose,
+  );
+
   return (
     <SheetPortal>
-      <SheetOverlay />
+      <SheetOverlay ref={overlayRef} />
       <SheetPrimitive.Content
+        ref={contentRef}
         data-slot="sheet-content"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
         className={cn(
           'fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500',
           side === 'right' &&
