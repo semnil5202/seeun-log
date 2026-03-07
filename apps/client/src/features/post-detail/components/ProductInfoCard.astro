@@ -1,0 +1,119 @@
+---
+/** 제품 정보 카드. Schema.org Product 마크업을 포함한다. */
+
+import type { Locale } from "@/shared/types/common";
+import { t } from "@/shared/lib/i18n/translations";
+
+interface Props {
+  categoryLabel: string;
+  subCategoryLabel: string;
+  productName: string;
+  translatedProductName?: string | null;
+  purchaseSource: string;
+  purchaseLink: string;
+  pricePrefix?: string | null;
+  price: number | null;
+  description: string;
+  locale: Locale;
+}
+
+const {
+  categoryLabel,
+  subCategoryLabel,
+  productName,
+  translatedProductName,
+  purchaseSource,
+  purchaseLink,
+  pricePrefix,
+  price,
+  description,
+  locale,
+} = Astro.props;
+
+const currencyUnit = t("place.currency", locale);
+const priceLabel = price != null
+  ? `${pricePrefix ?? ''}${price.toLocaleString()}${currencyUnit}`
+  : null;
+const targetCurrency = t("place.targetCurrency", locale);
+const exchangeUrl = price != null && targetCurrency
+  ? `https://www.google.com/search?q=${price}+KRW+to+${targetCurrency}`
+  : null;
+
+const summaryLabel = t("post.summary", locale);
+const summaryLines = description ? description.split('\n').filter(Boolean) : [];
+---
+
+<div
+  class="bg-gray-50 border border-gray-200 p-5 mb-6"
+  itemscope
+  itemtype="https://schema.org/Product"
+>
+  <dl class="space-y-3 text-sm">
+    <div class="flex items-baseline gap-3">
+      <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.category", locale)}</dt>
+      <dd class="text-gray-900">{categoryLabel} <span class="text-base leading-none">›</span> {subCategoryLabel}</dd>
+    </div>
+    <div class="flex items-baseline gap-3">
+      <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("product.name", locale)}</dt>
+      <dd class="text-gray-900 font-semibold" itemprop="name">
+        {translatedProductName ?? productName}
+      </dd>
+    </div>
+    {purchaseSource && (
+      <div class="flex items-baseline gap-3">
+        <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("product.source", locale)}</dt>
+        <dd class="flex items-baseline gap-1.5">
+          <span class="text-gray-900">{purchaseSource}</span>
+          {purchaseLink && (
+            <a
+              href={purchaseLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label={purchaseSource}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 7h10v10"></path>
+                <path d="M7 17 17 7"></path>
+              </svg>
+            </a>
+          )}
+        </dd>
+      </div>
+    )}
+    {priceLabel && (
+      <div class="flex items-baseline gap-3">
+        <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.price", locale)}</dt>
+        <dd class="flex items-baseline gap-1.5">
+          <span class="text-gray-900">{priceLabel}</span>
+          {exchangeUrl && (
+            <a
+              href={exchangeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label={t("a11y.currencyConverter", locale)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 7h10v10"></path>
+                <path d="M7 17 17 7"></path>
+              </svg>
+            </a>
+          )}
+        </dd>
+      </div>
+    )}
+    {summaryLines.length > 0 && (
+      <div class="flex items-baseline gap-3">
+        <dt class="shrink-0 w-20 text-gray-500 font-medium">{summaryLabel}</dt>
+        <dd class="text-gray-900">
+          <ul class="space-y-0.5">
+            {summaryLines.map((line) => (
+              <li>⋅ {line}</li>
+            ))}
+          </ul>
+        </dd>
+      </div>
+    )}
+  </dl>
+</div>

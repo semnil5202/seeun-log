@@ -20,6 +20,9 @@ export const postFormSchema = z
     address: z.string(),
     pricePrefix: z.string(),
     price: z.string(),
+    productName: z.string(),
+    purchaseSource: z.string(),
+    purchaseLink: z.string(),
   })
   .superRefine((data, ctx) => {
     if (data.formType === 'visit') {
@@ -27,6 +30,14 @@ export const postFormSchema = z
         ctx.addIssue({ code: 'custom', path: ['placeName'], message: '장소를 입력해주세요.' });
       if (!data.address.trim())
         ctx.addIssue({ code: 'custom', path: ['address'], message: '주소를 입력해주세요.' });
+      if (!data.price.trim())
+        ctx.addIssue({ code: 'custom', path: ['price'], message: '금액을 입력해주세요.' });
+    }
+    if (data.formType === 'product-review') {
+      if (!data.productName.trim())
+        ctx.addIssue({ code: 'custom', path: ['productName'], message: '제품명을 입력해주세요.' });
+      if (!data.purchaseSource.trim())
+        ctx.addIssue({ code: 'custom', path: ['purchaseSource'], message: '구매처를 입력해주세요.' });
       if (!data.price.trim())
         ctx.addIssue({ code: 'custom', path: ['price'], message: '금액을 입력해주세요.' });
     }
@@ -48,4 +59,7 @@ export const POST_FORM_DEFAULTS: PostFormValues = {
   address: '',
   pricePrefix: '',
   price: '',
+  productName: '',
+  purchaseSource: '',
+  purchaseLink: '',
 };

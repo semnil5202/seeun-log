@@ -37,6 +37,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { CategorySelector } from '@/features/post-editor/components/CategorySelector';
 import { ThumbnailUpload } from '@/features/post-editor/components/ThumbnailUpload';
+import { ProductReviewFields } from '@/features/post-editor/components/ProductReviewFields';
 import { VisitFields } from '@/features/post-editor/components/VisitFields';
 import { TiptapEditorContainer } from '@/features/post-editor/containers/TiptapEditorContainer';
 import { FORM_TYPE_OPTIONS } from '@/features/post-editor/constants/category';
@@ -79,6 +80,9 @@ export default function EditPostPage() {
       address: string | null;
       price_prefix: string | null;
       price: number | null;
+      product_name: string | null;
+      purchase_source: string | null;
+      purchase_link: string | null;
     };
     translations: TranslationResult[];
     imageAlts?: ImageAlt[];
@@ -139,6 +143,9 @@ function EditPostForm({
       address: string | null;
       price_prefix: string | null;
       price: number | null;
+      product_name: string | null;
+      purchase_source: string | null;
+      purchase_link: string | null;
     };
     translations: TranslationResult[];
     imageAlts?: ImageAlt[];
@@ -151,7 +158,7 @@ function EditPostForm({
 
   const initialValues = useMemo<PostFormValues>(
     () => ({
-      formType: (post.place_name ? 'visit' : 'product-review') as PostFormType,
+      formType: (post.product_name ? 'product-review' : 'visit') as PostFormType,
       title: post.title,
       content: post.content,
       category: post.category,
@@ -164,6 +171,9 @@ function EditPostForm({
       address: post.address ?? '',
       pricePrefix: post.price_prefix ?? '',
       price: post.price != null ? String(post.price) : '',
+      productName: post.product_name ?? '',
+      purchaseSource: post.purchase_source ?? '',
+      purchaseLink: post.purchase_link ?? '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- post data only changes when id changes
     [postId],
@@ -282,6 +292,8 @@ function EditPostForm({
       'address',
       'price',
       'description',
+      'productName',
+      'purchaseSource',
     ]);
 
     const checks: [keyof PostFormValues, boolean][] = [
@@ -297,6 +309,14 @@ function EditPostForm({
       checks.push(
         ['placeName', !values.placeName.trim()],
         ['address', !values.address.trim()],
+        ['price', !values.price.trim()],
+      );
+    }
+
+    if (formType === 'product-review') {
+      checks.push(
+        ['productName', !values.productName.trim()],
+        ['purchaseSource', !values.purchaseSource.trim()],
         ['price', !values.price.trim()],
       );
     }
@@ -325,6 +345,9 @@ function EditPostForm({
     setValue('address', '');
     setValue('pricePrefix', '');
     setValue('price', '');
+    setValue('productName', '');
+    setValue('purchaseSource', '');
+    setValue('purchaseLink', '');
   };
 
   const handleCategoryChange = (value: string) => {
@@ -547,6 +570,9 @@ function EditPostForm({
 
         {formType === 'visit' && (
           <VisitFields register={register} errors={errors} setValue={setValue} />
+        )}
+        {formType === 'product-review' && (
+          <ProductReviewFields register={register} errors={errors} setValue={setValue} />
         )}
 
         <div className="mt-8">

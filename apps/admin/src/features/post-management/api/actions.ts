@@ -81,6 +81,9 @@ export async function fetchPost(id: string) {
       address: string | null;
       price_prefix: string | null;
       price: number | null;
+      product_name: string | null;
+      purchase_source: string | null;
+      purchase_link: string | null;
       thumbnail_alt: string | null;
       prev_slug: string | null;
       created_at: string;
@@ -93,6 +96,7 @@ export async function fetchPost(id: string) {
       content: t.content,
       place_name: t.place_name ?? '',
       address: t.address ?? '',
+      product_name: t.product_name ?? '',
       image_alts: (t.image_alts ?? []) as ImageAlt[],
       thumbnail_alt: t.thumbnail_alt ?? '',
     })) as TranslationResult[],
@@ -124,6 +128,9 @@ export async function createPost(params: {
       address: fv.address || null,
       price_prefix: fv.pricePrefix || null,
       price: fv.price ? parseInt(fv.price) : null,
+      product_name: fv.productName || null,
+      purchase_source: fv.purchaseSource || null,
+      purchase_link: fv.purchaseLink || null,
       image_alts: params.imageAlts ?? [],
     })
     .select('id')
@@ -144,6 +151,7 @@ export async function createPost(params: {
       content: t.content,
       place_name: t.place_name || null,
       address: t.address || null,
+      product_name: t.product_name || null,
       image_alts: t.image_alts ?? [],
       thumbnail_alt: t.thumbnail_alt || null,
     }));
@@ -197,6 +205,9 @@ export async function updatePost(params: {
     address: fv.address || null,
     price_prefix: fv.pricePrefix || null,
     price: fv.price ? parseInt(fv.price) : null,
+    product_name: fv.productName || null,
+    purchase_source: fv.purchaseSource || null,
+    purchase_link: fv.purchaseLink || null,
     image_alts: params.imageAlts ?? [],
     updated_at: new Date().toISOString(),
   };
@@ -226,6 +237,7 @@ export async function updatePost(params: {
         content: t.content,
         place_name: t.place_name || null,
         address: t.address || null,
+        product_name: t.product_name || null,
         image_alts: t.image_alts ?? [],
         thumbnail_alt: t.thumbnail_alt || null,
         updated_at: new Date().toISOString(),

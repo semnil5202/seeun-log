@@ -40,7 +40,14 @@ if (!post) {
   return Astro.redirect(`/${category}/`, 302);
 }
 
-const localizedPost: LocalizedPost = { ...post, locale };
+const localizedPost: LocalizedPost = {
+  ...post,
+  locale,
+  translated_place_name: null,
+  translated_address: null,
+  translated_product_name: null,
+  image_alts: post.image_alts ?? [],
+};
 
 const categoryLabel = await getCategoryLabel(category, locale);
 const subCategoryLabel = await getSubCategoryLabel(sub_category, locale);

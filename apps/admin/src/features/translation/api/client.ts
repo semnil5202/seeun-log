@@ -153,6 +153,7 @@ async function fetchTranslateSingle(
     description: (parsed.description as string) ?? '',
     place_name: (parsed.place_name as string) ?? '',
     address: (parsed.address as string) ?? '',
+    product_name: (parsed.product_name as string) ?? '',
     image_alts: resultImageAlts,
     thumbnail_alt: (parsed.thumbnail_alt as string) ?? '',
   };
@@ -172,6 +173,7 @@ export async function fetchTranslatePost(params: TranslateParams): Promise<Trans
       description: '',
       place_name: '',
       address: '',
+      product_name: '',
       image_alts: [] as TranslationResult['image_alts'],
       thumbnail_alt: '',
       failed: true,
