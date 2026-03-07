@@ -1,4 +1,5 @@
 import { openai } from '@/shared/lib/openai';
+import { CATEGORY_TRANSLATE_SYSTEM_PROMPT } from '@/shared/constants/prompts';
 import type { TranslationLocale } from '@/shared/types/post';
 
 export async function translateCategoryName(
@@ -9,11 +10,7 @@ export async function translateCategoryName(
     temperature: 0.3,
     response_format: { type: 'json_object' },
     messages: [
-      {
-        role: 'system',
-        content:
-          '한국어 카테고리명을 각 언어로 간결하게 번역하세요. 반드시 JSON 형식으로 반환: { "en": "...", "ja": "...", "zh-CN": "...", "zh-TW": "...", "id": "...", "vi": "...", "th": "..." }',
-      },
+      { role: 'system', content: CATEGORY_TRANSLATE_SYSTEM_PROMPT },
       { role: 'user', content: name },
     ],
   });
