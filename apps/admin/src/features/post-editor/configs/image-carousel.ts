@@ -287,10 +287,10 @@ export const CustomImageCarousel = Node.create({
 
         // 4-corner resize dots (hidden until double-click)
         const dotPositions = [
-          { top: '-4px', left: '-4px', cursor: 'nw-resize' },
-          { top: '-4px', right: '-4px', cursor: 'ne-resize' },
-          { bottom: '-4px', left: '-4px', cursor: 'sw-resize' },
-          { bottom: '-4px', right: '-4px', cursor: 'se-resize' },
+          { top: '-6px', left: '-6px', cursor: 'nw-resize' },
+          { top: '-6px', right: '-6px', cursor: 'ne-resize' },
+          { bottom: '-6px', left: '-6px', cursor: 'sw-resize' },
+          { bottom: '-6px', right: '-6px', cursor: 'se-resize' },
         ];
 
         const dots: HTMLElement[] = [];
@@ -300,10 +300,10 @@ export const CustomImageCarousel = Node.create({
             'style',
             [
               'position: absolute',
-              'width: 9px',
-              'height: 9px',
+              'width: 14px',
+              'height: 14px',
               'background: #4a90d9',
-              'border: 1px solid white',
+              'border: 2px solid white',
               'border-radius: 50%',
               'display: none',
               'z-index: 3',
@@ -494,7 +494,8 @@ export const CustomImageCarousel = Node.create({
       // Carousel-level selection (single click)
       const showSelection = () => {
         isSelected = true;
-        $container.style.outline = '1px dashed #4a90d9';
+        $container.style.outline = '2px dashed #4a90d9';
+        $container.style.padding = '12px';
         deleteButtons.forEach((btn) => {
           btn.style.display = 'flex';
         });
@@ -503,6 +504,7 @@ export const CustomImageCarousel = Node.create({
       const hideSelection = () => {
         isSelected = false;
         $container.style.outline = 'none';
+        $container.style.padding = '0';
         deleteButtons.forEach((btn) => {
           btn.style.display = 'none';
         });
