@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { CategorySelector } from '@/features/post-editor/components/CategorySelector';
 import { ThumbnailUpload } from '@/features/post-editor/components/ThumbnailUpload';
+import { ProductReviewFields } from '@/features/post-editor/components/ProductReviewFields';
 import { VisitFields } from '@/features/post-editor/components/VisitFields';
 import { TiptapEditorContainer } from '@/features/post-editor/containers/TiptapEditorContainer';
 import { FORM_TYPE_OPTIONS } from '@/features/post-editor/constants/category';
@@ -166,6 +167,8 @@ function NewPostContent() {
       'address',
       'price',
       'description',
+      'productName',
+      'purchaseSource',
     ]);
 
     const checks: [keyof PostFormValues, boolean][] = [
@@ -181,6 +184,14 @@ function NewPostContent() {
       checks.push(
         ['placeName', !values.placeName.trim()],
         ['address', !values.address.trim()],
+        ['price', !values.price.trim()],
+      );
+    }
+
+    if (formType === 'product-review') {
+      checks.push(
+        ['productName', !values.productName.trim()],
+        ['purchaseSource', !values.purchaseSource.trim()],
         ['price', !values.price.trim()],
       );
     }
@@ -209,6 +220,9 @@ function NewPostContent() {
     setValue('address', '');
     setValue('pricePrefix', '');
     setValue('price', '');
+    setValue('productName', '');
+    setValue('purchaseSource', '');
+    setValue('purchaseLink', '');
   };
 
   const handleCategoryChange = (value: string) => {
@@ -285,12 +299,6 @@ function NewPostContent() {
     if (isExtracting) return;
     setImageAltError(false);
 
-    const valid = await trigger();
-    if (!valid) {
-      focusFirstEmptyField();
-      return;
-    }
-
     const thumbnailAltFilled = !getValues('thumbnail') || getValues('thumbnailAlt').trim();
     const srcs = extractImageSrcs(getValues('content'));
     const contentAltsFilled = srcs.every((src) => {
@@ -299,6 +307,12 @@ function NewPostContent() {
     });
     if (!thumbnailAltFilled || !contentAltsFilled) {
       setImageAltError(true);
+      return;
+    }
+
+    const valid = await trigger();
+    if (!valid) {
+      focusFirstEmptyField();
       return;
     }
 
@@ -514,6 +528,9 @@ function NewPostContent() {
 
         {formType === 'visit' && (
           <VisitFields register={register} errors={errors} setValue={setValue} />
+        )}
+        {formType === 'product-review' && (
+          <ProductReviewFields register={register} errors={errors} setValue={setValue} />
         )}
 
         <div className="mt-8">
