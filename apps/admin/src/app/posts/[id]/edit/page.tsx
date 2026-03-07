@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { ChevronLeft, ImageIcon, LoaderIcon, Save } from 'lucide-react';
+import { Check, ChevronLeft, ImageIcon, Languages, LoaderIcon, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { fetchDraft } from '@/features/draft/api';
@@ -593,11 +593,11 @@ function EditPostForm({
               {lastSavedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
-          <div className="flex items-center justify-end gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end sm:gap-3">
             <button
               type="button"
               onClick={() => setIsAltSheetOpen(true)}
-              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+              className="inline-flex items-center justify-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
             >
               <ImageIcon className="size-4" />
               이미지 alt 입력
@@ -606,8 +606,9 @@ function EditPostForm({
               <button
                 type="button"
                 onClick={() => setIsEditSheetOpen(true)}
-                className="h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+                className="inline-flex items-center justify-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
               >
+                <Languages className="size-4" />
                 번역본 확인하기
               </button>
             )}
@@ -615,7 +616,7 @@ function EditPostForm({
               type="button"
               onClick={saveManual}
               disabled={isSaving}
-              className="inline-flex items-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent disabled:opacity-50"
             >
               {isSaving ? (
                 <LoaderIcon className="size-4 animate-spin" />
@@ -628,8 +629,9 @@ function EditPostForm({
               type="button"
               onClick={handleSubmitClick}
               disabled={submitDisabled}
-              className="h-10 bg-primary px-5 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 h-10 bg-primary px-5 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
+              <Check className="size-4" />
               수정 완료
             </button>
           </div>

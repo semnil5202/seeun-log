@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import Link from 'next/link';
-import { ChevronLeft, LoaderIcon, Sparkles } from 'lucide-react';
+import { ChevronLeft, LoaderIcon, Plus, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -277,6 +277,11 @@ export default function NewCategoryPage() {
             </button>
           )}
           <Button disabled={isCreatingParent} onClick={handleCreateParent}>
+            {isCreatingParent ? (
+              <LoaderIcon className="mr-1 size-4 animate-spin" />
+            ) : (
+              <Plus className="mr-1 size-4" />
+            )}
             {isCreatingParent ? '생성 중...' : '추가'}
           </Button>
         </div>
@@ -413,6 +418,11 @@ export default function NewCategoryPage() {
             </button>
           )}
           <Button disabled={isCreatingChild} onClick={handleCreateChild}>
+            {isCreatingChild ? (
+              <LoaderIcon className="mr-1 size-4 animate-spin" />
+            ) : (
+              <Plus className="mr-1 size-4" />
+            )}
             {isCreatingChild ? '생성 중...' : '추가'}
           </Button>
         </div>
