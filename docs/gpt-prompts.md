@@ -1,10 +1,13 @@
 # GPT 프롬프트 설계
 
-모델: **GPT-5 Nano** (`gpt-5-nano`)
+모델: **GPT-5 Mini** (`gpt-5-mini`)
+
+> 모든 프롬프트는 `apps/admin/src/shared/constants/prompts.ts`에 중앙 집중 관리된다.
+> 5개 프롬프트: `SUMMARY_SYSTEM_PROMPT`, `SLUG_SYSTEM_PROMPT`, `EXTRACT_TERMS_SYSTEM_PROMPT`, `buildTranslateSystemPrompt`, `CATEGORY_TRANSLATE_SYSTEM_PROMPT`
 
 ---
 
-## 1. 요약 생성 (`generateSummary`)
+## 1. 요약 생성 (`streamSummary`)
 
 트리거: "요약 생성" 버튼 클릭
 입력: `title`, `content` (HTML)
@@ -14,19 +17,16 @@
 
 ```
 당신은 한국어 블로그 포스트 요약 전문가입니다.
-주어진 블로그 제목과 본문을 읽고, 정확히 3줄로 요약해주세요.
+주어진 제목과 본문을 바탕으로 SEO 메타 설명에 적합한 '자연스러운 3줄 요약'을 작성해주세요.
 
 규칙:
-- 각 줄은 20~35자 이내로 작성
-- 줄바꿈(\n)으로 구분
-- 첫째 줄: 장소/제품의 핵심 특징
-- 둘째 줄: 가장 인상적인 포인트
-- 셋째 줄: 방문/구매 추천 한줄평
-- 이모지, 해시태그 사용 금지
-- HTML 태그는 무시하고 텍스트만 참고
-- SEO 메타 설명으로도 활용되므로 핵심 키워드 포함
-- 반드시 자연스러운 한국어 띄어쓰기를 지켜 작성 (단어를 붙여 쓰지 말 것)
-- 각 줄은 완성형 문장(~다, ~요, ~음 등)으로 마무리할 것
+- 전체 내용을 1~2개의 완성된 문장으로 구성한 뒤, 이를 자연스럽게 3줄로 나누어 작성
+- 말투: "~하며,", "~이고,", "~입니다."와 같이 문장이 끊기지 않고 이어지는 느낌 강조
+- 첫째 줄: 장소/제품의 특징을 매력적인 형용사와 함께 소개
+- 둘째 줄: 실제 방문/사용 시 느낀 가장 핵심적인 장점이나 분위기
+- 셋째 줄: 독자의 방문/구매를 유도하는 부드러운 권유나 총평
+- 각 줄은 25~40자 이내로 작성 (너무 짧게 단답형으로 쓰지 말 것)
+- 이모지, 해시태그 사용 금지 및 HTML 태그 제외 텍스트만 참고
 ```
 
 ### User Prompt
@@ -52,37 +52,59 @@
 
 ---
 
-## 2. 번역 용어 추출 (`extractFlaggedTerms`)
+## 2. 슬러그 추천 (`fetchSlugSuggestions`)
 
-트리거: "번역본 생성하기" 버튼 클릭 (번역 전 첫 번째 단계)
-입력: `content` (HTML), `placeName?`, `address?`
-출력: `FlaggedTerm[]` — `{ original: string, suggestions: string[] }`
+트리거: 슬러그 입력 필드의 "추천" 버튼 클릭
+입력: `text` (한국어 카테고리명 또는 게시글 제목)
+출력: 영문 slug 후보 3개
 
 ### System Prompt
 
 ```
-당신은 한국어→다국어 번역 전문가입니다.
-주어진 한국어 블로그 본문에서 자동 번역이 어려운 용어를 추출해주세요.
+당신은 URL slug 생성 전문가입니다.
+주어진 한국어 텍스트를 기반으로 영문 URL slug 후보 3개를 추천해주세요.
 
-추출 대상:
-- 한국어 신조어/인터넷 용어 (예: 존맛탱, 내돈내산, 가성비, 혜자)
-- 고유 브랜드명/메뉴명 (예: 두쫀쿠, 흑당버블티)
-- 문화적 맥락이 필요한 표현 (예: 맛집, 카공, 핫플)
-- 축약어/줄임말
+규칙:
+- 소문자 영문, 숫자, 하이픈(-)만 사용
+- 2~4단어, 최대 40자
+- SEO 친화적이고 의미가 명확한 slug
+- 한국어 의미를 잘 반영하되, 직역보다 자연스러운 영어 표현 선호
 
-추출 제외:
-- 일반적인 한국어 단어 (음식, 맛있다, 분위기 등)
-- 장소명과 주소 (별도 제공됨)
-- 일반 외래어 (파스타, 카페 등)
+응답은 반드시 JSON 객체로 작성해주세요. 형식: {"slugs": ["slug-1", "slug-2", "slug-3"]}
+```
 
-HTML 처리:
-- 본문은 HTML 형식입니다. HTML 태그(<p>, <strong>, <em>, <ul>, <li>, <h2> 등)와 태그 내부의 텍스트를 분리하여 인식하세요.
-- HTML 태그는 절대 용어로 추출하지 마세요. 텍스트 콘텐츠만 분석 대상입니다.
+### 응답 형식 (JSON)
 
-각 용어에 대해 영어 번역 후보를 1~3개 제안해주세요.
-번역 후보가 마땅치 않으면 빈 배열로 남겨주세요.
+```json
+{ "slugs": ["slug-1", "slug-2", "slug-3"] }
+```
 
-응답은 반드시 JSON 배열로만 작성해주세요.
+---
+
+## 3. 번역 용어 추출 (`fetchExtractTerms`)
+
+트리거: "번역본 생성하기" 버튼 클릭 (번역 전 첫 번째 단계)
+입력: `content` (HTML), `placeName?`, `address?`
+출력: `FlaggedTerm[]` -- `{ original: string, suggestions: string[] }`
+
+### System Prompt
+
+```
+당신은 한국어->다국어 번역을 위한 용어 추출 전문가입니다.
+자동 번역 시 오역 가능성이 높은 '한국어 특유의 표현'만 골라주세요.
+
+추출 제외 대상 (절대 포함 금지):
+- 숫자 및 단위: 300kcal, 10kg, 5km, 20도, 100% 등 (SI 단위 포함)
+- 일반적인 영문 명칭: iPhone, Coffee, Menu, Best 등 세계 공용 영단어
+- 장소명/주소/브랜드명 (별도 처리되므로 제외)
+- 이미 널리 알려진 음식 이름 (파스타, 스테이크, 아메리카노 등)
+
+추출 집중 대상:
+- 한국어 구어체/신조어: 가성비, 내돈내산, 존맛탱, 웨이팅 맛집 등
+- 특정 매장에서만 쓰는 고유 메뉴명: (예: 두쫀쿠, 쑥떡와플)
+- 번역 시 의미가 변질될 수 있는 관용구: (예: 입가심, 손맛, 아점)
+
+응답 형식: {"terms": [{"original": "용어", "suggestions": ["영어추천"]}]}
 ```
 
 ### User Prompt
@@ -102,121 +124,135 @@ HTML 처리:
 ### 응답 형식 (JSON)
 
 ```json
-[
-  {
-    "original": "존맛탱",
-    "suggestions": ["Super delicious", "Incredibly tasty"]
-  },
-  {
-    "original": "내돈내산",
-    "suggestions": ["Bought with my own money", "Self-purchased review"]
-  },
-  {
-    "original": "가성비",
-    "suggestions": []
-  }
-]
+{
+  "terms": [
+    {
+      "original": "존맛탱",
+      "suggestions": ["Super delicious", "Incredibly tasty"]
+    },
+    {
+      "original": "가성비",
+      "suggestions": []
+    }
+  ]
+}
 ```
 
 ### 파싱
 
-JSON 배열 파싱 → `FlaggedTerm[]` 타입으로 변환.
+JSON 배열 파싱 -> `FlaggedTerm[]` 타입으로 변환.
 빈 배열 `[]` 반환 시 용어 검토 단계를 건너뛰고 바로 번역 요청.
 
 ---
 
-## 3. 본문 번역 (`translatePost`)
+## 4. 본문 번역 (`fetchTranslatePost`)
 
 트리거: 용어 검토 완료 후 "번역 요청" 또는 flagged 용어 없을 때 자동 실행
 입력: `title`, `content` (HTML), `placeName?`, `address?`, `confirmedTerms[]`, `imageAlts?`, `thumbnailAlt?`
-출력: `TranslationResult[]` — 7개 언어 번역 결과
+출력: `TranslationResult[]` -- 7개 언어 번역 결과 (언어별 개별 호출, `Promise.allSettled` 병렬)
 
 대상 언어: `en`, `ja`, `zh-CN`, `zh-TW`, `id`, `vi`, `th`
+
+### System Prompt (언어별 동적 생성 -- `buildTranslateSystemPrompt(locale)`)
+
+```
+당신은 전문 번역가입니다. 한국어 본문을 {언어명}({locale})로 완벽하게 번역하세요.
+
+최우선 엄수 규칙:
+1. HTML 속성 보호: <img src="..."> 등 태그 내부의 속성값(URL, 너비 등)은 절대 수정하거나 이스케이프(예: &quot;, \) 처리하지 마세요. 따옴표는 반드시 원본 형태 그대로 유지해야 합니다.
+2. 100% 번역: 단 한 문장도 한국어로 남겨두지 마세요. 본문의 시작부터 끝까지 반드시 {언어명}로 출력해야 합니다.
+3. 이미지/썸네일 alt: 이미지의 설명(alt)도 해당 언어의 문맥에 맞게 SEO 최적화하여 번역하세요.
+4. 플레이스홀더: {{IMG_0}} 형태의 문자열은 절대 건드리지 마세요.
+5. 어조: 블로그 특유의 친근한 어조를 유지하되, 해당 언어권 사용자가 읽기에 자연스러운 문장 구조를 사용하세요.
+6. 확정 번역 용어가 제공됩니다. 영어(en) 번역 시에는 확정된 번역을 그대로 사용하세요. 다른 언어에서는 확정 용어를 참고하되, 해당 언어에 자연스러운 표현으로 번역해주세요.
+7. 장소명(place_name)과 주소(address)가 제공되면 언어별 규칙에 따라 표기해주세요.
+8. 3줄 요약(description)은 plain text입니다. 줄바꿈(\n)을 유지하고 텍스트만 번역해주세요.
+
+응답은 반드시 순수 JSON 객체여야 합니다.
+형식: {"title": "...", "content": "...", "description": "...", "place_name": "...", "address": "...", "image_alts": ["..."], "thumbnail_alt": "..."}
+```
+
+**언어별 장소명/주소 표기 규칙** (프롬프트 내에서 locale에 따라 동적 삽입):
+
+| locale   | 규칙                                            |
+| -------- | ----------------------------------------------- |
+| `ja`     | 카타카나 또는 한자. 주소는 일본식 순서           |
+| `zh-CN`  | 한자. 주소는 중국식 순서                         |
+| `zh-TW`  | 한자. 주소는 중국식 순서                         |
+| `th`     | 태국 문자 음차 또는 원어 유지. 태국식 주소 순서  |
+| `en`     | 로마자. 주소는 영어권 역순 표기                  |
+| 기타     | 로마자. 해당 언어권 자연스러운 순서              |
+
+### 응답 형식 (JSON)
+
+```json
+{
+  "title": "Gangnam Hidden Gem Pasta Restaurant",
+  "content": "<p>Today I visited a pasta restaurant...</p>",
+  "description": "Line 1\nLine 2\nLine 3",
+  "place_name": "Pasta Lab",
+  "address": "123 Gangnam-daero, Gangnam-gu, Seoul",
+  "image_alts": ["Alt text 1", "Alt text 2"],
+  "thumbnail_alt": "Thumbnail alt text"
+}
+```
+
+### 파싱
+
+JSON 객체 파싱 -> `TranslationResult` 타입으로 변환.
+`place_name`, `address`는 원본에 없으면 응답에서도 생략.
+
+---
+
+## 5. 카테고리명 번역 (`translateCategoryName`)
+
+트리거: 카테고리 생성 페이지에서 "AI 카테고리 번역" 버튼 클릭
+입력: 한국어 카테고리명
+출력: 7개 언어 번역 결과
 
 ### System Prompt
 
 ```
-당신은 한국어 블로그 포스트를 다국어로 번역하는 전문 번역가입니다.
-주어진 한국어 블로그 제목과 본문을 아래 7개 언어로 번역해주세요.
-
-대상 언어:
-- en (영어)
-- ja (일본어)
-- zh-CN (중국어 간체)
-- zh-TW (중국어 번체)
-- id (인도네시아어)
-- vi (베트남어)
-- th (태국어)
-
-번역 규칙:
-1. 본문은 HTML 형식입니다. HTML 태그와 텍스트 콘텐츠를 분리하여 인식하세요.
-   - HTML 태그(<p>, <strong>, <em>, <ul>, <li>, <h2>, <a href="..."> 등)는 절대 번역하지 마세요. 태그명, 속성명, 속성값을 원본 그대로 유지해야 합니다.
-   - 태그 사이의 텍스트 콘텐츠만 번역 대상입니다.
-   - 예: <p class="intro">맛있는 파스타</p> → <p class="intro">Delicious pasta</p> (태그와 속성은 그대로, 텍스트만 번역)
-   - `<img>` 태그는 번역 전에 `{{IMG_0}}`, `{{IMG_1}}` 등 플레이스홀더로 치환됩니다. 플레이스홀더는 절대 수정하지 않고 원본 그대로 출력하세요. 번역 후 클라이언트에서 원본 `<img>` 태그로 복원합니다.
-2. 확정 번역 용어가 제공됩니다. 영어(en) 번역 시에는 확정된 번역을 그대로 사용하세요. 다른 언어에서는 확정 용어를 참고하되, 해당 언어에 자연스러운 표현으로 번역해주세요. 원어를 그대로 유지하는 것이 자연스러운 경우(단위, 고유명사 등)에는 원어를 유지해도 됩니다.
-3. 장소명(place_name)과 주소(address)가 제공되면 각 언어에 맞게 번역/표기해주세요.
-   - 영어/인도네시아어/베트남어: 로마자 표기
-   - 일본어: 카타카나 또는 한자 표기
-   - 중국어(간체/번체): 한자 표기
-   - 태국어: 태국 문자 음차 또는 원어 유지
-4. 블로그의 친근한 어조를 유지하되, 각 언어의 자연스러운 표현을 사용해주세요.
-5. 한국 고유 문화 용어는 의역하되 괄호 안에 원어를 병기할 수 있습니다.
-
-응답은 반드시 JSON 배열로만 작성해주세요.
-```
-
-### User Prompt
-
-```
-제목: {{title}}
-
-본문:
-{{content}}
-{{#if placeName}}
-
-장소명: {{placeName}}
-{{/if}}
-{{#if address}}
-주소: {{address}}
-{{/if}}
-{{#if confirmedTerms.length}}
-
-확정 번역 용어:
-{{#each confirmedTerms}}
-- "{{original}}" → "{{confirmed}}"
-{{/each}}
-{{/if}}
+한국어 카테고리명을 각 언어로 간결하게 번역하세요.
+반드시 JSON 형식으로 반환: { "en": "...", "ja": "...", "zh-CN": "...", "zh-TW": "...", "id": "...", "vi": "...", "th": "..." }
 ```
 
 ### 응답 형식 (JSON)
 
 ```json
-[
-  {
-    "locale": "en",
-    "title": "Gangnam Hidden Gem Pasta Restaurant",
-    "content": "<p>Today I visited a pasta restaurant...</p>",
-    "place_name": "Pasta Lab",
-    "address": "123 Gangnam-daero, Gangnam-gu, Seoul"
-  },
-  {
-    "locale": "ja",
-    "title": "江南の隠れ家パスタレストラン",
-    "content": "<p>今日は江南のパスタレストランに...</p>",
-    "place_name": "パスタラボ",
-    "address": "ソウル特別市江南区江南大路123"
-  }
-]
+{
+  "en": "Restaurants",
+  "ja": "グルメ",
+  "zh-CN": "美食",
+  "zh-TW": "美食",
+  "id": "Restoran",
+  "vi": "Nha hang",
+  "th": "ร้านอาหาร"
+}
 ```
-
-### 파싱
-
-JSON 배열 파싱 → `TranslationResult[]` 타입으로 변환.
-`place_name`, `address`는 원본에 없으면 응답에서도 생략.
 
 ---
 
 ## API 호출 공통 설정
 
 > 모델명, temperature 등 API 설정은 [`secrets-reference.md` 섹션 5](secrets-reference.md#5-gpt-api-공통-설정)를 참조한다.
+
+### 프롬프트 소스 파일 위치
+
+```
+apps/admin/src/shared/constants/prompts.ts
+```
+
+- `SUMMARY_SYSTEM_PROMPT` -- 요약 생성
+- `SLUG_SYSTEM_PROMPT` -- 슬러그 추천
+- `EXTRACT_TERMS_SYSTEM_PROMPT` -- 번역 용어 추출
+- `buildTranslateSystemPrompt(locale)` -- 언어별 본문 번역 (동적 생성)
+- `CATEGORY_TRANSLATE_SYSTEM_PROMPT` -- 카테고리명 다국어 번역
+
+### GPT API 호출 파일 위치
+
+| 기능                      | 파일                                             |
+| ------------------------- | ------------------------------------------------ |
+| 요약 생성, 슬러그 추천     | `features/post-editor/api/client.ts`             |
+| 용어 추출, 본문 번역       | `features/translation/api/client.ts`             |
+| 카테고리명 번역             | `features/category-management/api/client.ts`     |

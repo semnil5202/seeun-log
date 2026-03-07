@@ -144,8 +144,15 @@
 
 ## Admin — 최근 완료 (2026-03-07)
 
+- [x] **GPT 프롬프트 중앙 집중화** — 각 feature 파일에 흩어져 있던 프롬프트를 `shared/constants/prompts.ts`로 통합 (5개: 요약, 슬러그, 용어추출, 번역, 카테고리번역)
+- [x] **GPT 모델 통일** — `gpt-5-nano` / `gpt-4.1-nano` -> `gpt-5-mini`로 전체 통일 (5곳)
+- [x] **프롬프트 내용 개선** — 요약: 자연스러운 연결 문장 3줄 (25~40자), 용어추출: 숫자/단위/공용 영단어 제외 강화, 번역: HTML 속성 보호 + 100% 번역 규칙 강조
+- [x] **대분류 카테고리 다국어 지원** — 대분류 생성 시 다국어 체크박스 + 7개 언어 번역 입력 + AI 번역 버튼. `createParentCategory`에 `isMultilingual`, `translations` 파라미터 추가
+- [x] **워터마크 불투명도 변경** — 0.15 -> 0.25
+- [x] **`features/translation/api/actions.ts` 삭제** — Server Action -> 브라우저 직접 호출(`client.ts`)로 이전 완료
 - [x] **3줄 요약 프롬프트 개선** — 띄어쓰기 규칙 + 완성형 문장 마무리 규칙 추가
 - [x] **밑줄 스타일 제거** — Tiptap CustomUnderline에서 커스텀 스타일 제거, 브라우저 기본 `<u>` 사용
+- [x] **모바일 UX 개선** — Sheet 스와이프 닫기 (좌→우/우→좌, 30% threshold, 실시간 translateX+overlay 연동), 모바일 사이드바 네비게이션 후 자동 닫기, 버튼 아이콘 추가 (Languages/Check/Plus) + 모바일 grid 레이아웃, 필터/버튼/테이블 모바일 크기 축소 (`max-md:text-xs`, `max-md:h-8/9`), 이미지 삭제 버튼 Lucide X SVG 아이콘, 세로 이미지 비율 깨짐 수정 (HTML width/height 속성 미렌더링 + height: auto 보장)
 
 ## SEO
 

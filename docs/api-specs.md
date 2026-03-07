@@ -1,6 +1,6 @@
 # Admin API Specs
 
-> Last updated: 2026-03-06 (prev_slug 자동 저장 로직 추가)
+> Last updated: 2026-03-07 (GPT-5 Mini 모델 통일, createCategory -> createParentCategory/createChildCategory 분리, translations 파라미터 추가)
 
 Admin 앱에서 필요한 API 엔드포인트 목록. Server Action 기반으로 구현하며, Supabase service role 키를 사용한다.
 
@@ -204,7 +204,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `{ summary: string }` — 3줄 요약 텍스트 (`\n` 구분)
 
-**External:** OpenAI GPT-5 Nano API
+**External:** OpenAI GPT-5 Mini API
 
 **DB:** 없음 (결과는 클라이언트 폼 state에 반영)
 
@@ -224,7 +224,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `string[]` — 영문 slug 후보 3개
 
-**External:** OpenAI GPT-5 Nano API (`response_format: { type: 'json_object' }`)
+**External:** OpenAI GPT-5 Mini API (`response_format: { type: 'json_object' }`)
 
 **DB:** 없음 (결과는 클라이언트 UI에서 선택/직접 입력)
 
@@ -261,7 +261,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 }
 ```
 
-**External:** OpenAI GPT-5 Nano API
+**External:** OpenAI GPT-5 Mini API
 
 **DB:** 없음 (TranslationSheetContainer에서 용어 검토 UI 표시)
 
@@ -301,7 +301,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 }
 ```
 
-**External:** OpenAI GPT-5 Nano API — 7개 locale `Promise.allSettled` 병렬 호출
+**External:** OpenAI GPT-5 Mini API — 7개 locale `Promise.allSettled` 병렬 호출
 
 **DB:** 없음 (결과는 TranslationPreviewSheet에서 프리뷰 표시. DB 저장은 `saveTranslations`에서 별도 수행)
 
@@ -333,7 +333,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **Output:** `translatePost`의 단일 locale 결과와 동일 구조
 
-**External:** OpenAI GPT-5 Nano API (단일 호출)
+**External:** OpenAI GPT-5 Mini API (단일 호출)
 
 **DB:** 없음
 
@@ -484,18 +484,30 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 ---
 
-### 7.2 카테고리 생성 — `createCategory`
+### 7.2 카테고리 생성 — `createParentCategory` / `createChildCategory`
 
-**Type:** Server Action
+**Type:** Server Action (대분류/소분류 각각 별도 Action)
 
-**Input:**
+**Input (대분류 — `createParentCategory`):**
 
 ```typescript
 {
-  slug: string;                // unique, URL 경로용
-  name: string;                // 표시명
-  parent_id?: string | null;   // null이면 대분류, 값이면 소분류
-  is_multilingual?: boolean;   // default: true
+  name: string;                                   // 표시명
+  slug: string;                                   // unique, URL 경로용
+  isMultilingual: boolean;                        // 다국어 지원 여부
+  translations?: Record<string, string>;          // 7개 언어 번역 (isMultilingual=true 시). key: locale, value: 번역된 카테고리명
+}
+```
+
+**Input (소분류 — `createChildCategory`):**
+
+```typescript
+{
+  name: string;                                   // 표시명
+  slug: string;                                   // unique, URL 경로용
+  parentId: string;                               // 대분류 ID
+  isMultilingual: boolean;                        // 다국어 지원 여부
+  translations?: Record<string, string>;          // 7개 언어 번역 (isMultilingual=true 시)
 }
 ```
 
@@ -507,6 +519,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 - slug 중복 검사 (UNIQUE 제약으로 DB 레벨에서도 보장)
 - parent_id 유효성 검사 (존재하는 대분류인지, 2-depth 초과 방지)
+- isMultilingual=true 시 translations 필수 (7개 언어 모두)
 
 ---
 
@@ -601,4 +614,4 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 | 7    | `listPosts`, `deletePost`                                                             | 4     | 미구현    |
 | 8    | `triggerBuild`                                                                        | 4     | 미구현    |
 | 9    | `getPostMetrics` (GA4 연동)                                                           | 4     | mock      |
-| 10   | `listCategories`, `createCategory`, `getCategory`, `updateCategory`, `deleteCategory` | 5     | 미구현    |
+| 10   | `listCategories`, `createParentCategory`, `createChildCategory`, `getCategory`, `updateCategory`, `deleteCategory` | 5     | 구현 완료 |
