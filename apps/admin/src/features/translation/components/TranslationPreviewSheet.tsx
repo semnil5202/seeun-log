@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RefreshCwIcon } from 'lucide-react';
+import { ClipboardCopyIcon, CheckIcon, RefreshCwIcon } from 'lucide-react';
 
 import {
   Sheet,
@@ -30,6 +30,30 @@ type TranslationPreviewSheetProps = {
   onRetryLocale?: (locale: TranslationLocale) => Promise<TranslationResult>;
   onRetryAll?: () => Promise<void>;
 };
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {copied ? (
+        <><CheckIcon className="size-3" /> 복사됨</>
+      ) : (
+        <><ClipboardCopyIcon className="size-3" /> 복사</>
+      )}
+    </button>
+  );
+}
 
 export function TranslationPreviewSheet({
   open,
@@ -97,27 +121,39 @@ export function TranslationPreviewSheet({
             ))}
           </div>
 
-          <div className="mt-6 space-y-5">
+          <div className="mt-6 divide-y divide-gray-200">
             {selected === 'ko' ? (
               <>
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">제목</label>
+                <div className="pb-5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-muted-foreground">제목</label>
+                    <CopyButton text={originalTitle} />
+                  </div>
                   <p className="mt-1 text-lg font-bold">{originalTitle}</p>
                 </div>
                 {originalPlaceName && (
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">장소</label>
+                  <div className="py-5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-muted-foreground">장소</label>
+                      <CopyButton text={originalPlaceName} />
+                    </div>
                     <p className="mt-1 text-sm">{originalPlaceName}</p>
                   </div>
                 )}
                 {originalAddress && (
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">주소</label>
+                  <div className="py-5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-muted-foreground">주소</label>
+                      <CopyButton text={originalAddress} />
+                    </div>
                     <p className="mt-1 text-sm">{originalAddress}</p>
                   </div>
                 )}
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">본문</label>
+                <div className="pt-5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-muted-foreground">본문</label>
+                    <CopyButton text={originalContent} />
+                  </div>
                   <div
                     className="prose prose-sm mt-1 max-w-none"
                     dangerouslySetInnerHTML={{ __html: originalContent }}
@@ -132,24 +168,36 @@ export function TranslationPreviewSheet({
               </div>
             ) : selectedTranslation ? (
               <>
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">제목</label>
+                <div className="pb-5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-muted-foreground">제목</label>
+                    <CopyButton text={selectedTranslation.title} />
+                  </div>
                   <p className="mt-1 text-lg font-bold">{selectedTranslation.title}</p>
                 </div>
                 {selectedTranslation.place_name && (
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">장소</label>
+                  <div className="py-5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-muted-foreground">장소</label>
+                      <CopyButton text={selectedTranslation.place_name} />
+                    </div>
                     <p className="mt-1 text-sm">{selectedTranslation.place_name}</p>
                   </div>
                 )}
                 {selectedTranslation.address && (
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">주소</label>
+                  <div className="py-5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-muted-foreground">주소</label>
+                      <CopyButton text={selectedTranslation.address} />
+                    </div>
                     <p className="mt-1 text-sm">{selectedTranslation.address}</p>
                   </div>
                 )}
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">본문</label>
+                <div className="pt-5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-muted-foreground">본문</label>
+                    <CopyButton text={selectedTranslation.content} />
+                  </div>
                   <div
                     className="prose prose-sm mt-1 max-w-none"
                     dangerouslySetInnerHTML={{ __html: selectedTranslation.content }}
