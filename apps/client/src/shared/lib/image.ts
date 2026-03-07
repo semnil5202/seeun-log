@@ -10,6 +10,6 @@ export function optimizedUrl(original: string): string {
 export function injectOptimizedUrls(html: string): string {
   return html.replace(/src="([^"]+?)\.webp"/g, (match, base) => {
     if (!base.includes('media.eunminlog.site')) return match;
-    return `src="${base}${RESIZED_SUFFIX}.webp" data-full="${base}.webp"`;
+    return `src="${base}${RESIZED_SUFFIX}.webp" data-full="${base}.webp" loading="lazy" decoding="async"`;
   });
 }
