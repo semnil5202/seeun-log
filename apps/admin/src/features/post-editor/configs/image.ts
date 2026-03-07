@@ -4,13 +4,17 @@ export const CustomResizableImage = Image.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
+      width: { default: null, renderHTML: () => ({}) },
+      height: { default: null, renderHTML: () => ({}) },
       style: {
         default: 'width: 100%; height: auto;',
         parseHTML: (element: HTMLElement) => {
           return element.getAttribute('style') ?? 'width: 100%; height: auto;';
         },
         renderHTML: (attributes: Record<string, string>) => {
-          return { style: attributes.style };
+          const style = attributes.style || '';
+          const hasHeight = /height\s*:/i.test(style);
+          return { style: hasHeight ? style : `${style}; height: auto;` };
         },
       },
     };
@@ -111,9 +115,12 @@ export const CustomResizableImage = Image.extend({
         if (typeof getPos === 'function') {
           const pos = getPos();
           if (pos === undefined) return;
-          const cleanStyle = $container.style.cssText
+          let cleanStyle = $container.style.cssText
             .replace(/\b(border|cursor|display|position|box-sizing)\s*:[^;]+;/g, '')
             .trim();
+          if (!/height\s*:/i.test(cleanStyle)) {
+            cleanStyle = cleanStyle.replace(/;?\s*$/, '; height: auto;');
+          }
           const newAttrs = { ...node.attrs, style: cleanStyle };
           view.dispatch(view.state.tr.setNodeMarkup(pos, null, newAttrs));
         }
