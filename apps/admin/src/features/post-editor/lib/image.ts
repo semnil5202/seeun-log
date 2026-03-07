@@ -53,8 +53,7 @@ export function toWebP(file: File, options: ToWebPOptions = {}): Promise<Blob> {
             resolve(blob);
           } else {
             canvas.toBlob(
-              (fallback) =>
-                fallback ? resolve(fallback) : reject(new Error('toBlob failed')),
+              (fallback) => (fallback ? resolve(fallback) : reject(new Error('toBlob failed'))),
               'image/jpeg',
               quality,
             );

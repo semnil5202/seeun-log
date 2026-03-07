@@ -37,7 +37,11 @@ export const postFormSchema = z
       if (!data.productName.trim())
         ctx.addIssue({ code: 'custom', path: ['productName'], message: '제품명을 입력해주세요.' });
       if (!data.purchaseSource.trim())
-        ctx.addIssue({ code: 'custom', path: ['purchaseSource'], message: '구매처를 입력해주세요.' });
+        ctx.addIssue({
+          code: 'custom',
+          path: ['purchaseSource'],
+          message: '구매처를 입력해주세요.',
+        });
       if (!data.price.trim())
         ctx.addIssue({ code: 'custom', path: ['price'], message: '금액을 입력해주세요.' });
     }
