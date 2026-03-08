@@ -40,6 +40,9 @@ const targetCurrency = t("place.targetCurrency", locale);
 const exchangeUrl = price != null && targetCurrency
   ? `https://www.google.com/search?q=${price}+KRW+to+${targetCurrency}`
   : null;
+const mapUrl = locale === 'ko'
+  ? `https://map.naver.com/v5/search/${encodeURIComponent(placeName)}`
+  : `https://www.google.com/maps/search/${encodeURIComponent(placeName)}`;
 
 const summaryLabel = t("post.summary", locale);
 const summaryText = translatedDescription ?? description;
@@ -63,20 +66,20 @@ const copyToast = locale !== 'ko' ? t("place.copyToast", locale) : undefined;
         <span class="text-gray-900 font-semibold" itemprop="name">
           {translatedPlaceName ?? placeName}
         </span>
-        <button
-          type="button"
-          class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
-          data-copy={placeName}
-          data-toast={copyToast}
-          aria-label={`${t("place.name", locale)} ${t("a11y.copy", locale)}`}
+        <a
+          href={mapUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
+          aria-label={t("a11y.mapSearch", locale)}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <title>{t("a11y.copy", locale)}</title>
-            <desc>{`${t("place.name", locale)} ${t("a11y.copy", locale)}`}</desc>
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            <title>{t("a11y.mapSearch", locale)}</title>
+            <desc>{t("a11y.mapSearch", locale)}</desc>
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
           </svg>
-        </button>
+        </a>
       </dd>
     </div>
     {address && (
