@@ -264,6 +264,7 @@ const advertisementLabel = t("a11y.advertisement", locale);
 
   const doSearch = (query) => {
     if (input) input.value = query;
+    toggleClearBtn();
     renderResults(query);
     const url = new URL(window.location.href);
     const trimmed = query.trim();
