@@ -614,7 +614,7 @@ function EditPostForm({
           <VisitFields register={register} errors={errors} setValue={setValue} />
         )}
         {formType === 'product-review' && (
-          <ProductReviewFields register={register} errors={errors} setValue={setValue} />
+          <ProductReviewFields register={register} setValue={setValue} />
         )}
 
         <div className="mt-8">

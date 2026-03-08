@@ -62,7 +62,7 @@ export function VisitFields({ register, errors, setValue }: VisitFieldsProps) {
         <div className="grow basis-0">
           <div className="mb-1 flex items-baseline justify-between">
             <label className="text-base font-bold">
-              금액 <span className="text-primary-600">*</span>
+              금액
             </label>
             <span className="text-[12px] text-muted-foreground">(단위: 만원)</span>
           </div>
@@ -70,9 +70,8 @@ export function VisitFields({ register, errors, setValue }: VisitFieldsProps) {
             type="number"
             {...register('price')}
             placeholder="금액"
-            className={`h-9 w-full border ${errors.price ? 'border-red-500' : 'border-input'} bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
-          {errors.price && <p className="mt-1 text-[14px] text-red-500">{errors.price.message}</p>}
         </div>
       </div>
     </div>
