@@ -72,7 +72,9 @@ const summaryLines = description ? description.split('\n').filter(Boolean) : [];
               class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
               aria-label={purchaseSource}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <title>{purchaseSource}</title>
+                <desc>{purchaseSource}</desc>
                 <path d="M7 7h10v10"></path>
                 <path d="M7 17 17 7"></path>
               </svg>
@@ -94,7 +96,9 @@ const summaryLines = description ? description.split('\n').filter(Boolean) : [];
               class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
               aria-label={t("a11y.currencyConverter", locale)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <title>{t("a11y.currencyConverter", locale)}</title>
+                <desc>{t("a11y.currencyConverter", locale)}</desc>
                 <path d="M7 7h10v10"></path>
                 <path d="M7 17 17 7"></path>
               </svg>
