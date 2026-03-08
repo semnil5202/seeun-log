@@ -4,6 +4,7 @@
 
 import { useRef, useState } from 'react';
 import { LoaderIcon, RefreshCwIcon, Sparkles } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 
 import {
@@ -52,6 +53,7 @@ type TranslationSheetProps = {
   onRetryLocale: (locale: TranslationLocale, signal?: AbortSignal) => Promise<TranslationResult>;
   onRetryAll?: (signal?: AbortSignal) => Promise<void>;
   onEditComplete?: () => void;
+  onUpdateTranslationContent?: (locale: TranslationLocale, content: string) => void;
 };
 
 const DirtyBadge = () => (
@@ -79,6 +81,7 @@ export function TranslationSheet({
   onRetryLocale,
   onRetryAll,
   onEditComplete,
+  onUpdateTranslationContent,
 }: TranslationSheetProps) {
   const [selected, setSelected] = useState<FilterLocale>('en');
   const [retrying, setRetrying] = useState(false);
@@ -88,6 +91,9 @@ export function TranslationSheet({
   const [bulkRetranslating, setBulkRetranslating] = useState(false);
   const individualAbortRef = useRef<AbortController | null>(null);
   const suppressAbortToastRef = useRef(false);
+  const [directEditLocales, setDirectEditLocales] = useState<Set<TranslationLocale>>(new Set());
+  const [directEditContent, setDirectEditContent] = useState<Record<string, string>>({});
+  const [manuallyEditedLocales, setManuallyEditedLocales] = useState<Set<TranslationLocale>>(new Set());
 
   const isAbortError = (e: unknown): boolean =>
     (e instanceof DOMException && e.name === 'AbortError') ||
@@ -105,7 +111,8 @@ export function TranslationSheet({
     selected !== 'ko' ? translations.find((tr) => tr.locale === selected) : null;
 
   const allDirtyTranslated =
-    dirtyFields.size === 0 || TARGET_LOCALES.every((l) => retranslatedLocales.has(l));
+    dirtyFields.size === 0 ||
+    TARGET_LOCALES.every((l) => retranslatedLocales.has(l) || manuallyEditedLocales.has(l));
 
   const handleRetryLocale = async () => {
     if (selected === 'ko' || retrying) return;
@@ -193,10 +200,32 @@ export function TranslationSheet({
     onOpenChange(false);
   };
 
+  const handleDirectEditToggle = (locale: TranslationLocale, checked: boolean, currentContent: string) => {
+    if (checked) {
+      setDirectEditLocales((prev) => new Set(prev).add(locale));
+      setDirectEditContent((prev) => ({ ...prev, [locale]: currentContent }));
+    } else {
+      const edited = directEditContent[locale];
+      if (edited !== undefined && edited !== currentContent) {
+        onUpdateTranslationContent?.(locale, edited);
+        setManuallyEditedLocales((prev) => new Set(prev).add(locale));
+      }
+      setDirectEditLocales((prev) => {
+        const next = new Set(prev);
+        next.delete(locale);
+        return next;
+      });
+    }
+  };
+
   const renderEditField = (field: TranslatableField, value: string, locale: TranslationLocale) => {
     const isDirty = dirtyFields.has(field);
     const isLocaleRetranslated = retranslatedLocales.has(locale);
     const isRetranslating = retranslating[locale] || bulkRetranslating;
+
+    const isDirectEditing = field === 'content' && directEditLocales.has(locale);
+    const isManuallyEdited = manuallyEditedLocales.has(locale);
+    const showTranslated = isLocaleRetranslated || isManuallyEdited;
 
     return (
       <div key={field} className="py-5 first:pt-0 last:pb-0">
@@ -205,27 +234,65 @@ export function TranslationSheet({
             <label className="text-sm font-semibold text-muted-foreground">
               {TRANSLATABLE_FIELD_LABELS[field]}
             </label>
-            {isDirty && !isLocaleRetranslated && <DirtyBadge />}
-            {isDirty && isLocaleRetranslated && (
+            {field !== 'content' && isDirty && !showTranslated && <DirtyBadge />}
+            {field !== 'content' && isDirty && showTranslated && (
               <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-700">
                 번역 완료
               </span>
             )}
+            {field === 'content' && isDirty && !showTranslated && <DirtyBadge />}
+            {field === 'content' && (isDirty ? showTranslated : isManuallyEdited) && (
+              <span className="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-700">
+                {isManuallyEdited && !isLocaleRetranslated ? '직접 수정됨' : '번역 완료'}
+              </span>
+            )}
           </div>
-          {isDirty && !isLocaleRetranslated && (
-            <button
-              type="button"
-              disabled={isRetranslating}
-              onClick={() => handleRetranslateLocale(locale)}
-              className="inline-flex items-center gap-1 bg-primary-600 px-3 py-1 text-[14px] font-medium text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
-            >
-              <Sparkles className={`size-3 ${isRetranslating ? 'animate-spin' : ''}`} />
-              AI 번역 요청
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {field === 'content' && (
+              <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                직접 수정
+                <Switch
+                  size="sm"
+                  checked={isDirectEditing}
+                  onCheckedChange={(checked) => handleDirectEditToggle(locale, checked, value)}
+                />
+              </label>
+            )}
+            {field !== 'content' && isDirty && !showTranslated && (
+              <button
+                type="button"
+                disabled={isRetranslating}
+                onClick={() => handleRetranslateLocale(locale)}
+                className="inline-flex items-center gap-1 bg-primary-600 px-3 py-1 text-[14px] font-medium text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+              >
+                <Sparkles className={`size-3 ${isRetranslating ? 'animate-spin' : ''}`} />
+                AI 번역 요청
+              </button>
+            )}
+            {field === 'content' && isDirty && !showTranslated && !isDirectEditing && (
+              <button
+                type="button"
+                disabled={isRetranslating}
+                onClick={() => handleRetranslateLocale(locale)}
+                className="inline-flex items-center gap-1 bg-primary-600 px-3 py-1 text-[14px] font-medium text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
+              >
+                <Sparkles className={`size-3 ${isRetranslating ? 'animate-spin' : ''}`} />
+                AI 번역 요청
+              </button>
+            )}
+          </div>
         </div>
         {field === 'title' ? (
           <p className="mt-1 text-lg font-bold">{value}</p>
+        ) : field === 'content' && isDirectEditing ? (
+          <textarea
+            className="mt-1 w-full resize-none border border-input bg-transparent p-3 font-mono text-xs outline-none"
+            style={{ height: '450px' }}
+            value={directEditContent[locale] ?? value}
+            onChange={(e) =>
+              setDirectEditContent((prev) => ({ ...prev, [locale]: e.target.value }))
+            }
+          />
         ) : field === 'content' ? (
           <div
             className="prose prose-sm mt-1 max-w-none"

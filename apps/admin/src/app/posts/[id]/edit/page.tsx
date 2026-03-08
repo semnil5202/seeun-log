@@ -749,6 +749,11 @@ function EditPostForm({
           onRetryLocale={handleRetranslateLocale}
           onRetryAll={handleRetryAll}
           onEditComplete={handleTranslationEditComplete}
+          onUpdateTranslationContent={(locale, content) =>
+            setTranslationResults((prev) =>
+              prev.map((r) => (r.locale === locale ? { ...r, content } : r)),
+            )
+          }
         />
       )}
 

@@ -802,6 +802,11 @@ function NewPostContent() {
         dirtyFields={previewDirtyFields}
         onRetryLocale={handleRetryLocale}
         onRetryAll={handleRetryAll}
+        onUpdateTranslationContent={(locale, content) =>
+          setTranslationResults((prev) =>
+            prev.map((r) => (r.locale === locale ? { ...r, content } : r)),
+          )
+        }
       />
     </>
   );
