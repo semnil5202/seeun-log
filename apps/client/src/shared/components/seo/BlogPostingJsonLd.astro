@@ -1,17 +1,16 @@
 ---
 import JsonLd from "./JsonLd.astro";
-import type { BlogPostingSchema, ReviewSchema } from "@/shared/types/seo";
+import type { BlogPostingSchema } from "@/shared/types/seo";
 import { SITE_NAME_KO } from "@eunminlog/config/site";
 
 interface Props {
   posting: BlogPostingSchema;
-  review?: ReviewSchema;
 }
 
-const { posting, review } = Astro.props;
+const { posting } = Astro.props;
 const site = Astro.site?.origin ?? "";
 
-const schema: Record<string, unknown> = {
+const schema = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   headline: posting.title,
@@ -29,26 +28,6 @@ const schema: Record<string, unknown> = {
     name: SITE_NAME_KO,
   },
 };
-
-if (review) {
-  schema.review = {
-    "@type": "Review",
-    itemReviewed: {
-      "@type": review.itemReviewed.type,
-      name: review.itemReviewed.name,
-      address: review.itemReviewed.address,
-    },
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: review.reviewRating,
-      bestRating: 5,
-    },
-    author: {
-      "@type": "Person",
-      name: review.authorName,
-    },
-  };
-}
 ---
 
 <JsonLd schema={schema} />

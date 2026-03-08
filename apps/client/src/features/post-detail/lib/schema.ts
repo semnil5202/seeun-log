@@ -1,4 +1,4 @@
-import type { BlogPostingSchema, ReviewSchema } from '@/shared/types/seo';
+import type { BlogPostingSchema } from '@/shared/types/seo';
 import type { LocalizedPost } from '@/shared/types/post';
 import { SITE_NAME_KO } from '@eunminlog/config/site';
 
@@ -19,21 +19,3 @@ export const buildBlogPostingSchema = (
   url: canonical,
   authorName: SITE_NAME_KO,
 });
-
-/**
- * Review JSON-LD 스키마 객체를 생성한다. place_name이 없으면 undefined를 반환한다.
- * @param post 로컬라이즈된 포스트
- */
-export const buildReviewSchema = (post: LocalizedPost): ReviewSchema | undefined => {
-  if (!post.place_name) return undefined;
-
-  return {
-    itemReviewed: {
-      type: 'Restaurant' as const,
-      name: post.place_name,
-      address: post.address ?? '',
-    },
-    reviewRating: post.rating,
-    authorName: SITE_NAME_KO,
-  };
-};

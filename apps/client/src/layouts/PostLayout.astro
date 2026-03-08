@@ -19,7 +19,7 @@ import { getLocalePath } from "@/shared/lib/i18n/locales";
 import { t } from "@/shared/lib/i18n/translations";
 import { formatDate } from "@/shared/lib/date";
 import { insertInArticleAds } from "@/features/post-detail/lib/ads";
-import { buildBlogPostingSchema, buildReviewSchema } from "@/features/post-detail/lib/schema";
+import { buildBlogPostingSchema } from "@/features/post-detail/lib/schema";
 import { optimizedUrl, injectOptimizedUrls } from "@/shared/lib/image";
 import type { LocalizedPost } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
@@ -69,7 +69,6 @@ const contentWithAlts = post.image_alts?.length
 const contentOptimized = injectOptimizedUrls(contentWithAlts);
 const contentWithAds = contentOptimized;
 const blogPosting = buildBlogPostingSchema(post, canonical);
-const reviewSchema = buildReviewSchema(post);
 const sponsoredLabel = t("post.sponsored", locale);
 
 const gaPageParams = {
@@ -95,7 +94,7 @@ const gaPageParams = {
 >
   <Fragment slot="head">
     <BreadcrumbJsonLd items={breadcrumbs} />
-    <BlogPostingJsonLd posting={blogPosting} review={reviewSchema} />
+    <BlogPostingJsonLd posting={blogPosting} />
   </Fragment>
 
   <div class="max-w-screen-xl mx-auto px-4 lg:px-6">

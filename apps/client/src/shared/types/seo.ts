@@ -24,12 +24,3 @@ export type BlogPostingSchema = {
   authorName: string;
 };
 
-export type ReviewSchema = {
-  itemReviewed: {
-    type: 'Restaurant' | 'Place';
-    name: string;
-    address: string;
-  };
-  reviewRating: number;
-  authorName: string;
-};
