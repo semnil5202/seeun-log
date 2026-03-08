@@ -45,6 +45,7 @@ type ParentRow = {
   slug: string;
   name: string;
   postCount: number;
+  isMultilingual: boolean;
   createdAt: string;
 };
 
@@ -71,6 +72,7 @@ function buildRows(categories: CategoryWithCount[]) {
         slug: c.slug,
         name: c.name,
         postCount: c.post_count,
+        isMultilingual: c.is_multilingual,
         createdAt: c.created_at.slice(0, 10),
       });
     }
@@ -317,7 +319,9 @@ function CategoriesContent() {
                     </TableCell>
                     <TableCell />
                     <TableCell className="py-3 text-center">{group.parent.postCount}</TableCell>
-                    <TableCell />
+                    <TableCell className="py-3 text-center">
+                      {group.parent.isMultilingual ? '지원' : '미지원'}
+                    </TableCell>
                     <TableCell className="py-3 text-center">{group.parent.createdAt}</TableCell>
                   </TableRow>,
                   ...group.children.map((child) => {

@@ -67,12 +67,12 @@ export async function fetchCategory(id: string) {
 export async function fetchParentCategories() {
   const { data, error } = await supabaseServer
     .from('categories')
-    .select('id, slug, name')
+    .select('id, slug, name, is_multilingual')
     .is('parent_id', null)
     .order('sort_order');
 
   if (error) throw new Error(`대분류 조회 실패: ${error.message}`);
-  return (data ?? []) as { id: string; slug: string; name: string }[];
+  return (data ?? []) as { id: string; slug: string; name: string; is_multilingual: boolean }[];
 }
 
 export type CategoryOption = { value: string; label: string; isMultilingual?: boolean };

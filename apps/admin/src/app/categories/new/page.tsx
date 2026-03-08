@@ -31,7 +31,9 @@ import type { TranslationLocale } from '@/shared/types/post';
 const LOCALES = Object.keys(LOCALE_LABELS) as TranslationLocale[];
 
 export default function NewCategoryPage() {
-  const [parentOptions, setParentOptions] = useState<{ slug: string; name: string }[]>([]);
+  const [parentOptions, setParentOptions] = useState<
+    { slug: string; name: string; is_multilingual: boolean }[]
+  >([]);
 
   const [categoryName, setCategoryName] = useState('');
   const [categorySlug, setCategorySlug] = useState('');
@@ -304,6 +306,11 @@ export default function NewCategoryPage() {
               onValueChange={(v) => {
                 setSubParent(v);
                 if (childErrors.parent) setChildErrors((prev) => ({ ...prev, parent: '' }));
+                const selected = parentOptions.find((p) => p.slug === v);
+                if (selected && !selected.is_multilingual) {
+                  setSubMultilingual(false);
+                  setSubTranslations({});
+                }
               }}
             >
               <SelectTrigger className="w-full">
@@ -355,27 +362,35 @@ export default function NewCategoryPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="multilingual-check"
-            className="size-4 cursor-pointer accent-primary-600"
-            checked={subMultilingual}
-            onChange={(e) => {
-              setSubMultilingual(e.target.checked);
-              if (e.target.checked) {
-                toast.info(
-                  '한 번 설정하면 현재는 변경이 불가합니다. 추후 변경 기능이 지원될 예정입니다.',
-                );
-              }
-            }}
-          />
-          <label
-            htmlFor="multilingual-check"
-            className="cursor-pointer text-sm font-medium text-muted-foreground"
-          >
-            다국어 지원
-          </label>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="multilingual-check"
+              className="size-4 cursor-pointer accent-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+              checked={subMultilingual}
+              disabled={!subParent || !parentOptions.find((p) => p.slug === subParent)?.is_multilingual}
+              onChange={(e) => {
+                setSubMultilingual(e.target.checked);
+                if (e.target.checked) {
+                  toast.info(
+                    '한 번 설정하면 현재는 변경이 불가합니다. 추후 변경 기능이 지원될 예정입니다.',
+                  );
+                }
+              }}
+            />
+            <label
+              htmlFor="multilingual-check"
+              className="cursor-pointer text-sm font-medium text-muted-foreground"
+            >
+              다국어 지원
+            </label>
+          </div>
+          {subParent && !parentOptions.find((p) => p.slug === subParent)?.is_multilingual && (
+            <p className="text-xs text-muted-foreground">
+              대분류가 다국어 미지원이므로 소분류도 다국어를 지원할 수 없습니다.
+            </p>
+          )}
         </div>
 
         {subMultilingual && (
