@@ -157,6 +157,71 @@ src/
 └── styles/                                 # 글로벌 스타일
 ```
 
+## Admin App Directory Structure (`apps/admin`)
+
+```
+src/
+├── app/                                       # Next.js App Router
+│   ├── api/drafts/                            # 임시저장 API Route
+│   ├── categories/                            # 카테고리 관리 페이지
+│   ├── dashboard/                             # 대시보드
+│   ├── drafts/                                # 임시저장 목록
+│   ├── login/                                 # 로그인
+│   └── posts/                                 # 포스트 생성/편집/목록
+├── features/
+│   ├── build-trigger/                         # SSG 빌드 트리거
+│   │   └── api/actions.ts                     # GitHub Actions 트리거 Server Action
+│   ├── category-management/                   # 카테고리 CRUD
+│   │   └── api/                               # Server Actions + 클라이언트 API
+│   ├── draft/                                 # 임시저장
+│   │   ├── hooks/useAutoSaveDraft.ts          # 자동 저장 훅
+│   │   ├── api.ts                             # 임시저장 API 클라이언트
+│   │   └── types.ts
+│   ├── media/                                 # 이미지 업로드
+│   │   ├── api/actions.ts                     # Supabase Storage 업로드 Server Action
+│   │   ├── constants/media.ts                 # 이미지 사이즈/포맷 상수
+│   │   └── hooks/useImageUpload.ts            # 업로드 훅
+│   ├── post-editor/                           # Tiptap 에디터
+│   │   ├── components/                        # 에디터 UI (Toolbar, TiptapEditor 등)
+│   │   ├── containers/TiptapEditorContainer.tsx
+│   │   ├── hooks/useTiptapEditor.ts
+│   │   ├── configs/                           # Tiptap 확장 설정
+│   │   ├── api/                               # 포스트 저장/수정 Server Actions
+│   │   ├── lib/image.ts                       # 이미지 처리 유틸
+│   │   ├── constants/category.ts
+│   │   └── types/form.ts
+│   ├── post-management/                       # 포스트 목록/삭제
+│   │   └── api/actions.ts
+│   └── translation/                           # AI 번역
+│       ├── api/client.ts                      # OpenAI GPT 호출 (스트리밍, AbortSignal 지원)
+│       ├── components/
+│       │   ├── TranslationSheet.tsx            # 번역 확인 Sheet (생성/수정 공용, dirty tracking, 재번역)
+│       │   ├── TermReviewItem.tsx              # 고유명사 검토 아이템
+│       │   └── TermReviewList.tsx              # 고유명사 검토 리스트
+│       ├── containers/TranslationSheetContainer.tsx  # 고유명사 추출 + 번역 실행
+│       ├── hooks/useTranslationDirtyFields.ts  # 번역 시점 vs 현재 폼 값 비교 훅
+│       ├── constants/locale.ts
+│       └── types/index.ts
+├── shared/
+│   ├── components/
+│   │   ├── filter/SearchFilter.tsx            # 검색 필터
+│   │   ├── layout/AppSidebar.tsx              # 사이드바 네비게이션
+│   │   ├── pagination/Pagination.tsx          # 페이지네이션
+│   │   ├── slug/SlugField.tsx                 # 슬러그 입력 필드
+│   │   └── ui/AiGenerateButton.tsx            # AI 생성 버튼
+│   ├── constants/prompts.ts                   # GPT 시스템 프롬프트
+│   ├── lib/
+│   │   ├── openai.ts                          # OpenAI 클라이언트 인스턴스
+│   │   ├── supabase.ts                        # Supabase 브라우저 클라이언트
+│   │   ├── supabase-server.ts                 # Supabase 서버 클라이언트
+│   │   └── supabase-middleware.ts             # Supabase 미들웨어 클라이언트
+│   └── types/post.ts                          # 포스트 공유 타입
+├── components/ui/                             # shadcn/ui 프리미티브
+├── hooks/use-mobile.ts                        # 모바일 감지 훅
+├── lib/utils.ts                               # cn() 유틸
+└── middleware.ts                              # 인증 미들웨어
+```
+
 ## Search Architecture
 
 - **데이터 전략**: 빌드 타임에 전체 포스트를 JSON으로 직렬화하여 검색 페이지 HTML에 인라인 삽입

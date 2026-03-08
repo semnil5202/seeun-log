@@ -51,10 +51,12 @@
 - [x] 고유명사 추출 Server Action (`extractFlaggedTerms`) — 본문에서 고유명사 식별 + 번역 가이드 제공
 - [x] 번역 실행 Server Action (`translatePost`) — 확인된 고유명사를 반영하여 다국어 번역
 - [x] 고유명사 검토 Sheet (`TranslationSheetContainer`) — 고유명사 리스트 검토/수정 UI + 번역 실행
-- [x] 번역 미리보기 Sheet (`TranslationPreviewSheet`) — 번역 결과 확인 UI (언어 필터 8개, 기본 영어, 장소/주소 포함)
+- [x] 번역 확인 Sheet (`TranslationSheet`) — 생성/수정 페이지 공용. 원문/번역 비교, 수정 감지(dirty tracking), 필드별·전체 재번역, API 요청 취소(AbortSignal)
 - [x] 번역 결과 저장 (Server Action → Supabase `post_translations` UPSERT)
 - [x] 번역 상태 관리 (locale별 진행/완료/실패 UI) — 실패 locale별 toast 알림 + "다시 시도" 버튼
 - [x] 개별 locale 재번역 — `retrySingleLocale` Server Action
+- [x] 제품 리뷰 필드 번역 — product_name, purchase_source, price_prefix GPT 번역 파이프라인 연동
+- [x] dirty tracking 훅 (`useTranslationDirtyFields`) — 번역 시점 스냅샷/서버 원본 vs 현재 폼 값 비교
 
 ### Phase 4+ (완료)
 
