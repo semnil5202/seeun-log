@@ -32,3 +32,20 @@ export type TranslationStatus =
   | 'translating'
   | 'success'
   | 'error';
+
+export type { ContentSection } from '../lib/html-sections';
+
+export type CheckableField =
+  | 'title'
+  | 'description'
+  | 'place_name'
+  | 'address'
+  | 'product_name'
+  | 'purchase_source'
+  | 'price_prefix'
+  | 'image_alts';
+
+export type SelectiveTranslateOptions = {
+  targetFields?: CheckableField[];
+  targetSectionIndices?: number[];
+};
