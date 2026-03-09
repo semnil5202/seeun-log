@@ -1,10 +1,12 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = () => {
+export const GET: APIRoute = ({ site }) => {
+  const siteUrl = site?.origin ?? 'https://www.eunminlog.site';
+
   const body = `User-agent: *
 Allow: /
 
-Sitemap: https://media.eunminlog.site/statics/seo/sitemap.xml
+Sitemap: ${siteUrl}/sitemap-index.xml
 `;
 
   return new Response(body, {
