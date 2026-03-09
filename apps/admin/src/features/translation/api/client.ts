@@ -232,9 +232,15 @@ async function fetchTranslateSingle(
 export async function fetchTranslatePost(
   params: TranslateParams,
   signal?: AbortSignal,
+  onLocaleComplete?: (locale: TranslationLocale) => void,
 ): Promise<TranslationResult[]> {
   const settled = await Promise.allSettled(
-    TARGET_LOCALES.map((locale) => fetchTranslateSingle(locale, params, signal)),
+    TARGET_LOCALES.map((locale) =>
+      fetchTranslateSingle(locale, params, signal).then((result) => {
+        onLocaleComplete?.(locale);
+        return result;
+      }),
+    ),
   );
 
   return settled.map((result, i) => {

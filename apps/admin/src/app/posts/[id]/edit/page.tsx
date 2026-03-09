@@ -48,6 +48,7 @@ import {
   type PostFormValues,
 } from '@/features/post-editor/types/form';
 import { fetchRetrySingleLocale, fetchTranslatePost } from '@/features/translation/api/client';
+import { LOCALE_FILTER_LABELS } from '@/features/translation/constants/locale';
 import { TranslationSheet } from '@/features/translation/components/TranslationSheet';
 import { useTranslationDirtyFields } from '@/features/translation/hooks/useTranslationDirtyFields';
 import { ImageAltSheet, extractImageSrcs } from '@/features/post-editor/components/ImageAltSheet';
@@ -476,7 +477,9 @@ function EditPostForm({
       confirmedTerms: [],
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
       thumbnailAlt: getValues('thumbnailAlt') || undefined,
-    }, signal);
+    }, signal, (locale) => {
+      toast.success(`${LOCALE_FILTER_LABELS[locale]} 번역 완료`);
+    });
     setTranslationResults(results);
   };
 

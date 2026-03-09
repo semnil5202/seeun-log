@@ -382,7 +382,9 @@ function NewPostContent() {
           imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
           thumbnailAlt: getValues('thumbnailAlt') || undefined,
         };
-        const results = await fetchTranslatePost(params);
+        const results = await fetchTranslatePost(params, undefined, (locale) => {
+          toast.success(`${LOCALE_FILTER_LABELS[locale]} 번역 완료`);
+        });
         setLastConfirmedTerms([]);
 
         const failedLocales = results.filter((r) => r.failed);
@@ -540,7 +542,9 @@ function NewPostContent() {
       confirmedTerms: lastConfirmedTerms,
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
       thumbnailAlt: getValues('thumbnailAlt') || undefined,
-    }, signal);
+    }, signal, (locale) => {
+      toast.success(`${LOCALE_FILTER_LABELS[locale]} 번역 완료`);
+    });
     setTranslationResults(results);
     captureSnapshot(imageAlts);
   };

@@ -91,6 +91,8 @@ export function TranslationSheetContainer({
         confirmedTerms: terms,
         imageAlts,
         thumbnailAlt,
+      }, undefined, (locale) => {
+        toast.success(`${LOCALE_FILTER_LABELS[locale]} 번역 완료`);
       });
 
       const failedLocales = results.filter((r) => r.failed);
