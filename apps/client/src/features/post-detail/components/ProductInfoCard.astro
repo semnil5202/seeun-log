@@ -57,46 +57,50 @@ const products = (displayProductNames ?? []).map((name, i) => ({
       <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.category", locale)}</dt>
       <dd class="text-gray-900">{categoryLabel} <span class="text-base leading-none">›</span> {subCategoryLabel}</dd>
     </div>
-    {products.map((product) => (
-      <div class="bg-white border border-gray-200 p-3 space-y-1.5">
-        <div class="flex items-baseline gap-3">
-          <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("product.name", locale)}</dt>
-          <dd class="text-gray-900 font-semibold" itemprop="name">
-            {product.name}
-          </dd>
-        </div>
-        {product.source && (
+    <div class:list={[
+      products.length > 1 && 'grid grid-cols-1 lg:grid-cols-2 gap-3 border-t border-b border-gray-200 py-3',
+    ]}>
+      {products.map((product) => (
+        <div class="space-y-1.5">
           <div class="flex items-baseline gap-3">
-            <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("product.source", locale)}</dt>
-            <dd class="flex items-baseline gap-1.5">
-              <span class="text-gray-900">{product.source}</span>
-              {product.link && (
-                <a
-                  href={product.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
-                  aria-label={product.source}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <title>{product.source}</title>
-                    <desc>{product.source}</desc>
-                    <path d="M7 7h10v10"></path>
-                    <path d="M7 17 17 7"></path>
-                  </svg>
-                </a>
-              )}
+            <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("product.name", locale)}</dt>
+            <dd class="text-gray-900 font-semibold" itemprop="name">
+              {product.name}
             </dd>
           </div>
-        )}
-        {product.price && (
-          <div class="flex items-baseline gap-3">
-            <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("place.price", locale)}</dt>
-            <dd class="text-gray-900">{product.price}</dd>
-          </div>
-        )}
-      </div>
-    ))}
+          {product.source && (
+            <div class="flex items-baseline gap-3">
+              <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("product.source", locale)}</dt>
+              <dd class="flex items-baseline gap-1.5">
+                <span class="text-gray-900">{product.source}</span>
+                {product.link && (
+                  <a
+                    href={product.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label={product.source}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <title>{product.source}</title>
+                      <desc>{product.source}</desc>
+                      <path d="M7 7h10v10"></path>
+                      <path d="M7 17 17 7"></path>
+                    </svg>
+                  </a>
+                )}
+              </dd>
+            </div>
+          )}
+          {product.price && (
+            <div class="flex items-baseline gap-3">
+              <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("place.price", locale)}</dt>
+              <dd class="text-gray-900">{product.price}</dd>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
     {summaryLines.length > 0 && (
       <div class="flex items-baseline gap-3">
         <dt class="shrink-0 w-20 text-gray-500 font-medium">{summaryLabel}</dt>

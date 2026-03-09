@@ -23,7 +23,7 @@ export function ProductReviewFields({ control }: ProductReviewFieldsProps) {
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="text-sm text-muted-foreground hover:text-foreground"
+                  className="text-lg text-muted-foreground hover:text-foreground"
                   aria-label={`제품 ${index + 1} 삭제`}
                 >
                   ×
