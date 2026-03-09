@@ -1,29 +1,20 @@
-/** 제품 리뷰 전용 필드 — 제품 목록(제품명/구매처/구매링크), 가격. */
+/** 제품 리뷰 전용 필드 — 제품 목록(제품명/구매처/구매링크/가격). */
 
-import type { FocusEvent } from 'react';
-import { useFieldArray, type Control, type UseFormSetValue } from 'react-hook-form';
+import { useFieldArray, type Control } from 'react-hook-form';
 
 import type { PostFormValues } from '../types/form';
 
 type ProductReviewFieldsProps = {
   control: Control<PostFormValues>;
-  setValue: UseFormSetValue<PostFormValues>;
 };
 
-export function ProductReviewFields({ control, setValue }: ProductReviewFieldsProps) {
+export function ProductReviewFields({ control }: ProductReviewFieldsProps) {
   const { fields, append, remove } = useFieldArray({ control, name: 'products' });
-
-  const handlePricePrefixBlur = (e: FocusEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (val && !val.endsWith(' ')) {
-      setValue('pricePrefix', val + ' ');
-    }
-  };
 
   return (
     <div className="mt-8 space-y-4">
+      <label className="block text-base font-bold">제품 목록</label>
       <div className="space-y-3">
-        <label className="block text-base font-bold">제품 목록</label>
         {fields.map((field, index) => (
           <div key={field.id} className="space-y-2 border border-input p-3">
             <div className="flex items-center justify-between">
@@ -59,38 +50,21 @@ export function ProductReviewFields({ control, setValue }: ProductReviewFieldsPr
                 className="h-9 grow basis-0 border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
               />
             </div>
+            <input
+              type="text"
+              {...control.register(`products.${index}.price`)}
+              placeholder="가격을 입력해주세요. (예: 10,000원, 무료)"
+              className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
+            />
           </div>
         ))}
         <button
           type="button"
-          onClick={() => append({ name: '', source: '', link: '' })}
+          onClick={() => append({ name: '', source: '', link: '', price: '' })}
           className="h-9 w-full border border-dashed border-input text-sm text-muted-foreground hover:bg-accent"
         >
           + 제품 추가
         </button>
-      </div>
-      <div className="flex gap-2">
-        <div className="grow-[2] basis-0">
-          <label className="mb-1 block text-base font-bold">가격 설명</label>
-          <input
-            type="text"
-            {...control.register('pricePrefix', { onBlur: handlePricePrefixBlur })}
-            placeholder="ex) 메인 메뉴 평균 가격: "
-            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
-          />
-        </div>
-        <div className="grow basis-0">
-          <div className="mb-1 flex items-baseline justify-between">
-            <label className="text-base font-bold">금액</label>
-            <span className="text-[12px] text-muted-foreground">(단위: 만원)</span>
-          </div>
-          <input
-            type="number"
-            {...control.register('price')}
-            placeholder="금액"
-            className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          />
-        </div>
       </div>
     </div>
   );

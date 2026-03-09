@@ -80,7 +80,7 @@ export async function fetchPost(id: string) {
       place_name: string | null;
       address: string | null;
       price_prefix: string | null;
-      price: number | null;
+      price: string[] | null;
       product_name: string[] | null;
       purchase_source: string[] | null;
       purchase_link: string[] | null;
@@ -98,6 +98,7 @@ export async function fetchPost(id: string) {
       address: t.address ?? '',
       product_name: Array.isArray(t.product_name) ? t.product_name : (t.product_name ? [t.product_name] : []),
       purchase_source: Array.isArray(t.purchase_source) ? t.purchase_source : (t.purchase_source ? [t.purchase_source] : []),
+      prices: Array.isArray(t.prices) ? t.prices : [],
       price_prefix: t.price_prefix ?? '',
       image_alts: (t.image_alts ?? []) as ImageAlt[],
       thumbnail_alt: t.thumbnail_alt ?? '',
@@ -116,6 +117,11 @@ export async function createPost(params: {
 
   const validProducts = fv.products.filter((p) => p.name.trim());
 
+  const isProductReview = fv.formType === 'product-review';
+  const validPrices = isProductReview
+    ? validProducts.map((p) => p.price)
+    : null;
+
   const { data: post, error } = await supabaseServer
     .from('posts')
     .insert({
@@ -131,7 +137,9 @@ export async function createPost(params: {
       place_name: fv.placeName || null,
       address: fv.address || null,
       price_prefix: fv.pricePrefix || null,
-      price: fv.price ? parseInt(fv.price) : null,
+      price: isProductReview
+        ? (validPrices && validPrices.some(Boolean) ? validPrices : null)
+        : (fv.price ? [fv.price] : null),
       product_name: validProducts.length > 0 ? validProducts.map((p) => p.name) : null,
       purchase_source: validProducts.length > 0 ? validProducts.map((p) => p.source) : null,
       purchase_link: validProducts.length > 0 ? validProducts.map((p) => p.link) : null,
@@ -157,6 +165,7 @@ export async function createPost(params: {
       address: t.address || null,
       product_name: t.product_name || null,
       purchase_source: t.purchase_source || null,
+      prices: t.prices && t.prices.length > 0 ? t.prices : null,
       price_prefix: t.price_prefix || null,
       image_alts: t.image_alts ?? [],
       thumbnail_alt: t.thumbnail_alt || null,
@@ -199,6 +208,10 @@ export async function updatePost(params: {
   if (fetchError) throw new Error(`게시글 조회 실패: ${fetchError.message}`);
 
   const validProducts = fv.products.filter((p) => p.name.trim());
+  const isProductReview = fv.formType === 'product-review';
+  const validPrices = isProductReview
+    ? validProducts.map((p) => p.price)
+    : null;
 
   const updateData: Record<string, unknown> = {
     slug: fv.slug,
@@ -212,7 +225,9 @@ export async function updatePost(params: {
     place_name: fv.placeName || null,
     address: fv.address || null,
     price_prefix: fv.pricePrefix || null,
-    price: fv.price ? parseInt(fv.price) : null,
+    price: isProductReview
+      ? (validPrices && validPrices.some(Boolean) ? validPrices : null)
+      : (fv.price ? [fv.price] : null),
     product_name: validProducts.length > 0 ? validProducts.map((p) => p.name) : null,
     purchase_source: validProducts.length > 0 ? validProducts.map((p) => p.source) : null,
     purchase_link: validProducts.length > 0 ? validProducts.map((p) => p.link) : null,
@@ -253,6 +268,7 @@ export async function updatePost(params: {
         address: t.address || null,
         product_name: t.product_name || null,
         purchase_source: t.purchase_source || null,
+        prices: t.prices && t.prices.length > 0 ? t.prices : null,
         price_prefix: t.price_prefix || null,
         image_alts: t.image_alts ?? [],
         thumbnail_alt: t.thumbnail_alt || null,

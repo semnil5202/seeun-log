@@ -31,7 +31,7 @@ export type Post = {
   place_name: string | null;
   address: string | null;
   price_prefix: string | null;
-  price: number | null;
+  price: string[] | null;
   product_name: string[] | null;
   purchase_source: string[] | null;
   purchase_link: string[] | null;

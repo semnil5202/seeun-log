@@ -20,7 +20,7 @@ export type Post = {
   place_name: string;
   address: string;
   price_prefix: string | null;
-  price: number | null;
+  price: string[] | null;
   product_name: string[] | null;
   purchase_source: string[] | null;
   purchase_link: string[] | null;
@@ -40,6 +40,7 @@ export type PostTranslation = {
   address: string | null;
   product_name: string[] | null;
   purchase_source: string[] | null;
+  prices: string[] | null;
   price_prefix: string | null;
   thumbnail_alt: string | null;
   image_alts: ImageAlt[];
@@ -56,6 +57,7 @@ export type LocalizedPost = {
   translated_address: string | null;
   translated_product_name: string[] | null;
   translated_purchase_source: string[] | null;
+  translated_prices: string[] | null;
   translated_price_prefix: string | null;
   image_alts: ImageAlt[];
 } & Omit<Post, 'title' | 'description' | 'content' | 'image_alts'>;

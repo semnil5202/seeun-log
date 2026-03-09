@@ -88,6 +88,7 @@ export type TranslateParams = {
   address?: string;
   productNames?: string[];
   purchaseSources?: string[];
+  prices?: string[];
   pricePrefix?: string;
   confirmedTerms: { original: string; confirmed: string }[];
   imageAlts?: ImageAlt[];
@@ -108,6 +109,7 @@ async function fetchTranslateSingle(
     address,
     productNames,
     purchaseSources,
+    prices,
     pricePrefix,
     confirmedTerms,
     imageAlts,
@@ -132,6 +134,9 @@ async function fetchTranslateSingle(
   }
   if (purchaseSources && purchaseSources.length > 0) {
     userPrompt += `\n구매처:\n${purchaseSources.map((s, i) => `${i + 1}. ${s}`).join('\n')}`;
+  }
+  if (prices && prices.length > 0) {
+    userPrompt += `\n가격:\n${prices.map((p, i) => `${i + 1}. ${p}`).join('\n')}`;
   }
   if (pricePrefix) userPrompt += `\n가격설명: ${pricePrefix}`;
 
@@ -218,6 +223,7 @@ async function fetchTranslateSingle(
     address: (parsed.address as string) ?? '',
     product_name: parseStringArray(parsed.product_name),
     purchase_source: parseStringArray(parsed.purchase_source),
+    prices: parseStringArray(parsed.prices),
     price_prefix: (parsed.price_prefix as string) ?? '',
     image_alts: resultImageAlts,
     thumbnail_alt: (parsed.thumbnail_alt as string) ?? '',
@@ -243,6 +249,7 @@ export async function fetchTranslatePost(
       address: '',
       product_name: [],
       purchase_source: [],
+      prices: [],
       price_prefix: '',
       image_alts: [] as TranslationResult['image_alts'],
       thumbnail_alt: '',

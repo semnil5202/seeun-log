@@ -34,6 +34,7 @@ const FIELD_LABELS: Record<CheckableField, string> = {
   product_name: '제품명',
   purchase_source: '구매처',
   price_prefix: '가격설명',
+  prices: '가격',
   image_alts: '이미지 Alt',
 };
 
@@ -47,6 +48,7 @@ type TranslationSheetProps = {
   originalAddress?: string;
   originalProductNames?: string[];
   originalPurchaseSources?: string[];
+  originalPrices?: string[];
   originalPricePrefix?: string;
   originalImageAlts?: ImageAlt[];
   originalThumbnailAlt?: string;
@@ -85,6 +87,7 @@ export function TranslationSheet({
   originalAddress,
   originalProductNames,
   originalPurchaseSources,
+  originalPrices,
   originalPricePrefix,
   originalImageAlts,
   originalThumbnailAlt,
@@ -124,12 +127,13 @@ export function TranslationSheet({
     if (originalAddress) fields.push('address');
     if (originalProductNames && originalProductNames.length > 0) fields.push('product_name');
     if (originalPurchaseSources && originalPurchaseSources.length > 0) fields.push('purchase_source');
+    if (originalPrices && originalPrices.some(Boolean)) fields.push('prices');
     if (originalPricePrefix) fields.push('price_prefix');
     if (originalDescription !== undefined) fields.push('description');
     if (originalThumbnailAlt || (originalImageAlts && originalImageAlts.length > 0))
       fields.push('image_alts');
     return fields;
-  }, [originalPlaceName, originalAddress, originalProductNames, originalPurchaseSources, originalPricePrefix, originalDescription, originalThumbnailAlt, originalImageAlts]);
+  }, [originalPlaceName, originalAddress, originalProductNames, originalPurchaseSources, originalPrices, originalPricePrefix, originalDescription, originalThumbnailAlt, originalImageAlts]);
 
   const checkState = useTranslationCheckState(availableFields, originalSections.length);
 
@@ -386,6 +390,19 @@ export function TranslationSheet({
           </ul>
         </div>
       )}
+      {originalPrices && originalPrices.some(Boolean) && (
+        <div className="py-5">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-muted-foreground">가격</label>
+            {dirtyFields.has('prices') && <DirtyBadge />}
+          </div>
+          <ul className="mt-1 space-y-0.5 text-sm">
+            {originalPrices.map((price, i) => (
+              <li key={i}>{originalPrices.length > 1 ? `${i + 1}. ` : ''}{price}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {originalPricePrefix && (
         <div className="py-5">
           <div className="flex items-center gap-2">
@@ -509,6 +526,16 @@ export function TranslationSheet({
               <ul className="mt-1 space-y-0.5 text-sm">
                 {selectedTranslation.purchase_source.map((source, i) => (
                   <li key={i}>{selectedTranslation.purchase_source.length > 1 ? `${i + 1}. ` : ''}{source}</li>
+                ))}
+              </ul>
+            ),
+          })}
+        {selectedTranslation.prices.length > 0 &&
+          renderFieldRow('prices', undefined, {
+            children: (
+              <ul className="mt-1 space-y-0.5 text-sm">
+                {selectedTranslation.prices.map((price, i) => (
+                  <li key={i}>{selectedTranslation.prices.length > 1 ? `${i + 1}. ` : ''}{price}</li>
                 ))}
               </ul>
             ),
