@@ -8,12 +8,9 @@ export const insertInArticleAds = (markdown: string): string => {
   const parts = markdown.split(/(?=^## )/m);
   if (parts.length <= 2) return markdown;
 
-  const secondIdx = 1;
-  const lastIdx = parts.length - 1;
-
   return parts
     .map((part, i) => {
-      if (i === secondIdx || (i === lastIdx && lastIdx !== secondIdx)) {
+      if (i >= 1) {
         return AD_PLACEHOLDER + part;
       }
       return part;
