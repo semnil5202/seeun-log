@@ -30,8 +30,8 @@ export type Post = {
   rating: number | null;
   place_name: string | null;
   address: string | null;
-  price_prefix: string | null;
-  price: string[] | null;
+  price_prefix: string[] | null;
+  price: number[] | null;
   product_name: string[] | null;
   purchase_source: string[] | null;
   purchase_link: string[] | null;

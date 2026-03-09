@@ -18,7 +18,7 @@ type ReferenceValues = {
   address: string;
   productNames: string[];
   purchaseSources: string[];
-  prices: string[];
+  pricePrefixes: string[];
   pricePrefix: string;
   imageAlts: ImageAlt[];
   thumbnailAlt: string;
@@ -32,7 +32,7 @@ type CurrentValues = {
   address: string;
   productNames: string[];
   purchaseSources: string[];
-  prices: string[];
+  pricePrefixes: string[];
   pricePrefix: string;
   imageAlts: ImageAlt[];
   thumbnailAlt: string;
@@ -62,8 +62,8 @@ export function useTranslationDirtyFields(
       dirty.add('product_name');
     if (JSON.stringify(currentValues.purchaseSources) !== JSON.stringify(referenceValues.purchaseSources))
       dirty.add('purchase_source');
-    if (JSON.stringify(currentValues.prices) !== JSON.stringify(referenceValues.prices))
-      dirty.add('prices');
+    if (JSON.stringify(currentValues.pricePrefixes) !== JSON.stringify(referenceValues.pricePrefixes))
+      dirty.add('price_prefix');
     if (currentValues.pricePrefix !== referenceValues.pricePrefix) dirty.add('price_prefix');
     const currentAltsText = currentValues.imageAlts.map((a) => a.alt).join('\n');
     const referenceAltsText = referenceValues.imageAlts.map((a) => a.alt).join('\n');

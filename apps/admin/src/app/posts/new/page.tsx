@@ -66,7 +66,6 @@ function mergeSelectiveResult(
     address: fields.has('address') ? partial.address : existing.address,
     product_name: fields.has('product_name') ? partial.product_name : existing.product_name,
     purchase_source: fields.has('purchase_source') ? partial.purchase_source : existing.purchase_source,
-    prices: fields.has('prices') ? partial.prices : existing.prices,
     price_prefix: fields.has('price_prefix') ? partial.price_prefix : existing.price_prefix,
     image_alts: fields.has('image_alts') ? partial.image_alts : existing.image_alts,
     thumbnail_alt: fields.has('image_alts') ? partial.thumbnail_alt : existing.thumbnail_alt,
@@ -136,7 +135,7 @@ function NewPostContent() {
     address: string;
     productNames: string[];
     purchaseSources: string[];
-    prices: string[];
+    pricePrefixes: string[];
     pricePrefix: string;
     imageAlts: ImageAlt[];
     thumbnailAlt: string;
@@ -154,7 +153,7 @@ function NewPostContent() {
         address: values.address,
         productNames: validProducts.map((p) => p.name),
         purchaseSources: validProducts.map((p) => p.source),
-        prices: validProducts.map((p) => p.price),
+        pricePrefixes: validProducts.map((p) => p.pricePrefix),
         pricePrefix: values.pricePrefix,
         imageAlts: [...currentImageAlts],
         thumbnailAlt: values.thumbnailAlt,
@@ -194,10 +193,14 @@ function NewPostContent() {
       };
       if (!formData.products) {
         formData.products = formData.productName
-          ? [{ name: formData.productName, source: formData.purchaseSource ?? '', link: formData.purchaseLink ?? '', price: '' }]
-          : [{ name: '', source: '', link: '', price: '' }];
+          ? [{ name: formData.productName, source: formData.purchaseSource ?? '', link: formData.purchaseLink ?? '', pricePrefix: '', price: '' }]
+          : [{ name: '', source: '', link: '', pricePrefix: '', price: '' }];
       } else {
-        formData.products = formData.products.map((p) => ({ ...p, price: (p as { price?: string }).price ?? '' }));
+        formData.products = formData.products.map((p) => ({
+          ...p,
+          pricePrefix: (p as { pricePrefix?: string }).pricePrefix ?? '',
+          price: (p as { price?: string }).price ?? '',
+        }));
       }
       reset(formData);
       loadDraftId(draft.id);
@@ -240,7 +243,7 @@ function NewPostContent() {
           address: translationSnapshot.address,
           productNames: translationSnapshot.productNames,
           purchaseSources: translationSnapshot.purchaseSources,
-          prices: translationSnapshot.prices,
+          pricePrefixes: translationSnapshot.pricePrefixes,
           pricePrefix: translationSnapshot.pricePrefix,
           imageAlts: translationSnapshot.imageAlts,
           thumbnailAlt: translationSnapshot.thumbnailAlt,
@@ -254,7 +257,7 @@ function NewPostContent() {
       address: watchedAddress,
       productNames: currentValidProducts.map((p) => p.name),
       purchaseSources: currentValidProducts.map((p) => p.source),
-      prices: currentValidProducts.map((p) => p.price),
+      pricePrefixes: currentValidProducts.map((p) => p.pricePrefix),
       pricePrefix: watchedPricePrefix,
       imageAlts,
       thumbnailAlt: watchedThumbnailAlt,
@@ -324,7 +327,7 @@ function NewPostContent() {
     setValue('address', '');
     setValue('pricePrefix', '');
     setValue('price', '');
-    setValue('products', [{ name: '', source: '', link: '', price: '' }]);
+    setValue('products', [{ name: '', source: '', link: '', pricePrefix: '', price: '' }]);
   };
 
   const handleCategoryChange = (value: string) => {
@@ -373,7 +376,7 @@ function NewPostContent() {
           address: addr || undefined,
           productNames: validProds.length > 0 ? validProds.map((p) => p.name) : undefined,
           purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
-          prices: validProds.length > 0 ? validProds.map((p) => p.price).filter(Boolean) : undefined,
+          pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
           pricePrefix: values.pricePrefix || undefined,
           confirmedTerms: [] as { original: string; confirmed: string }[],
           imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
@@ -505,7 +508,7 @@ function NewPostContent() {
       address: addr || undefined,
       productNames: validProds.length > 0 ? validProds.map((p) => p.name) : undefined,
       purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
-      prices: validProds.length > 0 ? validProds.map((p) => p.price).filter(Boolean) : undefined,
+      pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
       pricePrefix: values.pricePrefix || undefined,
       confirmedTerms: lastConfirmedTerms,
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
@@ -532,7 +535,7 @@ function NewPostContent() {
       address: addr || undefined,
       productNames: validProds.length > 0 ? validProds.map((p) => p.name) : undefined,
       purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
-      prices: validProds.length > 0 ? validProds.map((p) => p.price).filter(Boolean) : undefined,
+      pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
       pricePrefix: values.pricePrefix || undefined,
       confirmedTerms: lastConfirmedTerms,
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
@@ -678,7 +681,7 @@ function NewPostContent() {
           <VisitFields register={register} errors={errors} setValue={setValue} />
         )}
         {formType === 'product-review' && (
-          <ProductReviewFields control={control} />
+          <ProductReviewFields control={control} setValue={setValue} />
         )}
 
         <div className="mt-8">
@@ -829,7 +832,7 @@ function NewPostContent() {
         address={watch('address')}
         productNames={currentValidProducts.map((p) => p.name).filter(Boolean)}
         purchaseSources={currentValidProducts.map((p) => p.source).filter(Boolean)}
-        prices={currentValidProducts.map((p) => p.price).filter(Boolean)}
+        pricePrefixes={currentValidProducts.map((p) => p.pricePrefix).filter(Boolean)}
         pricePrefix={watch('pricePrefix') || undefined}
         imageAlts={imageAlts}
         thumbnailAlt={watch('thumbnailAlt') || undefined}
@@ -845,7 +848,7 @@ function NewPostContent() {
         originalAddress={watchedAddress || undefined}
         originalProductNames={currentValidProducts.map((p) => p.name).filter(Boolean)}
         originalPurchaseSources={currentValidProducts.map((p) => p.source).filter(Boolean)}
-        originalPrices={currentValidProducts.map((p) => p.price).filter(Boolean)}
+        originalPricePrefixes={currentValidProducts.map((p) => p.pricePrefix).filter(Boolean)}
         originalPricePrefix={watchedPricePrefix || undefined}
         originalImageAlts={imageAlts.length > 0 ? imageAlts : undefined}
         originalThumbnailAlt={watchedThumbnailAlt || undefined}

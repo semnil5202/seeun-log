@@ -19,8 +19,7 @@ export type TranslationResult = {
   address: string;
   product_name: string[];
   purchase_source: string[];
-  price_prefix: string;
-  prices: string[];
+  price_prefix: string[];
   image_alts: ImageAlt[];
   thumbnail_alt: string;
   failed?: boolean;
@@ -44,7 +43,6 @@ export type CheckableField =
   | 'product_name'
   | 'purchase_source'
   | 'price_prefix'
-  | 'prices'
   | 'image_alts';
 
 export type SelectiveTranslateOptions = {

@@ -6,6 +6,7 @@ const productSchema = z.object({
   name: z.string(),
   source: z.string(),
   link: z.string(),
+  pricePrefix: z.string(),
   price: z.string(),
 });
 
@@ -54,5 +55,5 @@ export const POST_FORM_DEFAULTS: PostFormValues = {
   address: '',
   pricePrefix: '',
   price: '',
-  products: [{ name: '', source: '', link: '', price: '' }],
+  products: [{ name: '', source: '', link: '', pricePrefix: '', price: '' }],
 };

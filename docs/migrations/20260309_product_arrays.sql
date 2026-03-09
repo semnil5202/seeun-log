@@ -1,25 +1,50 @@
--- Migration: price 컬럼 타입 변경 및 price_prefix 컬럼 유지
+-- Migration: price/price_prefix 컬럼 타입 변경 및 분리
 -- Date: 2026-03-09
 --
 -- 변경 내용:
---   posts.price: integer | null → text[] | null
---     이유: 제품별 가격을 배열로 관리. "10,000원", "무료", "$50" 등 자유 형식 지원.
---     product_name, purchase_source, purchase_link 배열과 동일 인덱스로 매핑.
---   posts.price_prefix: 유지 (visit 폼의 장소 가격대 설명에 계속 사용)
+--   posts.price: text[] | null → integer[] | null
+--     이유: 제품별 가격을 숫자 배열로 관리. product_name 배열과 동일 인덱스로 매핑.
+--   posts.price_prefix: text | null → text[] | null
+--     이유: 제품별 가격 설명을 배열로 관리 (visit: [단일 설명], product-review: 제품별 설명 배열).
 --
---   post_translations.prices: text[] | null 컬럼 추가
---     이유: 번역된 제품별 가격 저장 (예: "10,000원" → "10,000 KRW")
---   post_translations.price_prefix: 유지
+--   post_translations.price_prefix: text | null → text[] | null
+--     이유: 번역된 가격 설명 배열 저장.
+--   post_translations.prices 컬럼 제거
+--     이유: 가격은 정수(integer)이므로 번역 불필요.
 
--- 1. posts.price 타입 변경 (integer → text[])
---    기존 데이터는 단일 정수값이므로 배열로 감싸서 마이그레이션
+-- 1. posts.price 타입 변경 (text[] → integer[])
+--    기존 text[] 데이터를 integer[]로 변환
 ALTER TABLE posts
-  ALTER COLUMN price TYPE text[]
-  USING CASE
-    WHEN price IS NOT NULL THEN ARRAY[price::text]
-    ELSE NULL
-  END;
+  ALTER COLUMN price TYPE integer[]
+  USING (
+    CASE
+      WHEN price IS NOT NULL THEN
+        ARRAY(SELECT unnest(price)::integer)
+      ELSE NULL
+    END
+  );
 
--- 2. post_translations에 prices 컬럼 추가
+-- 2. posts.price_prefix 타입 변경 (text → text[])
+--    기존 단일 문자열을 단일 요소 배열로 마이그레이션
+ALTER TABLE posts
+  ALTER COLUMN price_prefix TYPE text[]
+  USING (
+    CASE
+      WHEN price_prefix IS NOT NULL THEN ARRAY[price_prefix]
+      ELSE NULL
+    END
+  );
+
+-- 3. post_translations.price_prefix 타입 변경 (text → text[])
 ALTER TABLE post_translations
-  ADD COLUMN IF NOT EXISTS prices text[] DEFAULT NULL;
+  ALTER COLUMN price_prefix TYPE text[]
+  USING (
+    CASE
+      WHEN price_prefix IS NOT NULL THEN ARRAY[price_prefix]
+      ELSE NULL
+    END
+  );
+
+-- 4. post_translations.prices 컬럼 제거 (가격은 정수, 번역 불필요)
+ALTER TABLE post_translations
+  DROP COLUMN IF EXISTS prices;

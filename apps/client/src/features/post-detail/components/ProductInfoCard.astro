@@ -12,8 +12,9 @@ interface Props {
   purchaseSources: string[] | null;
   translatedPurchaseSources?: string[] | null;
   purchaseLinks: string[] | null;
-  prices?: string[] | null;
-  translatedPrices?: string[] | null;
+  prices?: number[] | null;
+  pricePrefixes?: string[] | null;
+  translatedPricePrefixes?: string[] | null;
   description: string;
   locale: Locale;
 }
@@ -27,7 +28,8 @@ const {
   translatedPurchaseSources,
   purchaseLinks,
   prices,
-  translatedPrices,
+  pricePrefixes,
+  translatedPricePrefixes,
   description,
   locale,
 } = Astro.props;
@@ -37,13 +39,14 @@ const summaryLines = description ? description.split('\n').filter(Boolean) : [];
 
 const displayProductNames = translatedProductNames ?? productNames;
 const displayPurchaseSources = translatedPurchaseSources ?? purchaseSources;
-const displayPrices = translatedPrices ?? prices;
+const displayPricePrefixes = translatedPricePrefixes ?? pricePrefixes;
 
 const products = (displayProductNames ?? []).map((name, i) => ({
   name,
   source: displayPurchaseSources?.[i] ?? '',
   link: purchaseLinks?.[i] ?? '',
-  price: displayPrices?.[i] ?? '',
+  pricePrefix: displayPricePrefixes?.[i] ?? '',
+  price: prices?.[i] ?? null,
 }));
 ---
 
@@ -92,10 +95,10 @@ const products = (displayProductNames ?? []).map((name, i) => ({
               </dd>
             </div>
           )}
-          {product.price && (
+          {product.price != null && (
             <div class="flex items-baseline gap-3">
               <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("place.price", locale)}</dt>
-              <dd class="text-gray-900">{product.price}</dd>
+              <dd class="text-gray-900">{product.pricePrefix}{product.price.toLocaleString()}</dd>
             </div>
           )}
         </div>

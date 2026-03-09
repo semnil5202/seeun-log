@@ -34,7 +34,6 @@ const FIELD_LABELS: Record<CheckableField, string> = {
   product_name: '제품명',
   purchase_source: '구매처',
   price_prefix: '가격설명',
-  prices: '가격',
   image_alts: '이미지 Alt',
 };
 
@@ -48,7 +47,7 @@ type TranslationSheetProps = {
   originalAddress?: string;
   originalProductNames?: string[];
   originalPurchaseSources?: string[];
-  originalPrices?: string[];
+  originalPricePrefixes?: string[];
   originalPricePrefix?: string;
   originalImageAlts?: ImageAlt[];
   originalThumbnailAlt?: string;
@@ -87,7 +86,7 @@ export function TranslationSheet({
   originalAddress,
   originalProductNames,
   originalPurchaseSources,
-  originalPrices,
+  originalPricePrefixes,
   originalPricePrefix,
   originalImageAlts,
   originalThumbnailAlt,
@@ -127,13 +126,12 @@ export function TranslationSheet({
     if (originalAddress) fields.push('address');
     if (originalProductNames && originalProductNames.length > 0) fields.push('product_name');
     if (originalPurchaseSources && originalPurchaseSources.length > 0) fields.push('purchase_source');
-    if (originalPrices && originalPrices.some(Boolean)) fields.push('prices');
-    if (originalPricePrefix) fields.push('price_prefix');
+    if ((originalPricePrefixes && originalPricePrefixes.some(Boolean)) || originalPricePrefix) fields.push('price_prefix');
     if (originalDescription !== undefined) fields.push('description');
     if (originalThumbnailAlt || (originalImageAlts && originalImageAlts.length > 0))
       fields.push('image_alts');
     return fields;
-  }, [originalPlaceName, originalAddress, originalProductNames, originalPurchaseSources, originalPrices, originalPricePrefix, originalDescription, originalThumbnailAlt, originalImageAlts]);
+  }, [originalPlaceName, originalAddress, originalProductNames, originalPurchaseSources, originalPricePrefixes, originalPricePrefix, originalDescription, originalThumbnailAlt, originalImageAlts]);
 
   const checkState = useTranslationCheckState(availableFields, originalSections.length);
 
@@ -390,15 +388,15 @@ export function TranslationSheet({
           </ul>
         </div>
       )}
-      {originalPrices && originalPrices.some(Boolean) && (
+      {originalPricePrefixes && originalPricePrefixes.some(Boolean) && (
         <div className="py-5">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold text-muted-foreground">가격</label>
-            {dirtyFields.has('prices') && <DirtyBadge />}
+            <label className="text-sm font-semibold text-muted-foreground">가격설명</label>
+            {dirtyFields.has('price_prefix') && <DirtyBadge />}
           </div>
           <ul className="mt-1 space-y-0.5 text-sm">
-            {originalPrices.map((price, i) => (
-              <li key={i}>{originalPrices.length > 1 ? `${i + 1}. ` : ''}{price}</li>
+            {originalPricePrefixes.map((prefix, i) => (
+              <li key={i}>{originalPricePrefixes.length > 1 ? `${i + 1}. ` : ''}{prefix}</li>
             ))}
           </ul>
         </div>
@@ -530,18 +528,16 @@ export function TranslationSheet({
               </ul>
             ),
           })}
-        {selectedTranslation.prices.length > 0 &&
-          renderFieldRow('prices', undefined, {
+        {selectedTranslation.price_prefix.length > 0 &&
+          renderFieldRow('price_prefix', undefined, {
             children: (
               <ul className="mt-1 space-y-0.5 text-sm">
-                {selectedTranslation.prices.map((price, i) => (
-                  <li key={i}>{selectedTranslation.prices.length > 1 ? `${i + 1}. ` : ''}{price}</li>
+                {selectedTranslation.price_prefix.map((prefix, i) => (
+                  <li key={i}>{selectedTranslation.price_prefix.length > 1 ? `${i + 1}. ` : ''}{prefix}</li>
                 ))}
               </ul>
             ),
           })}
-        {selectedTranslation.price_prefix &&
-          renderFieldRow('price_prefix', selectedTranslation.price_prefix)}
 
         {renderFieldRow('description', selectedTranslation.description)}
 

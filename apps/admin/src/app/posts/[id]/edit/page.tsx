@@ -76,8 +76,8 @@ export default function EditPostPage() {
       is_multilingual: boolean;
       place_name: string | null;
       address: string | null;
-      price_prefix: string | null;
-      price: string[] | null;
+      price_prefix: string[] | null;
+      price: number[] | null;
       product_name: string[] | null;
       purchase_source: string[] | null;
       purchase_link: string[] | null;
@@ -139,8 +139,8 @@ function EditPostForm({
       is_multilingual: boolean;
       place_name: string | null;
       address: string | null;
-      price_prefix: string | null;
-      price: string[] | null;
+      price_prefix: string[] | null;
+      price: number[] | null;
       product_name: string[] | null;
       purchase_source: string[] | null;
       purchase_link: string[] | null;
@@ -167,16 +167,17 @@ function EditPostForm({
       description: post.description,
       placeName: post.place_name ?? '',
       address: post.address ?? '',
-      pricePrefix: post.price_prefix ?? '',
-      price: '',
+      pricePrefix: Array.isArray(post.price_prefix) ? (post.price_prefix[0] ?? '') : (post.price_prefix ?? ''),
+      price: Array.isArray(post.price) && !post.product_name?.length ? (post.price[0] != null ? String(post.price[0]) : '') : '',
       products: post.product_name && post.product_name.length > 0
         ? post.product_name.map((name, i) => ({
             name,
             source: post.purchase_source?.[i] ?? '',
             link: post.purchase_link?.[i] ?? '',
-            price: post.price?.[i] ?? '',
+            pricePrefix: post.price_prefix?.[i] ?? '',
+            price: post.price?.[i] != null ? String(post.price[i]) : '',
           }))
-        : [{ name: '', source: '', link: '', price: '' }],
+        : [{ name: '', source: '', link: '', pricePrefix: '', price: '' }],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- post data only changes when id changes
     [postId],
@@ -247,10 +248,14 @@ function EditPostForm({
       };
       if (!formData.products) {
         formData.products = formData.productName
-          ? [{ name: formData.productName, source: formData.purchaseSource ?? '', link: formData.purchaseLink ?? '', price: '' }]
-          : [{ name: '', source: '', link: '', price: '' }];
+          ? [{ name: formData.productName, source: formData.purchaseSource ?? '', link: formData.purchaseLink ?? '', pricePrefix: '', price: '' }]
+          : [{ name: '', source: '', link: '', pricePrefix: '', price: '' }];
       } else {
-        formData.products = formData.products.map((p) => ({ ...p, price: (p as { price?: string }).price ?? '' }));
+        formData.products = formData.products.map((p) => ({
+          ...p,
+          pricePrefix: (p as { pricePrefix?: string }).pricePrefix ?? '',
+          price: (p as { price?: string }).price ?? '',
+        }));
       }
       reset(formData);
       loadDraftId(draft.id);
@@ -290,7 +295,7 @@ function EditPostForm({
       address: initialValues.address,
       productNames: initialValidProducts.map((p) => p.name),
       purchaseSources: initialValidProducts.map((p) => p.source),
-      prices: initialValidProducts.map((p) => p.price),
+      pricePrefixes: initialValidProducts.map((p) => p.pricePrefix),
       pricePrefix: initialValues.pricePrefix,
       imageAlts: postData.imageAlts ?? [],
       thumbnailAlt: initialValues.thumbnailAlt,
@@ -303,7 +308,7 @@ function EditPostForm({
       address: watchedAddress,
       productNames: currentValidProducts.map((p) => p.name),
       purchaseSources: currentValidProducts.map((p) => p.source),
-      prices: currentValidProducts.map((p) => p.price),
+      pricePrefixes: currentValidProducts.map((p) => p.pricePrefix),
       pricePrefix: watchedPricePrefix,
       imageAlts,
       thumbnailAlt: watchedThumbnailAlt,
@@ -318,7 +323,8 @@ function EditPostForm({
     watch('thumbnail') !== initialValues.thumbnail ||
     watchedPricePrefix !== initialValues.pricePrefix ||
     watchedPrice !== initialValues.price ||
-    JSON.stringify(currentValidProducts.map((p) => p.price)) !== JSON.stringify(initialValidProducts.map((p) => p.price));
+    JSON.stringify(currentValidProducts.map((p) => p.price)) !== JSON.stringify(initialValidProducts.map((p) => p.price)) ||
+    JSON.stringify(currentValidProducts.map((p) => p.pricePrefix)) !== JSON.stringify(initialValidProducts.map((p) => p.pricePrefix));
 
   const needsTranslation = isMultilingual && !!(category && subCategory);
   const needsRetranslation = needsTranslation && dirtyTranslationFields.size > 0;
@@ -382,7 +388,7 @@ function EditPostForm({
     setValue('address', '');
     setValue('pricePrefix', '');
     setValue('price', '');
-    setValue('products', [{ name: '', source: '', link: '', price: '' }]);
+    setValue('products', [{ name: '', source: '', link: '', pricePrefix: '', price: '' }]);
   };
 
   const handleCategoryChange = (value: string) => {
@@ -424,7 +430,7 @@ function EditPostForm({
       address: addr || undefined,
       productNames: validProds.length > 0 ? validProds.map((p) => p.name) : undefined,
       purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
-      prices: validProds.length > 0 ? validProds.map((p) => p.price).filter(Boolean) : undefined,
+      pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
       pricePrefix: values.pricePrefix || undefined,
       confirmedTerms: [],
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
@@ -441,7 +447,6 @@ function EditPostForm({
         address: fields.has('address') ? result.address : existingTranslation.address,
         product_name: fields.has('product_name') ? result.product_name : existingTranslation.product_name,
         purchase_source: fields.has('purchase_source') ? result.purchase_source : existingTranslation.purchase_source,
-        prices: fields.has('prices') ? result.prices : existingTranslation.prices,
         price_prefix: fields.has('price_prefix') ? result.price_prefix : existingTranslation.price_prefix,
         image_alts: fields.has('image_alts') ? result.image_alts : existingTranslation.image_alts,
         thumbnail_alt: fields.has('image_alts') ? result.thumbnail_alt : existingTranslation.thumbnail_alt,
@@ -466,7 +471,7 @@ function EditPostForm({
       address: addr || undefined,
       productNames: validProds.length > 0 ? validProds.map((p) => p.name) : undefined,
       purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
-      prices: validProds.length > 0 ? validProds.map((p) => p.price).filter(Boolean) : undefined,
+      pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
       pricePrefix: values.pricePrefix || undefined,
       confirmedTerms: [],
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
@@ -659,7 +664,7 @@ function EditPostForm({
           <VisitFields register={register} errors={errors} setValue={setValue} />
         )}
         {formType === 'product-review' && (
-          <ProductReviewFields control={control} />
+          <ProductReviewFields control={control} setValue={setValue} />
         )}
 
         <div className="mt-8">
@@ -785,7 +790,7 @@ function EditPostForm({
           originalAddress={watchedAddress || undefined}
           originalProductNames={currentValidProducts.map((p) => p.name).filter(Boolean)}
           originalPurchaseSources={currentValidProducts.map((p) => p.source).filter(Boolean)}
-          originalPrices={currentValidProducts.map((p) => p.price).filter(Boolean)}
+          originalPricePrefixes={currentValidProducts.map((p) => p.pricePrefix).filter(Boolean)}
           originalPricePrefix={watchedPricePrefix || undefined}
           originalImageAlts={imageAlts.length > 0 ? imageAlts : undefined}
           originalThumbnailAlt={watchedThumbnailAlt || undefined}

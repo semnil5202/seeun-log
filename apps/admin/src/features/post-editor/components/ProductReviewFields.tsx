@@ -1,15 +1,24 @@
-/** 제품 리뷰 전용 필드 — 제품 목록(제품명/구매처/구매링크/가격). */
+/** 제품 리뷰 전용 필드 — 제품 목록(제품명/구매처/구매링크/가격설명/가격). */
 
-import { useFieldArray, type Control } from 'react-hook-form';
+import type { FocusEvent } from 'react';
+import { useFieldArray, type Control, type UseFormSetValue } from 'react-hook-form';
 
 import type { PostFormValues } from '../types/form';
 
 type ProductReviewFieldsProps = {
   control: Control<PostFormValues>;
+  setValue: UseFormSetValue<PostFormValues>;
 };
 
-export function ProductReviewFields({ control }: ProductReviewFieldsProps) {
+export function ProductReviewFields({ control, setValue }: ProductReviewFieldsProps) {
   const { fields, append, remove } = useFieldArray({ control, name: 'products' });
+
+  const handlePricePrefixBlur = (index: number) => (e: FocusEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val && !val.endsWith(' ')) {
+      setValue(`products.${index}.pricePrefix`, val + ' ');
+    }
+  };
 
   return (
     <div className="mt-8 space-y-4">
@@ -50,17 +59,31 @@ export function ProductReviewFields({ control }: ProductReviewFieldsProps) {
                 className="h-9 grow basis-0 border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
               />
             </div>
-            <input
-              type="text"
-              {...control.register(`products.${index}.price`)}
-              placeholder="가격을 입력해주세요. (예: 10,000원, 무료)"
-              className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
-            />
+            <div className="flex gap-2">
+              <div className="grow-[2] basis-0">
+                <input
+                  type="text"
+                  {...control.register(`products.${index}.pricePrefix`, {
+                    onBlur: handlePricePrefixBlur(index),
+                  })}
+                  placeholder="ex) 1인 기준 "
+                  className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <div className="grow basis-0">
+                <input
+                  type="number"
+                  {...control.register(`products.${index}.price`)}
+                  placeholder="금액"
+                  className="h-9 w-full border border-input bg-transparent px-3 text-sm shadow-xs outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+              </div>
+            </div>
           </div>
         ))}
         <button
           type="button"
-          onClick={() => append({ name: '', source: '', link: '', price: '' })}
+          onClick={() => append({ name: '', source: '', link: '', pricePrefix: '', price: '' })}
           className="h-9 w-full border border-dashed border-input text-sm text-muted-foreground hover:bg-accent"
         >
           + 제품 추가

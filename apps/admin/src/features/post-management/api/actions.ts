@@ -79,8 +79,8 @@ export async function fetchPost(id: string) {
       rating: number | null;
       place_name: string | null;
       address: string | null;
-      price_prefix: string | null;
-      price: string[] | null;
+      price_prefix: string[] | null;
+      price: number[] | null;
       product_name: string[] | null;
       purchase_source: string[] | null;
       purchase_link: string[] | null;
@@ -98,8 +98,7 @@ export async function fetchPost(id: string) {
       address: t.address ?? '',
       product_name: Array.isArray(t.product_name) ? t.product_name : (t.product_name ? [t.product_name] : []),
       purchase_source: Array.isArray(t.purchase_source) ? t.purchase_source : (t.purchase_source ? [t.purchase_source] : []),
-      prices: Array.isArray(t.prices) ? t.prices : [],
-      price_prefix: t.price_prefix ?? '',
+      price_prefix: Array.isArray(t.price_prefix) ? t.price_prefix : (t.price_prefix ? [t.price_prefix] : []),
       image_alts: (t.image_alts ?? []) as ImageAlt[],
       thumbnail_alt: t.thumbnail_alt ?? '',
     })) as TranslationResult[],
@@ -118,8 +117,11 @@ export async function createPost(params: {
   const validProducts = fv.products.filter((p) => p.name.trim());
 
   const isProductReview = fv.formType === 'product-review';
-  const validPrices = isProductReview
-    ? validProducts.map((p) => p.price)
+  const productPricePrefixes = isProductReview
+    ? validProducts.map((p) => p.pricePrefix)
+    : null;
+  const productPrices = isProductReview
+    ? validProducts.map((p) => (p.price ? Number(p.price) : 0))
     : null;
 
   const { data: post, error } = await supabaseServer
@@ -136,10 +138,12 @@ export async function createPost(params: {
       is_multilingual: params.translations.length > 0,
       place_name: fv.placeName || null,
       address: fv.address || null,
-      price_prefix: fv.pricePrefix || null,
+      price_prefix: isProductReview
+        ? (productPricePrefixes && productPricePrefixes.some(Boolean) ? productPricePrefixes : null)
+        : (fv.pricePrefix ? [fv.pricePrefix] : null),
       price: isProductReview
-        ? (validPrices && validPrices.some(Boolean) ? validPrices : null)
-        : (fv.price ? [fv.price] : null),
+        ? (productPrices && productPrices.some(Boolean) ? productPrices : null)
+        : (fv.price ? [Number(fv.price)] : null),
       product_name: validProducts.length > 0 ? validProducts.map((p) => p.name) : null,
       purchase_source: validProducts.length > 0 ? validProducts.map((p) => p.source) : null,
       purchase_link: validProducts.length > 0 ? validProducts.map((p) => p.link) : null,
@@ -165,8 +169,7 @@ export async function createPost(params: {
       address: t.address || null,
       product_name: t.product_name || null,
       purchase_source: t.purchase_source || null,
-      prices: t.prices && t.prices.length > 0 ? t.prices : null,
-      price_prefix: t.price_prefix || null,
+      price_prefix: t.price_prefix && t.price_prefix.length > 0 ? t.price_prefix : null,
       image_alts: t.image_alts ?? [],
       thumbnail_alt: t.thumbnail_alt || null,
     }));
@@ -209,8 +212,11 @@ export async function updatePost(params: {
 
   const validProducts = fv.products.filter((p) => p.name.trim());
   const isProductReview = fv.formType === 'product-review';
-  const validPrices = isProductReview
-    ? validProducts.map((p) => p.price)
+  const productPricePrefixes = isProductReview
+    ? validProducts.map((p) => p.pricePrefix)
+    : null;
+  const productPrices = isProductReview
+    ? validProducts.map((p) => (p.price ? Number(p.price) : 0))
     : null;
 
   const updateData: Record<string, unknown> = {
@@ -224,10 +230,12 @@ export async function updatePost(params: {
     thumbnail_alt: fv.thumbnailAlt || null,
     place_name: fv.placeName || null,
     address: fv.address || null,
-    price_prefix: fv.pricePrefix || null,
+    price_prefix: isProductReview
+      ? (productPricePrefixes && productPricePrefixes.some(Boolean) ? productPricePrefixes : null)
+      : (fv.pricePrefix ? [fv.pricePrefix] : null),
     price: isProductReview
-      ? (validPrices && validPrices.some(Boolean) ? validPrices : null)
-      : (fv.price ? [fv.price] : null),
+      ? (productPrices && productPrices.some(Boolean) ? productPrices : null)
+      : (fv.price ? [Number(fv.price)] : null),
     product_name: validProducts.length > 0 ? validProducts.map((p) => p.name) : null,
     purchase_source: validProducts.length > 0 ? validProducts.map((p) => p.source) : null,
     purchase_link: validProducts.length > 0 ? validProducts.map((p) => p.link) : null,
@@ -268,8 +276,7 @@ export async function updatePost(params: {
         address: t.address || null,
         product_name: t.product_name || null,
         purchase_source: t.purchase_source || null,
-        prices: t.prices && t.prices.length > 0 ? t.prices : null,
-        price_prefix: t.price_prefix || null,
+        price_prefix: t.price_prefix && t.price_prefix.length > 0 ? t.price_prefix : null,
         image_alts: t.image_alts ?? [],
         thumbnail_alt: t.thumbnail_alt || null,
         updated_at: new Date().toISOString(),
