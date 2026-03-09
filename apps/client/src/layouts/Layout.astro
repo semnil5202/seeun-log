@@ -50,6 +50,9 @@ const robotsContent = isProduction ? 'index, follow' : 'noindex, nofollow';
       type={type}
       isMultilingual={isMultilingual}
     />
+    <link rel="preload" href="https://media.eunminlog.site/fonts/Pretendard-Regular.subset.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="https://media.eunminlog.site/fonts/Pretendard-SemiBold.subset.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="https://media.eunminlog.site/fonts/Pretendard-Bold.subset.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="robots" content={robotsContent} />
     <slot name="head" />
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
