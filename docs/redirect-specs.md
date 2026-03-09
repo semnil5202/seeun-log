@@ -1,7 +1,7 @@
 # 301 Redirect Strategy — Slug 변경 시 이전 URL 리다이렉트
 
 > Date: 2026-03-06
-> Status: Draft (PM 작성, 승인 후 se가 구현)
+> Status: Implemented
 
 ---
 

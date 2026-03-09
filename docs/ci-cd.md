@@ -208,6 +208,7 @@ on:
       - 'packages/config/**'
       - 'packages/tsconfig/**'
       - 'pnpm-lock.yaml'
+      - 'infra/**'
       - '.github/workflows/deploy-client.yml'
   workflow_dispatch: # Admin Server Action에서 호출
 ```
@@ -247,6 +248,7 @@ paths:
   - 'packages/config/**'
   - 'packages/tsconfig/**'
   - 'pnpm-lock.yaml'
+  - 'infra/**'
   - '.github/workflows/deploy-client.yml'
 ```
 

@@ -43,3 +43,6 @@ next-env.d.ts
 
 # secrets reference
 docs/secrets-reference.md
+
+# generated cf function
+infra/cf-functions/viewer-request.js

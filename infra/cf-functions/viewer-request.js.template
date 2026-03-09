@@ -1,0 +1,67 @@
+// Auto-generated at build time — do not edit manually.
+var POST_REDIRECTS = __POST_REDIRECTS__;
+var CATEGORY_REDIRECTS = __CATEGORY_REDIRECTS__;
+
+var LOCALES = ['en', 'ja', 'zh-CN', 'zh-TW', 'id', 'vi', 'th'];
+
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+
+  var parts = uri.split('/').filter(function (p) {
+    return p !== '';
+  });
+
+  if (parts.length >= 1) {
+    var offset = 0;
+
+    if (LOCALES.indexOf(parts[0]) !== -1) {
+      offset = 1;
+    }
+
+    var changed = false;
+    var newParts = parts.slice();
+
+    // Category redirect: check category (offset) and sub_category (offset+1)
+    for (var i = offset; i < Math.min(offset + 2, newParts.length); i++) {
+      var seg = newParts[i];
+      if (CATEGORY_REDIRECTS[seg]) {
+        newParts[i] = CATEGORY_REDIRECTS[seg].s;
+        changed = true;
+      }
+    }
+
+    // Post redirect: check slug at offset+2
+    var slugIdx = offset + 2;
+    if (newParts.length > slugIdx) {
+      var postSlug = parts[slugIdx];
+      var pr = POST_REDIRECTS[postSlug];
+      if (pr) {
+        var catSeg = newParts[offset];
+        if (catSeg === pr.c) {
+          newParts[slugIdx] = pr.s;
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      var newUri = '/' + newParts.join('/');
+      if (uri.endsWith('/') && !newUri.endsWith('/')) newUri += '/';
+      return {
+        statusCode: 301,
+        statusDescription: 'Moved Permanently',
+        headers: { location: { value: newUri } },
+      };
+    }
+  }
+
+  // URI -> index.html mapping
+  if (uri.endsWith('/')) {
+    request.uri += 'index.html';
+  } else if (uri.indexOf('.') === -1) {
+    request.uri += '/index.html';
+  }
+
+  return request;
+}
