@@ -195,7 +195,11 @@ function PostsContent() {
     try {
       const result = await deletePosts(Array.from(selectedIds));
       if (result.success) {
-        toast.success(`${result.deletedCount}개의 게시글이 삭제되었습니다.`);
+        if (result.buildFailed) {
+          toast.warning(`${result.deletedCount}개의 게시글이 삭제되었으나 배포에 실패했습니다.`);
+        } else {
+          toast.success(`${result.deletedCount}개의 게시글이 삭제되었습니다.`);
+        }
         setSelectedIds(new Set());
         setIsDeleteDialogOpen(false);
         await loadPosts(currentFilter, currentSort, page);
