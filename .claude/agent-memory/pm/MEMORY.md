@@ -37,8 +37,11 @@
 
 ## Admin Phase Status (as of 2026-03-09)
 
-- All phases (1~5) completed. DB migrations M-01~M-10 all applied.
-- Section-based selective translation: html-sections.ts (split/reassemble/compare), useTranslationCheckState hook, content_sections GPT response merge, checkbox indeterminate support (2026-03-09)
+- All phases (1~5) completed. DB migrations M-01~M-17 all applied.
+- Link bookmark: CustomLinkBookmark Tiptap node, LinkPastePopup, Client CSS hover/mobile, internal link i18n (shared/lib/bookmark.ts), translation skip
+- Product review fields: text→text[], integer→integer[], useFieldArray, ProductReviewFields, PriceInputRow shared component, post_translations.prices removed (M-17)
+- ProductInfoCard: multi-product grid (lg:grid-cols-2), single-product simple layout, pricePrefix+price.toLocaleString()
+- Section-based selective translation: html-sections.ts (split/reassemble/compare), useTranslationCheckState hook, content_sections GPT response merge, checkbox indeterminate support
 - TranslationPreviewSheet + TranslationEditSheet → TranslationSheet 통합 (섹션 기반 UI 리팩토링)
 - Summary prompt updated: spacing + complete sentence rules (2026-03-07)
 - Underline: browser default `<u>` style (custom removed)
