@@ -1,6 +1,7 @@
 // Auto-generated at build time — do not edit manually.
 var POST_REDIRECTS = __POST_REDIRECTS__;
 var CATEGORY_REDIRECTS = __CATEGORY_REDIRECTS__;
+var POST_CATEGORY_REDIRECTS = __POST_CATEGORY_REDIRECTS__;
 
 var LOCALES = ['en', 'ja', 'zh-CN', 'zh-TW', 'id', 'vi', 'th'];
 
@@ -21,6 +22,17 @@ function handler(event) {
 
     var changed = false;
     var newParts = parts.slice();
+
+    // Post category redirect: category/sub_category 재배치 (slug 동일, 카테고리만 변경)
+    if (newParts.length > offset + 2) {
+      var pathKey = newParts[offset] + '/' + newParts[offset + 1] + '/' + newParts[offset + 2];
+      var pcr = POST_CATEGORY_REDIRECTS[pathKey];
+      if (pcr) {
+        newParts[offset] = pcr.c;
+        newParts[offset + 1] = pcr.sc;
+        changed = true;
+      }
+    }
 
     // Category redirect: check category (offset) and sub_category (offset+1)
     for (var i = offset; i < Math.min(offset + 2, newParts.length); i++) {

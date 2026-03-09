@@ -190,7 +190,7 @@ export async function updatePost(params: {
 
   const { data: existing, error: fetchError } = await supabaseServer
     .from('posts')
-    .select('slug')
+    .select('slug, category, sub_category')
     .eq('id', params.id)
     .single();
 
@@ -218,6 +218,12 @@ export async function updatePost(params: {
 
   if (existing.slug !== fv.slug) {
     updateData.prev_slug = existing.slug;
+  }
+  if (existing.category !== fv.category) {
+    updateData.prev_category = existing.category;
+  }
+  if (existing.sub_category !== fv.subCategory) {
+    updateData.prev_sub_category = existing.sub_category;
   }
 
   const { error: updateError } = await supabaseServer

@@ -32,7 +32,12 @@ async function query(table, select, filter) {
   return res.json();
 }
 
-const posts = await query('posts', 'slug,prev_slug,category,sub_category', 'prev_slug=not.is.null');
+const postsWithPrevSlug = await query('posts', 'slug,prev_slug,category,sub_category', 'prev_slug=not.is.null');
+const postsWithPrevCat = await query(
+  'posts',
+  'slug,category,sub_category,prev_category,prev_sub_category',
+  'or=(prev_category.not.is.null,prev_sub_category.not.is.null)',
+);
 const categories = await query('categories', 'slug,prev_slug', 'prev_slug=not.is.null');
 
 const allCategories = await query('categories', 'slug', '');
@@ -42,9 +47,17 @@ const allCurrentPostSlugs = new Set(
 );
 
 const postRedirects = {};
-for (const p of posts) {
+for (const p of postsWithPrevSlug) {
   if (allCurrentPostSlugs.has(p.prev_slug)) continue;
   postRedirects[p.prev_slug] = { s: p.slug, c: p.category, sc: p.sub_category };
+}
+
+const postCategoryRedirects = {};
+for (const p of postsWithPrevCat) {
+  const pc = p.prev_category || p.category;
+  const psc = p.prev_sub_category || p.sub_category;
+  const key = `${pc}/${psc}/${p.slug}`;
+  postCategoryRedirects[key] = { c: p.category, sc: p.sub_category };
 }
 
 const categoryRedirects = {};
@@ -59,7 +72,8 @@ const template = readFileSync(templatePath, 'utf-8');
 
 const output = template
   .replace('__POST_REDIRECTS__', JSON.stringify(postRedirects))
-  .replace('__CATEGORY_REDIRECTS__', JSON.stringify(categoryRedirects));
+  .replace('__CATEGORY_REDIRECTS__', JSON.stringify(categoryRedirects))
+  .replace('__POST_CATEGORY_REDIRECTS__', JSON.stringify(postCategoryRedirects));
 
 const sizeKB = Buffer.byteLength(output, 'utf-8') / 1024;
 if (sizeKB > 9.5) {
@@ -69,5 +83,5 @@ if (sizeKB > 9.5) {
 
 writeFileSync(outputPath, output);
 console.log(
-  `Generated viewer-request.js (${sizeKB.toFixed(1)}KB, ${Object.keys(postRedirects).length} post redirects, ${Object.keys(categoryRedirects).length} category redirects)`,
+  `Generated viewer-request.js (${sizeKB.toFixed(1)}KB, ${Object.keys(postRedirects).length} post slug redirects, ${Object.keys(postCategoryRedirects).length} post category redirects, ${Object.keys(categoryRedirects).length} category redirects)`,
 );

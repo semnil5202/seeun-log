@@ -274,10 +274,15 @@ export async function updateCategory(params: {
   if (existing.slug !== params.slug) {
     const isParent = existing.parent_id === null;
     const column = isParent ? 'category' : 'sub_category';
+    const prevColumn = isParent ? 'prev_category' : 'prev_sub_category';
 
     await supabaseServer
       .from('posts')
-      .update({ [column]: params.slug, updated_at: new Date().toISOString() })
+      .update({
+        [column]: params.slug,
+        [prevColumn]: existing.slug,
+        updated_at: new Date().toISOString(),
+      })
       .eq(column, existing.slug);
   }
 
