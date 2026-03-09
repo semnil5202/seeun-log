@@ -43,6 +43,7 @@ export async function getPresignedUrl(
     Bucket: process.env.AWS_S3_BUCKET!,
     Key: key,
     ContentType: uploadContentType,
+    CacheControl: 'public, max-age=31536000, immutable',
   });
 
   const presignedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
