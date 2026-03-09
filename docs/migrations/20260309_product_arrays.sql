@@ -16,13 +16,7 @@
 --    기존 text[] 데이터를 integer[]로 변환
 ALTER TABLE posts
   ALTER COLUMN price TYPE integer[]
-  USING (
-    CASE
-      WHEN price IS NOT NULL THEN
-        ARRAY(SELECT unnest(price)::integer)
-      ELSE NULL
-    END
-  );
+  USING price::integer[];
 
 -- 2. posts.price_prefix 타입 변경 (text → text[])
 --    기존 단일 문자열을 단일 요소 배열로 마이그레이션
