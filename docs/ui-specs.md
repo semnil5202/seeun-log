@@ -75,7 +75,7 @@
 
 [Footer]
 +-----------------------------------------------------------------------------------------------+
-| Copyright © eunmin log | Privacy Policy | Sitemap | Instagram                                  |
+| Copyright © eunmin log | Privacy Policy | Sponsor Inquiry                                         |
 +-----------------------------------------------------------------------------------------------+
 ```
 
