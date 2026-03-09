@@ -79,14 +79,20 @@ img[data-lightbox] {
   background: rgba(0, 0, 0, 0.4);
   color: white;
   cursor: pointer;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
 }
 
-[data-type='image-carousel']:hover .carousel-arrow {
-  display: flex;
+@media (hover: hover) {
+  [data-type='image-carousel'] .carousel-arrow {
+    display: none;
+  }
+
+  [data-type='image-carousel']:hover .carousel-arrow {
+    display: flex;
+  }
 }
 
 [data-type='image-carousel'] .carousel-arrow--prev {
