@@ -13,6 +13,10 @@ interface Props {
 
 const { title, description, url, image, locale, type = "website" } = Astro.props;
 
+const ogImage = image?.endsWith('.webp')
+  ? image.replace(/\.webp$/, '_og.webp')
+  : image;
+
 const ogLocaleMap: Record<Locale, string> = {
   ko: "ko_KR",
   en: "en_US",
@@ -31,4 +35,10 @@ const ogLocaleMap: Record<Locale, string> = {
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={SITE_NAME_KO} />
 <meta property="og:locale" content={ogLocaleMap[locale]} />
-{image && <meta property="og:image" content={image} />}
+{ogImage && (
+  <>
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+  </>
+)}
