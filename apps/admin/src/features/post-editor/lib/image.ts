@@ -20,11 +20,12 @@ function drawWatermark(ctx: CanvasRenderingContext2D, width: number, height: num
 
 type ToWebPOptions = {
   maxWidth?: number;
+  maxHeight?: number;
   quality?: number;
 };
 
 export function toWebP(file: File, options: ToWebPOptions = {}): Promise<Blob> {
-  const { maxWidth, quality = 1 } = options;
+  const { maxWidth, maxHeight, quality = 1 } = options;
 
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -37,16 +38,30 @@ export function toWebP(file: File, options: ToWebPOptions = {}): Promise<Blob> {
         w = maxWidth;
       }
 
+      const cropY = maxHeight && h > maxHeight ? Math.round((h - maxHeight) / 2) : 0;
+      const canvasH = maxHeight && h > maxHeight ? maxHeight : h;
+
+      const resized = document.createElement('canvas');
+      resized.width = w;
+      resized.height = h;
+      const rCtx = resized.getContext('2d');
+      if (!rCtx) {
+        reject(new Error('Canvas context failed'));
+        return;
+      }
+      rCtx.drawImage(img, 0, 0, w, h);
+
       const canvas = document.createElement('canvas');
       canvas.width = w;
-      canvas.height = h;
+      canvas.height = canvasH;
       const ctx = canvas.getContext('2d');
       if (!ctx) {
         reject(new Error('Canvas context failed'));
         return;
       }
-      ctx.drawImage(img, 0, 0, w, h);
-      drawWatermark(ctx, w, h);
+      ctx.drawImage(resized, 0, cropY, w, canvasH, 0, 0, w, canvasH);
+      drawWatermark(ctx, w, canvasH);
+
       canvas.toBlob(
         (blob) => {
           if (blob) {

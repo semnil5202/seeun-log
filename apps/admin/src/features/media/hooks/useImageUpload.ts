@@ -48,7 +48,7 @@ export function useImageUpload() {
     await uploadBlob(resizedUrl, resizedBlob);
 
     if (options?.og) {
-      const ogBlob = await toWebP(file, { maxWidth: OG_MAX_WIDTH });
+      const ogBlob = await toWebP(file, { maxWidth: OG_MAX_WIDTH, maxHeight: 630 });
       const ogKey = key.replace(/\.(webp|jpg)$/, `${OG_SUFFIX}.${ext}`);
       const { presignedUrl: ogPresignedUrl } = await getPresignedUrl(
         file.type,
