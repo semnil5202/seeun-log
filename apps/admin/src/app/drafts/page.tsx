@@ -33,6 +33,7 @@ export default function DraftsPage() {
   const [drafts, setDrafts] = useState<DraftListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<DraftListItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadDrafts = useCallback(async () => {
     try {
@@ -51,6 +52,7 @@ export default function DraftsPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    setIsDeleting(true);
 
     try {
       await deleteDraft(deleteTarget.id);
@@ -59,6 +61,7 @@ export default function DraftsPage() {
     } catch {
       toast.error('삭제에 실패했습니다.');
     } finally {
+      setIsDeleting(false);
       setDeleteTarget(null);
     }
   };
@@ -144,8 +147,8 @@ export default function DraftsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDelete}>
-              삭제
+            <AlertDialogAction variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? '삭제 중...' : '삭제'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
