@@ -180,9 +180,15 @@
 - [ ] Left Sidebar 프로필 영역 다듬기
 - [x] 파비콘 적용
 
-## SEO — Sitemap
+## SEO — Sitemap & robots.txt
 
-- [ ] sitemap.xml 생성 (Astro SSG 빌드 타임)
+- [x] `@astrojs/sitemap` integration 연동 (8 locale hreflang alternate, `/search/` 제외)
+- [x] `robots.txt` Astro API Route 생성 (`User-agent: *`, `Allow: /`, sitemap URL 참조)
+
+## SEO — OG Image
+
+- [ ] 메인 페이지(`/`) OG 이미지 설정
+- [ ] 카테고리/서브카테고리 인덱스 페이지 OG 이미지 설정
 
 ## Ads
 

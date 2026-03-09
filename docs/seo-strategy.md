@@ -27,9 +27,31 @@
   - `reviewRating`: 1-5 stars
   - `author`: Semin & Chaeun
 
+## robots.txt
+
+Astro API Route (`src/pages/robots.txt.ts`)로 동적 생성.
+
+```
+User-agent: *
+Allow: /
+
+Sitemap: {site}/sitemap-index.xml
+```
+
+- `{site}`는 `astro.config.mjs`의 `site` 값 (`getSiteUrlFromEnv()`)
+- Sitemap URL은 `@astrojs/sitemap`이 생성하는 `sitemap-index.xml`을 가리킴
+
+## Sitemap
+
+`@astrojs/sitemap` integration으로 빌드 타임에 자동 생성.
+
+- 8개 locale(`ko`, `en`, `ja`, `zh-CN`, `zh-TW`, `id`, `vi`, `th`)에 대한 `xhtml:link hreflang` alternate 자동 생성
+- `/search/` 페이지 제외 (`filter` 옵션 -- noindex 페이지)
+- `is_multilingual === false`인 포스트는 다국어 페이지가 빌드되지 않으므로 sitemap에도 자연스럽게 미포함
+
 ## Meta Tags
 
-- 모든 페이지: `<title>`, `<meta description>`, Open Graph (`og:title`, `og:description`, `og:image`)
+- 모든 페이지: `<title>`, `<meta description>`, Open Graph (`og:title`, `og:description`, `og:image`, `og:image:width`, `og:image:height`)
 - Canonical Tag 필수 (중복 URL 방지)
 - Trailing slash 일관성 유지
 
@@ -44,6 +66,7 @@
 - `srcset` + explicit `width`/`height`
 - 첫 번째 PostCard thumbnail: LCP Priority (`loading="eager"`)
 - 나머지: `loading="lazy"`
+- OG 이미지: 썸네일 업로드 시 1200px 너비 `_og.webp` 변형을 자동 생성. `OpenGraph.astro`에서 `thumbnail.webp` → `thumbnail_og.webp`로 변환하여 `og:image`에 사용. `og:image:width`(1200) / `og:image:height`(630) 메타태그 포함
 
 ## i18n (다국어)
 

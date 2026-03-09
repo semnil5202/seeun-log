@@ -304,11 +304,13 @@ S3 배포 후, 캐시 무효화 전에 실행:
 
 ### 9-4. 추가 GitHub Secrets
 
-CF Function 관련 시크릿은 [`docs/secrets-reference.md`](secrets-reference.md) 섹션 2-2를 참조한다.
+dev/prod 각각 별도의 CF Function을 사용한다. 기존에는 단일 함수를 공유했으나, dev 배포 시 prod 함수가 덮어쓰이는 문제가 발생하여 분리하였다.
+
+CF Function 이름 및 시크릿 키는 [`secrets-reference.md`](secrets-reference.md) 섹션 2-2를 참조한다.
 
 ### 9-5. 환경 변수 분기 추가 (Step 5)
 
-기존 환경 변수 분기(Step 5)에 `CF_FUNCTION_NAME`을 추가한다. 시크릿 키는 [`secrets-reference.md`](secrets-reference.md) 섹션 2-2를 참조.
+Step 5에서 브랜치 기준으로 `CF_FUNCTION_NAME`을 분기한다. `main` 브랜치는 `PROD_CF_FUNCTION_NAME`, `develop` 브랜치는 `DEV_CF_FUNCTION_NAME` 시크릿을 사용한다. 시크릿 키는 [`secrets-reference.md`](secrets-reference.md) 섹션 2-2를 참조.
 
 ## 10. Checklist (구현 전 확인)
 

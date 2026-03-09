@@ -70,6 +70,7 @@ graph LR
 | GitHub Actions        | CI/CD, SSG 빌드   |
 | AWS S3 + CloudFront   | 정적 호스팅 + CDN (Client SSG) |
 | AWS S3 + CloudFront   | 미디어 CDN (이미지/폰트, 1년 캐시). 상세: [`secrets-reference.md`](secrets-reference.md) 섹션 12 |
+| @astrojs/sitemap       | Sitemap 자동 생성 (8 locale hreflang alternate, `/search/` 제외) |
 
 ## Client App Directory Structure (`apps/client`)
 
@@ -155,6 +156,7 @@ src/
 │   ├── ListLayout.astro                    # 리스트 페이지 레이아웃 (3-Column)
 │   └── PostLayout.astro                    # 포스트 상세 레이아웃
 ├── pages/                                  # Astro 파일 라우팅
+│   └── robots.txt.ts                       # robots.txt API Route (동적 생성)
 └── styles/                                 # 글로벌 스타일
 ```
 
