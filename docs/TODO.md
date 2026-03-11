@@ -148,6 +148,10 @@
 - [x] **검색 페이지 max-width** — `SearchUI.astro` 루트 div에 `w-full max-w-[688px]` 적용
 - [x] **애드센스 가짜 지면 주석 처리** — 5곳 주석 처리. 복원 가이드: [`docs/ADSENSE-TODO.md`](ADSENSE-TODO.md)
 
+## Admin + Client — 최근 완료 (2026-03-11)
+
+- [x] **이미지 width/height 속성 명시 (CLS 방지)** — Admin: `toWebP()` 반환 타입 `WebPResult` (`{ blob, width, height }`), `useImageUpload` 반환 `UploadImageResult` (`{ url, width, height }`), `CustomResizableImage` width/height HTML 속성 출력, `UploadImage` 툴바 치수 전달. Client: `injectOptimizedUrls()` 리사이즈 적용 시 width/height 비례 스케일링 (`RESIZED_MAX_WIDTH=688`). 리사이즈 이미지 quality 0.8 -> 0.75. 캐러셀 이미지는 제외
+
 ## Admin — 최근 완료 (2026-03-09)
 
 - [x] **링크 북마크 기능** — Tiptap 커스텀 노드 `CustomLinkBookmark` (OG 태그 카드 UI). URL 붙여넣기 시 `LinkPastePopup`으로 링크/북마크 선택. 내부 링크(`eunminlog.site`) 북마크는 빌드 타임에 다국어 URL/텍스트 자동 변환 (`shared/lib/bookmark.ts`). 번역 파이프라인에서 북마크 영역 skip. Client CSS hover 효과 + 모바일 세로 배치

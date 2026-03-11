@@ -68,6 +68,16 @@ Sitemap: {site}/sitemap-index.xml
 - 나머지: `loading="lazy"`
 - OG 이미지: 썸네일 업로드 시 1200px 너비 `_og.webp` 변형을 자동 생성. `OpenGraph.astro`에서 `thumbnail.webp` → `thumbnail_og.webp`로 변환하여 `og:image`에 사용. `og:image:width`(1200) / `og:image:height`(630) 메타태그 포함
 
+### CLS 방지 (Cumulative Layout Shift)
+
+본문 이미지에 HTML `width`/`height` 속성을 명시하여 브라우저가 이미지 로드 전 공간을 미리 확보한다.
+
+- **Admin (업로드 시)**: `toWebP()` 함수가 리사이즈(688px) 이미지의 실제 치수(`width`, `height`)를 반환. Tiptap `CustomResizableImage` 노드가 HTML 속성으로 출력
+- **Client (빌드 시)**: `injectOptimizedUrls()`가 `_688` 리사이즈 URL 적용 시 width/height 속성을 비례 스케일링 (`RESIZED_MAX_WIDTH = 688`)
+- **반응형 조합**: CSS `width: 100%; height: auto;` + HTML `width`/`height` 속성으로 비율 유지
+- **제한**: 캐러셀 이미지(`data-type="image-carousel"`)는 CSS 레이아웃용 `data-width`/`data-height`와 구조적 충돌로 이번 범위에서 제외
+- **하위 호환**: 기존 게시글(width/height 속성 없는 이미지)은 속성 부재 시 무시하므로 정상 동작
+
 ## i18n (다국어)
 
 OpenAI GPT-5 Mini로 자동 번역. 한국어가 기본 언어.
