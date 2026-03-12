@@ -20,7 +20,7 @@ import { t } from "@/shared/lib/i18n/translations";
 import { formatDate } from "@/shared/lib/date";
 import { insertInArticleAds } from "@/features/post-detail/lib/ads";
 import { buildBlogPostingSchema } from "@/features/post-detail/lib/schema";
-import { optimizedUrl, injectOptimizedUrls } from "@/shared/lib/image";
+import { optimizedUrl, injectOptimizedUrls, injectZoomIcons } from "@/shared/lib/image";
 import { injectLocalizedBookmarks } from "@/shared/lib/bookmark";
 import type { LocalizedPost } from "@/shared/types/post";
 import type { Locale } from "@/shared/types/common";
@@ -69,7 +69,7 @@ const contentWithAlts = post.image_alts?.length
   : post.content;
 const contentOptimized = injectOptimizedUrls(contentWithAlts);
 const contentWithBookmarks = await injectLocalizedBookmarks(contentOptimized, locale);
-const contentWithAds = contentWithBookmarks;
+const contentWithAds = injectZoomIcons(contentWithBookmarks);
 const blogPosting = buildBlogPostingSchema(post, canonical);
 const sponsoredLabel = t("post.sponsored", locale);
 
@@ -144,7 +144,7 @@ const gaPageParams = {
             )}
           </div>
 
-          <div class="aspect-video w-full overflow-hidden mb-6 bg-gray-100">
+          <div class="aspect-video w-full overflow-hidden mb-6 bg-gray-100 relative img-zoom-parent">
             <img
               src={optimizedUrl(post.thumbnail)}
               data-full={post.thumbnail}
@@ -158,6 +158,9 @@ const gaPageParams = {
               itemprop="image"
               data-lightbox
             />
+            <span class="img-zoom-hint" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+            </span>
           </div>
 
           {post.place_name && (
