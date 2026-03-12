@@ -17,8 +17,35 @@ img[data-lightbox] {
   cursor: pointer;
 }
 
-[itemprop='articleBody'] > p > img {
+[itemprop='articleBody'] > p > img,
+[itemprop='articleBody'] > p > .img-zoom-parent {
   margin: 12px 0;
+}
+
+.img-zoom-hint {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@media (hover: hover) {
+  .img-zoom-hint {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .img-zoom-parent:hover .img-zoom-hint {
+    opacity: 1;
+  }
 }
 
 [itemprop='articleBody'] p:empty,
