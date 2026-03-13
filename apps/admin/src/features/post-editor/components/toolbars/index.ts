@@ -5,4 +5,5 @@ export { TextAlign } from './TextAlign';
 export { UploadImage } from './UploadImage';
 export { History } from './History';
 export { TableToolbar } from './TableToolbar';
+export { TextColor } from './TextColor';
 export { VerticalDivider } from './VerticalDivider';

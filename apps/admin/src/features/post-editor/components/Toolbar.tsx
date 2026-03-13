@@ -6,6 +6,7 @@ import {
   List,
   TableToolbar,
   TextAlign,
+  TextColor,
   TiptapLink,
   UploadImage,
   VerticalDivider,
@@ -20,6 +21,8 @@ export function Toolbar({ editor }: ToolbarProps) {
     <div className="sticky top-0 z-10 flex h-11 items-center justify-between overflow-x-auto border-b bg-muted px-2">
       <div className="flex items-center gap-1">
         <FontStyles editor={editor} />
+        <VerticalDivider />
+        <TextColor editor={editor} />
         <VerticalDivider />
         <TiptapLink editor={editor} />
         <VerticalDivider />

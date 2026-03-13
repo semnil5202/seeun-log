@@ -10,6 +10,9 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { textblockTypeInputRule } from '@tiptap/core';
 
+import Color from '@tiptap/extension-color';
+import { TextStyle } from '@tiptap/extension-text-style';
+
 import { CustomImageCarousel } from './image-carousel';
 import { CustomResizableImage } from './image';
 import { CustomLinkBookmark } from './link-bookmark';
@@ -128,14 +131,33 @@ const CustomTableRow = TableRow.configure({
   HTMLAttributes: {},
 });
 
-const CustomTableHeader = TableHeader.configure({
+const backgroundAttr = {
+  background: {
+    default: null,
+    parseHTML: (el: HTMLElement) => el.style.backgroundColor || null,
+    renderHTML: (attrs: Record<string, string | null>) => {
+      if (!attrs.background) return {};
+      return { style: `background-color: ${attrs.background}` };
+    },
+  },
+};
+
+const CustomTableHeader = TableHeader.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...backgroundAttr };
+  },
+}).configure({
   HTMLAttributes: {
     style:
       'border: 1px solid #d1d5db; padding: 8px 12px; background-color: #f3f4f6; font-weight: 600; text-align: left;',
   },
 });
 
-const CustomTableCell = TableCell.configure({
+const CustomTableCell = TableCell.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...backgroundAttr };
+  },
+}).configure({
   HTMLAttributes: {
     style: 'border: 1px solid #d1d5db; padding: 8px 12px;',
   },
@@ -155,4 +177,6 @@ export const tiptapExtensions = [
   CustomTableRow,
   CustomTableHeader,
   CustomTableCell,
+  TextStyle,
+  Color,
 ];

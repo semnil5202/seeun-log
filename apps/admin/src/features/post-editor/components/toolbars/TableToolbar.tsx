@@ -5,6 +5,16 @@ import { TableIcon } from '../icons';
 
 import type { EditorProps } from './types';
 
+const CELL_COLORS: { color: string | null; label: string }[] = [
+  { color: null, label: '없음' },
+  { color: '#f3f4f6', label: '회색' },
+  { color: '#fef9c3', label: '노랑' },
+  { color: '#dcfce7', label: '초록' },
+  { color: '#dbeafe', label: '파랑' },
+  { color: '#fce7f3', label: '분홍' },
+  { color: '#ffedd5', label: '주황' },
+];
+
 export function TableToolbar({ editor }: EditorProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isInTable, setIsInTable] = useState(false);
@@ -33,7 +43,7 @@ export function TableToolbar({ editor }: EditorProps) {
       const parent = buttonRef.current.closest('[class*="border-b"]');
       const parentRect = parent?.getBoundingClientRect();
       const right = parentRect
-        ? window.innerWidth - parentRect.right + parentRect.width * 0.2
+        ? window.innerWidth - parentRect.right + parentRect.width * 0.15
         : window.innerWidth - rect.right;
       setDropdownPos({ top: rect.bottom + 4, right: Math.max(8, right) });
     }
@@ -57,7 +67,7 @@ export function TableToolbar({ editor }: EditorProps) {
       </button>
       {isInTable && (
         <div
-          className="fixed z-50 flex max-w-[calc(100vw-16px)] items-center gap-0.5 overflow-x-auto rounded border bg-background px-1 py-0.5 shadow-md"
+          className="fixed z-50 flex max-w-[calc(100vw-16px)] items-center gap-0.5 overflow-x-auto border bg-background px-1 py-0.5 shadow-md"
           style={{ top: dropdownPos.top, right: dropdownPos.right }}
         >
           <button
@@ -124,6 +134,30 @@ export function TableToolbar({ editor }: EditorProps) {
           >
             분할
           </button>
+          <div className="mx-0.5 h-4 w-px bg-border" />
+          {CELL_COLORS.map(({ color, label }) => (
+            <button
+              key={`bg-${label}`}
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().setCellAttribute('background', color).run();
+              }}
+              className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded hover:bg-accent"
+              title={`배경: ${label}`}
+            >
+              <span
+                className="h-4 w-4 rounded-sm border border-gray-300"
+                style={{ backgroundColor: color ?? 'transparent' }}
+              >
+                {color === null && (
+                  <svg viewBox="0 0 16 16" className="h-4 w-4 text-gray-400">
+                    <line x1="2" y1="14" x2="14" y2="2" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                )}
+              </span>
+            </button>
+          ))}
           <div className="mx-0.5 h-4 w-px bg-border" />
           <button
             type="button"

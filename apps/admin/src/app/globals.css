@@ -188,8 +188,9 @@
   text-align: left;
 }
 
-.ProseMirror .selectedCell {
-  background-color: oklch(0.91 0.05 155 / 30%);
+.ProseMirror td.selectedCell,
+.ProseMirror th.selectedCell {
+  background-color: oklch(0.91 0.05 155 / 30%) !important;
 }
 
 .ProseMirror .column-resize-handle {
