@@ -8,11 +8,15 @@ import type { EditorProps } from './types';
 export function TableToolbar({ editor }: EditorProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isInTable, setIsInTable] = useState(false);
+  const [canMerge, setCanMerge] = useState(false);
+  const [canSplit, setCanSplit] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
 
   useEffect(() => {
     const handleUpdate = () => {
       setIsInTable(editor.isActive('table'));
+      setCanMerge(editor.can().mergeCells());
+      setCanSplit(editor.can().splitCell());
     };
 
     editor.on('selectionUpdate', handleUpdate);
@@ -104,7 +108,7 @@ export function TableToolbar({ editor }: EditorProps) {
               e.preventDefault();
               editor.chain().focus().mergeCells().run();
             }}
-            disabled={!editor.can().mergeCells()}
+            disabled={!canMerge}
             className="flex h-7 cursor-pointer items-center justify-center rounded px-2 text-xs text-foreground hover:bg-accent disabled:cursor-default disabled:opacity-40"
           >
             병합
@@ -115,7 +119,7 @@ export function TableToolbar({ editor }: EditorProps) {
               e.preventDefault();
               editor.chain().focus().splitCell().run();
             }}
-            disabled={!editor.can().splitCell()}
+            disabled={!canSplit}
             className="flex h-7 cursor-pointer items-center justify-center rounded px-2 text-xs text-foreground hover:bg-accent disabled:cursor-default disabled:opacity-40"
           >
             분할
