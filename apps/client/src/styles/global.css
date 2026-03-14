@@ -43,7 +43,8 @@ img[data-lightbox] {
     transition: opacity 0.2s;
   }
 
-  .img-zoom-parent:hover .img-zoom-hint {
+  .img-zoom-parent:hover .img-zoom-hint,
+  .carousel-slide:hover .img-zoom-hint {
     opacity: 1;
   }
 }
@@ -93,6 +94,7 @@ img[data-lightbox] {
 [data-type='image-carousel'] .carousel-slide {
   flex: 0 0 90%;
   scroll-snap-align: start;
+  position: relative;
 }
 
 [data-type='image-carousel'] .carousel-slide img {
