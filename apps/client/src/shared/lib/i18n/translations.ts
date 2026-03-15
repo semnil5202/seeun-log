@@ -216,7 +216,7 @@ const UI_STRINGS: Record<Locale, Record<string, string>> = {
     'place.name': '場所',
     'place.address': '住所',
     'place.price': '価格',
-    'place.priceUnit': '円',
+    'place.priceUnit': 'ウォン',
     'product.name': '製品名',
     'product.source': '購入先',
     'place.currency': 'ウォン',
