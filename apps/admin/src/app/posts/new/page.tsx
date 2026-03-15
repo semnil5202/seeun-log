@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -113,6 +113,8 @@ function NewPostContent() {
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummarized, setIsSummarized] = useState(false);
   const [isTranslated, setIsTranslated] = useState(false);
+  const [translationEditCompleted, setTranslationEditCompleted] = useState(false);
+  const [completedFormSnapshot, setCompletedFormSnapshot] = useState<string | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -263,6 +265,30 @@ function NewPostContent() {
       thumbnailAlt: watchedThumbnailAlt,
     },
   );
+
+  const currentFormFingerprint = useMemo(() => {
+    return JSON.stringify({
+      title,
+      content: watchedContent,
+      description,
+      placeName: watchedPlaceName,
+      address: watchedAddress,
+      productNames: currentValidProducts.map((p) => p.name),
+      purchaseSources: currentValidProducts.map((p) => p.source),
+      pricePrefixes: currentValidProducts.map((p) => p.pricePrefix),
+      pricePrefix: watchedPricePrefix,
+      imageAlts: imageAlts.map((a) => a.alt),
+      thumbnailAlt: watchedThumbnailAlt,
+    });
+  }, [title, watchedContent, description, watchedPlaceName, watchedAddress, currentValidProducts, watchedPricePrefix, imageAlts, watchedThumbnailAlt]);
+
+  useEffect(() => {
+    if (!translationEditCompleted || !completedFormSnapshot) return;
+    if (currentFormFingerprint !== completedFormSnapshot) {
+      setTranslationEditCompleted(false);
+      setCompletedFormSnapshot(null);
+    }
+  }, [currentFormFingerprint, translationEditCompleted, completedFormSnapshot]);
 
   const isMultilingual =
     !!(category && subCategory) &&
@@ -461,6 +487,11 @@ function NewPostContent() {
     }
 
     if (needsTranslation && !isTranslated) {
+      setTranslationError(true);
+      return;
+    }
+
+    if (needsTranslation && isTranslated && previewDirtyFields.size > 0 && !translationEditCompleted) {
       setTranslationError(true);
       return;
     }
@@ -809,7 +840,12 @@ function NewPostContent() {
               이미지 alt 입력이 먼저 필요합니다.
             </p>
           )}
-          {translationError && (
+          {translationError && isTranslated && previewDirtyFields.size > 0 && (
+            <p className="mt-2 text-end text-[14px] text-red-500">
+              수정된 번역 영역의 번역 요청이 먼저 필요합니다.
+            </p>
+          )}
+          {translationError && !isTranslated && (
             <p className="mt-2 text-end text-[14px] text-red-500">번역본 생성이 먼저 필요합니다.</p>
           )}
         </div>
@@ -865,9 +901,18 @@ function NewPostContent() {
         dirtyFields={previewDirtyFields}
         onRetryLocale={handleRetryLocale}
         onRetryAll={handleRetryAll}
+        onEditComplete={() => {
+          setTranslationEditCompleted(true);
+          setCompletedFormSnapshot(currentFormFingerprint);
+        }}
         onUpdateTranslationContent={(locale, content) =>
           setTranslationResults((prev) =>
             prev.map((r) => (r.locale === locale ? { ...r, content } : r)),
+          )
+        }
+        onUpdateTranslation={(locale, partial) =>
+          setTranslationResults((prev) =>
+            prev.map((r) => (r.locale === locale ? { ...r, ...partial } : r)),
           )
         }
       />

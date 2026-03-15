@@ -63,6 +63,7 @@ type TranslationSheetProps = {
   onRetryAll?: (signal?: AbortSignal) => Promise<void>;
   onEditComplete?: () => void;
   onUpdateTranslationContent?: (locale: TranslationLocale, content: string) => void;
+  onUpdateTranslation?: (locale: TranslationLocale, partial: Partial<TranslationResult>) => void;
 };
 
 const DirtyBadge = () => (
@@ -103,6 +104,7 @@ export function TranslationSheet({
   onRetryLocale,
   onEditComplete,
   onUpdateTranslationContent,
+  onUpdateTranslation,
 }: TranslationSheetProps) {
   const [selected, setSelected] = useState<FilterLocale>('en');
   const [retranslating, setRetranslating] = useState<Record<string, boolean>>({});
@@ -112,6 +114,8 @@ export function TranslationSheet({
   const suppressAbortToastRef = useRef(false);
   const [directEditSections, setDirectEditSections] = useState<Record<string, string>>({});
   const [directEditingSections, setDirectEditingSections] = useState<Set<string>>(new Set());
+  const [directEditFields, setDirectEditFields] = useState<Record<string, string>>({});
+  const [directEditingFields, setDirectEditingFields] = useState<Set<string>>(new Set());
   const [manuallyEditedLocales, setManuallyEditedLocales] = useState<Set<TranslationLocale>>(new Set());
 
   const selectedTranslation =
@@ -241,6 +245,56 @@ export function TranslationSheet({
     }
   };
 
+  const fieldEditKey = (locale: TranslationLocale, field: string) => `${locale}-field-${field}`;
+
+  const handleFieldDirectEditToggle = (
+    locale: TranslationLocale,
+    field: keyof TranslationResult,
+    currentValue: string,
+  ) => {
+    const key = fieldEditKey(locale, field);
+    if (directEditingFields.has(key)) {
+      const edited = directEditFields[key];
+      if (edited !== undefined && edited !== currentValue) {
+        onUpdateTranslation?.(locale, { [field]: edited });
+        setManuallyEditedLocales((prev) => new Set(prev).add(locale));
+      }
+      setDirectEditingFields((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    } else {
+      setDirectEditingFields((prev) => new Set(prev).add(key));
+      setDirectEditFields((prev) => ({ ...prev, [key]: currentValue }));
+    }
+  };
+
+  const handleArrayFieldDirectEditToggle = (
+    locale: TranslationLocale,
+    field: keyof TranslationResult,
+    currentValues: string[],
+  ) => {
+    const key = fieldEditKey(locale, field);
+    const joinedCurrent = currentValues.join('\n');
+    if (directEditingFields.has(key)) {
+      const edited = directEditFields[key];
+      if (edited !== undefined && edited !== joinedCurrent) {
+        const newValues = edited.split('\n');
+        onUpdateTranslation?.(locale, { [field]: newValues });
+        setManuallyEditedLocales((prev) => new Set(prev).add(locale));
+      }
+      setDirectEditingFields((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    } else {
+      setDirectEditingFields((prev) => new Set(prev).add(key));
+      setDirectEditFields((prev) => ({ ...prev, [key]: joinedCurrent }));
+    }
+  };
+
   const isBulkRunning = bulkRetranslating;
 
   const renderFieldRow = (
@@ -250,6 +304,9 @@ export function TranslationSheet({
       isBold?: boolean;
       isHtml?: boolean;
       children?: ReactNode;
+      directEditField?: keyof TranslationResult;
+      directEditArrayField?: keyof TranslationResult;
+      directEditArrayValues?: string[];
     },
   ) => {
     if (value === undefined && !options?.children) return null;
@@ -261,6 +318,15 @@ export function TranslationSheet({
     const isLocaleRetranslated = retranslatedLocales.has(locale);
     const isManuallyEdited = manuallyEditedLocales.has(locale);
     const showTranslated = isLocaleRetranslated || isManuallyEdited;
+
+    const isKo = selected === 'ko';
+    const editFieldKey = options?.directEditField
+      ? fieldEditKey(locale, options.directEditField)
+      : options?.directEditArrayField
+        ? fieldEditKey(locale, options.directEditArrayField)
+        : null;
+    const isDirectEditing = editFieldKey !== null && directEditingFields.has(editFieldKey);
+    const showDirectEditSwitch = !isKo && (options?.directEditField !== undefined || options?.directEditArrayField !== undefined);
 
     return (
       <div className="py-5 first:pt-0 last:pb-0">
@@ -278,17 +344,44 @@ export function TranslationSheet({
             {isDirty && !showTranslated && <DirtyBadge />}
             {isDirty && showTranslated && <TranslatedBadge />}
           </div>
+          {showDirectEditSwitch && (
+            <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              직접 수정
+              <Switch
+                size="sm"
+                checked={isDirectEditing}
+                onCheckedChange={() => {
+                  if (options?.directEditArrayField && options?.directEditArrayValues) {
+                    handleArrayFieldDirectEditToggle(locale, options.directEditArrayField, options.directEditArrayValues);
+                  } else if (options?.directEditField) {
+                    handleFieldDirectEditToggle(locale, options.directEditField, value ?? '');
+                  }
+                }}
+              />
+            </label>
+          )}
         </div>
-        {options?.children ?? (
-          options?.isHtml ? (
-            <div
-              className="prose prose-sm mt-1 max-w-none"
-              dangerouslySetInnerHTML={{ __html: value! }}
-            />
-          ) : (
-            <p className={`mt-1 ${options?.isBold ? 'text-lg font-bold' : 'whitespace-pre-wrap text-sm'}`}>
-              {value}
-            </p>
+        {isDirectEditing && editFieldKey !== null ? (
+          <textarea
+            className="mt-1 w-full resize-none border border-input bg-transparent p-2 font-mono text-xs outline-none"
+            style={{ height: '80px' }}
+            value={directEditFields[editFieldKey] ?? (options?.directEditArrayValues ? options.directEditArrayValues.join('\n') : (value ?? ''))}
+            onChange={(e) =>
+              setDirectEditFields((prev) => ({ ...prev, [editFieldKey]: e.target.value }))
+            }
+          />
+        ) : (
+          options?.children ?? (
+            options?.isHtml ? (
+              <div
+                className="prose prose-sm mt-1 max-w-none"
+                dangerouslySetInnerHTML={{ __html: value! }}
+              />
+            ) : (
+              <p className={`mt-1 ${options?.isBold ? 'text-lg font-bold' : 'whitespace-pre-wrap text-sm'}`}>
+                {value}
+              </p>
+            )
           )
         )}
       </div>
@@ -521,44 +614,62 @@ export function TranslationSheet({
           <span className="text-sm font-semibold text-muted-foreground">전체 선택</span>
         </div>
 
-        {renderFieldRow('title', selectedTranslation.title, { isBold: true })}
+        {renderFieldRow('title', selectedTranslation.title, { isBold: true, directEditField: 'title' })}
 
         {selectedTranslation.place_name &&
-          renderFieldRow('place_name', selectedTranslation.place_name)}
+          renderFieldRow('place_name', selectedTranslation.place_name, { directEditField: 'place_name' })}
         {selectedTranslation.address &&
-          renderFieldRow('address', selectedTranslation.address)}
+          renderFieldRow('address', selectedTranslation.address, { directEditField: 'address' })}
         {selectedTranslation.product_name.length > 0 &&
           renderFieldRow('product_name', undefined, {
-            children: (
-              <ul className="mt-1 space-y-0.5 text-sm">
-                {selectedTranslation.product_name.map((name, i) => (
-                  <li key={i}>{selectedTranslation.product_name.length > 1 ? `${i + 1}. ` : ''}{name}</li>
-                ))}
-              </ul>
-            ),
+            directEditArrayField: 'product_name',
+            directEditArrayValues: selectedTranslation.product_name,
+            children: (() => {
+              const key = fieldEditKey(locale, 'product_name');
+              if (directEditingFields.has(key)) return null;
+              return (
+                <ul className="mt-1 space-y-0.5 text-sm">
+                  {selectedTranslation.product_name.map((name, i) => (
+                    <li key={i}>{selectedTranslation.product_name.length > 1 ? `${i + 1}. ` : ''}{name}</li>
+                  ))}
+                </ul>
+              );
+            })(),
           })}
         {selectedTranslation.purchase_source.length > 0 &&
           renderFieldRow('purchase_source', undefined, {
-            children: (
-              <ul className="mt-1 space-y-0.5 text-sm">
-                {selectedTranslation.purchase_source.map((source, i) => (
-                  <li key={i}>{selectedTranslation.purchase_source.length > 1 ? `${i + 1}. ` : ''}{source}</li>
-                ))}
-              </ul>
-            ),
+            directEditArrayField: 'purchase_source',
+            directEditArrayValues: selectedTranslation.purchase_source,
+            children: (() => {
+              const key = fieldEditKey(locale, 'purchase_source');
+              if (directEditingFields.has(key)) return null;
+              return (
+                <ul className="mt-1 space-y-0.5 text-sm">
+                  {selectedTranslation.purchase_source.map((source, i) => (
+                    <li key={i}>{selectedTranslation.purchase_source.length > 1 ? `${i + 1}. ` : ''}{source}</li>
+                  ))}
+                </ul>
+              );
+            })(),
           })}
         {selectedTranslation.price_prefix.length > 0 &&
           renderFieldRow('price_prefix', undefined, {
-            children: (
-              <ul className="mt-1 space-y-0.5 text-sm">
-                {selectedTranslation.price_prefix.map((prefix, i) => (
-                  <li key={i}>{selectedTranslation.price_prefix.length > 1 ? `${i + 1}. ` : ''}{prefix}</li>
-                ))}
-              </ul>
-            ),
+            directEditArrayField: 'price_prefix',
+            directEditArrayValues: selectedTranslation.price_prefix,
+            children: (() => {
+              const key = fieldEditKey(locale, 'price_prefix');
+              if (directEditingFields.has(key)) return null;
+              return (
+                <ul className="mt-1 space-y-0.5 text-sm">
+                  {selectedTranslation.price_prefix.map((prefix, i) => (
+                    <li key={i}>{selectedTranslation.price_prefix.length > 1 ? `${i + 1}. ` : ''}{prefix}</li>
+                  ))}
+                </ul>
+              );
+            })(),
           })}
 
-        {renderFieldRow('description', selectedTranslation.description)}
+        {renderFieldRow('description', selectedTranslation.description, { directEditField: 'description' })}
 
         {/* 본문 — 섹션 리스트 */}
         <div className="py-5">
@@ -585,26 +696,67 @@ export function TranslationSheet({
           renderFieldRow('image_alts', undefined, {
             children: (
               <div className="mt-2 space-y-3">
-                {originalThumbnailAlt && (
-                  <div className="flex items-start gap-3">
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
-                        썸네일
-                      </span>
-                      {!selectedTranslation.thumbnail_alt && <UntranslatedBadge />}
+                {originalThumbnailAlt && (() => {
+                  const thumbKey = fieldEditKey(locale, 'thumbnail_alt');
+                  const isEditingThumb = directEditingFields.has(thumbKey);
+                  const currentThumbAlt = selectedTranslation.thumbnail_alt || originalThumbnailAlt;
+                  return (
+                    <div className="flex items-start gap-3">
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+                          썸네일
+                        </span>
+                        {!selectedTranslation.thumbnail_alt && <UntranslatedBadge />}
+                      </div>
+                      <div className="min-w-0 grow">
+                        {originalThumbnail && (
+                          <img src={originalThumbnail} alt="" className="mb-1 h-12 w-auto object-cover" />
+                        )}
+                        {isEditingThumb ? (
+                          <textarea
+                            className="w-full resize-none border border-input bg-transparent p-2 font-mono text-xs outline-none"
+                            style={{ height: '60px' }}
+                            value={directEditFields[thumbKey] ?? currentThumbAlt}
+                            onChange={(e) =>
+                              setDirectEditFields((prev) => ({ ...prev, [thumbKey]: e.target.value }))
+                            }
+                          />
+                        ) : (
+                          <p className="text-sm">{currentThumbAlt}</p>
+                        )}
+                      </div>
+                      <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                        직접 수정
+                        <Switch
+                          size="sm"
+                          checked={isEditingThumb}
+                          onCheckedChange={() => {
+                            if (isEditingThumb) {
+                              const edited = directEditFields[thumbKey];
+                              if (edited !== undefined && edited !== currentThumbAlt) {
+                                onUpdateTranslation?.(locale, { thumbnail_alt: edited });
+                                setManuallyEditedLocales((prev) => new Set(prev).add(locale));
+                              }
+                              setDirectEditingFields((prev) => {
+                                const next = new Set(prev);
+                                next.delete(thumbKey);
+                                return next;
+                              });
+                            } else {
+                              setDirectEditingFields((prev) => new Set(prev).add(thumbKey));
+                              setDirectEditFields((prev) => ({ ...prev, [thumbKey]: currentThumbAlt }));
+                            }
+                          }}
+                        />
+                      </label>
                     </div>
-                    <div className="min-w-0">
-                      {originalThumbnail && (
-                        <img src={originalThumbnail} alt="" className="mb-1 h-12 w-auto object-cover" />
-                      )}
-                      <p className="text-sm">
-                        {selectedTranslation.thumbnail_alt || originalThumbnailAlt}
-                      </p>
-                    </div>
-                  </div>
-                )}
+                  );
+                })()}
                 {(originalImageAlts ?? []).map((origItem, i) => {
                   const translated = selectedTranslation.image_alts.find((t) => t.src === origItem.src);
+                  const imgKey = fieldEditKey(locale, `image_alt_${origItem.src}`);
+                  const isEditingImg = directEditingFields.has(imgKey);
+                  const currentAlt = translated?.alt || origItem.alt;
                   return (
                     <div key={origItem.src} className="flex items-start gap-3">
                       <div className="flex shrink-0 items-center gap-1.5">
@@ -613,10 +765,51 @@ export function TranslationSheet({
                         </span>
                         {!translated && <UntranslatedBadge />}
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 grow">
                         <img src={origItem.src} alt="" className="mb-1 h-12 w-auto object-cover" />
-                        <p className="text-sm">{translated?.alt || origItem.alt}</p>
+                        {isEditingImg ? (
+                          <textarea
+                            className="w-full resize-none border border-input bg-transparent p-2 font-mono text-xs outline-none"
+                            style={{ height: '60px' }}
+                            value={directEditFields[imgKey] ?? currentAlt}
+                            onChange={(e) =>
+                              setDirectEditFields((prev) => ({ ...prev, [imgKey]: e.target.value }))
+                            }
+                          />
+                        ) : (
+                          <p className="text-sm">{currentAlt}</p>
+                        )}
                       </div>
+                      <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                        직접 수정
+                        <Switch
+                          size="sm"
+                          checked={isEditingImg}
+                          onCheckedChange={() => {
+                            if (isEditingImg) {
+                              const edited = directEditFields[imgKey];
+                              if (edited !== undefined && edited !== currentAlt) {
+                                const newImageAlts = selectedTranslation.image_alts.map((a) =>
+                                  a.src === origItem.src ? { ...a, alt: edited } : a,
+                                );
+                                if (!translated) {
+                                  newImageAlts.push({ src: origItem.src, alt: edited });
+                                }
+                                onUpdateTranslation?.(locale, { image_alts: newImageAlts });
+                                setManuallyEditedLocales((prev) => new Set(prev).add(locale));
+                              }
+                              setDirectEditingFields((prev) => {
+                                const next = new Set(prev);
+                                next.delete(imgKey);
+                                return next;
+                              });
+                            } else {
+                              setDirectEditingFields((prev) => new Set(prev).add(imgKey));
+                              setDirectEditFields((prev) => ({ ...prev, [imgKey]: currentAlt }));
+                            }
+                          }}
+                        />
+                      </label>
                     </div>
                   );
                 })}

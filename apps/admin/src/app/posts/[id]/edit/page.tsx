@@ -484,8 +484,35 @@ function EditPostForm({
     setTranslationResults(results);
   };
 
+  const [completedFormSnapshot, setCompletedFormSnapshot] = useState<string | null>(null);
+
+  const currentFormFingerprint = useMemo(() => {
+    return JSON.stringify({
+      title,
+      content: watchedContent,
+      description,
+      placeName: watchedPlaceName,
+      address: watchedAddress,
+      productNames: currentValidProducts.map((p) => p.name),
+      purchaseSources: currentValidProducts.map((p) => p.source),
+      pricePrefixes: currentValidProducts.map((p) => p.pricePrefix),
+      pricePrefix: watchedPricePrefix,
+      imageAlts: imageAlts.map((a) => a.alt),
+      thumbnailAlt: watchedThumbnailAlt,
+    });
+  }, [title, watchedContent, description, watchedPlaceName, watchedAddress, currentValidProducts, watchedPricePrefix, imageAlts, watchedThumbnailAlt]);
+
+  useEffect(() => {
+    if (!translationEditCompleted || !completedFormSnapshot) return;
+    if (currentFormFingerprint !== completedFormSnapshot) {
+      setTranslationEditCompleted(false);
+      setCompletedFormSnapshot(null);
+    }
+  }, [currentFormFingerprint, translationEditCompleted, completedFormSnapshot]);
+
   const handleTranslationEditComplete = () => {
     setTranslationEditCompleted(true);
+    setCompletedFormSnapshot(currentFormFingerprint);
   };
 
   const handleEditSheetOpen = () => {
@@ -693,7 +720,6 @@ function EditPostForm({
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   setIsSummarized(false);
-                  setTranslationEditCompleted(false);
                 }}
                 onBlur={field.onBlur}
                 ref={field.ref}
@@ -807,6 +833,11 @@ function EditPostForm({
           onUpdateTranslationContent={(locale, content) =>
             setTranslationResults((prev) =>
               prev.map((r) => (r.locale === locale ? { ...r, content } : r)),
+            )
+          }
+          onUpdateTranslation={(locale, partial) =>
+            setTranslationResults((prev) =>
+              prev.map((r) => (r.locale === locale ? { ...r, ...partial } : r)),
             )
           }
         />
