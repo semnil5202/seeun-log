@@ -36,6 +36,7 @@ const {
 
 const summaryLabel = t("post.summary", locale);
 const summaryLines = description ? description.split('\n').filter(Boolean) : [];
+const targetCurrency = t("place.targetCurrency", locale);
 
 const displayProductNames = translatedProductNames ?? productNames;
 const displayPurchaseSources = translatedPurchaseSources ?? purchaseSources;
@@ -98,7 +99,25 @@ const products = (displayProductNames ?? []).map((name, i) => ({
           {product.price != null && (
             <div class="flex items-baseline gap-3">
               <dt class="shrink-0 w-16 text-gray-500 font-medium">{t("place.price", locale)}</dt>
-              <dd class="text-gray-900">{product.pricePrefix}{product.price.toLocaleString()}</dd>
+              <dd class="flex items-baseline gap-1.5">
+                <span class="text-gray-900">{product.pricePrefix}{product.price.toLocaleString()}</span>
+                {targetCurrency && (
+                  <a
+                    href={`https://www.google.com/search?q=${product.price}+KRW+to+${targetCurrency}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shrink-0 translate-y-px text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label={t("a11y.currencyConverter", locale)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <title>{t("a11y.currencyConverter", locale)}</title>
+                      <desc>{t("a11y.currencyConverter", locale)}</desc>
+                      <path d="M7 7h10v10"></path>
+                      <path d="M7 17 17 7"></path>
+                    </svg>
+                  </a>
+                )}
+              </dd>
             </div>
           )}
         </div>
