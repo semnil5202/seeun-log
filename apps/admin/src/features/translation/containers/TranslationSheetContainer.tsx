@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CheckIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,14 +18,17 @@ import { fetchTranslatePost } from '../api/client';
 import { LOCALE_FILTER_LABELS } from '../constants/locale';
 import { TermReviewList } from '../components/TermReviewList';
 
+type ConfirmedTermValue = { original: string; confirmed: Record<string, string> };
+
 type TranslationSheetContainerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTranslationComplete: (
     results: TranslationResult[],
-    confirmedTerms: { original: string; confirmed: string }[],
+    confirmedTerms: ConfirmedTermValue[],
   ) => void;
   initialTerms: FlaggedTerm[];
+  initialConfirmedValues?: ConfirmedTermValue[];
   title: string;
   content: string;
   description: string;
@@ -37,6 +40,8 @@ type TranslationSheetContainerProps = {
   pricePrefix?: string;
   imageAlts?: ImageAlt[];
   thumbnailAlt?: string;
+  reviewOnly?: boolean;
+  onTermsConfirmed?: (confirmedTerms: ConfirmedTermValue[]) => void;
 };
 
 export function TranslationSheetContainer({
@@ -44,6 +49,7 @@ export function TranslationSheetContainer({
   onOpenChange,
   onTranslationComplete,
   initialTerms,
+  initialConfirmedValues,
   title,
   content,
   description,
@@ -55,13 +61,38 @@ export function TranslationSheetContainer({
   pricePrefix,
   imageAlts,
   thumbnailAlt,
+  reviewOnly,
+  onTermsConfirmed,
 }: TranslationSheetContainerProps) {
   const [status, setStatus] = useState<TranslationStatus>('reviewing');
-  const [confirmedTerms, setConfirmedTerms] = useState<Map<number, string>>(new Map());
+  const [confirmedTerms, setConfirmedTerms] = useState<Map<number, Record<string, string>>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState({ completed: 0, total: 7 });
+  const prevTermsRef = useRef<FlaggedTerm[]>([]);
 
-  const handleConfirmTerm = (index: number, value: string) => {
+  useEffect(() => {
+    if (initialTerms === prevTermsRef.current) return;
+    prevTermsRef.current = initialTerms;
+
+    if (initialTerms.length === 0) {
+      setConfirmedTerms(new Map());
+      return;
+    }
+
+    const prefilled = new Map<number, Record<string, string>>();
+    if (initialConfirmedValues && initialConfirmedValues.length > 0) {
+      const lookup = new Map(initialConfirmedValues.map((t) => [t.original, t.confirmed]));
+      initialTerms.forEach((term, i) => {
+        const prev = lookup.get(term.original);
+        if (prev && Object.keys(prev).length > 0) {
+          prefilled.set(i, prev);
+        }
+      });
+    }
+    setConfirmedTerms(prefilled);
+  }, [initialTerms, initialConfirmedValues]);
+
+  const handleConfirmTerm = (index: number, value: Record<string, string>) => {
     setConfirmedTerms((prev) => {
       const next = new Map(prev);
       next.set(index, value);
@@ -69,15 +100,33 @@ export function TranslationSheetContainer({
     });
   };
 
+  const handleReviewConfirm = () => {
+    const currentTerms = initialTerms.map((term, i) => ({
+      original: term.original,
+      confirmed: confirmedTerms.get(i) ?? {},
+    }));
+    const currentOriginals = new Set(currentTerms.map((t) => t.original));
+    const previousTerms = (initialConfirmedValues ?? []).filter(
+      (t) => !currentOriginals.has(t.original),
+    );
+    onTermsConfirmed?.([...currentTerms, ...previousTerms]);
+    onOpenChange(false);
+  };
+
   const handleTranslateRequest = async () => {
     setStatus('translating');
     setError(null);
     setProgress({ completed: 0, total: 7 });
 
-    const terms = initialTerms.map((term, i) => ({
+    const currentTerms = initialTerms.map((term, i) => ({
       original: term.original,
-      confirmed: confirmedTerms.get(i) ?? '',
+      confirmed: confirmedTerms.get(i) ?? {},
     }));
+    const currentOriginals = new Set(currentTerms.map((t) => t.original));
+    const previousTerms = (initialConfirmedValues ?? []).filter(
+      (t) => !currentOriginals.has(t.original),
+    );
+    const terms = [...currentTerms, ...previousTerms];
 
     try {
       const results = await fetchTranslatePost(
@@ -121,7 +170,6 @@ export function TranslationSheetContainer({
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       setStatus('reviewing');
-      setConfirmedTerms(new Map());
       setError(null);
       setProgress({ completed: 0, total: 7 });
     }
@@ -132,7 +180,7 @@ export function TranslationSheetContainer({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-[688px]">
         <SheetHeader>
-          <SheetTitle className="text-lg">번역본 생성</SheetTitle>
+          <SheetTitle className="text-lg">{reviewOnly ? '번역 용어 검토' : '번역본 생성'}</SheetTitle>
           <SheetDescription className="text-base">
             번역이 어려운 용어를 검토하고 확정 번역을 입력해주세요.
           </SheetDescription>
@@ -144,8 +192,9 @@ export function TranslationSheetContainer({
               terms={initialTerms}
               confirmedTerms={confirmedTerms}
               onConfirmTerm={handleConfirmTerm}
-              onTranslateRequest={handleTranslateRequest}
+              onTranslateRequest={reviewOnly ? handleReviewConfirm : handleTranslateRequest}
               isTranslating={false}
+              submitLabel={reviewOnly ? '용어 확정' : undefined}
             />
           )}
 
