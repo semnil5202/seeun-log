@@ -47,15 +47,17 @@ import {
   TITLE_MAX_LENGTH,
   type PostFormValues,
 } from '@/features/post-editor/types/form';
-import { fetchRetrySingleLocale, fetchTranslatePost } from '@/features/translation/api/client';
+import { fetchExtractTerms, fetchRetrySingleLocale, fetchTranslatePost } from '@/features/translation/api/client';
+import { splitHtmlIntoSections, reassembleSections } from '@/features/translation/lib/html-sections';
 import { TranslationSheet } from '@/features/translation/components/TranslationSheet';
+import { TranslationSheetContainer } from '@/features/translation/containers/TranslationSheetContainer';
 import { useTranslationDirtyFields } from '@/features/translation/hooks/useTranslationDirtyFields';
 import { ImageAltSheet, extractImageSrcs } from '@/features/post-editor/components/ImageAltSheet';
 import { SlugField } from '@/shared/components/slug/SlugField';
 import { AiGenerateButton } from '@/shared/components/ui/AiGenerateButton';
 
 import type { PostFormType, TranslationLocale } from '@/shared/types/post';
-import type { ImageAlt, SelectiveTranslateOptions, TranslationResult } from '@/features/translation/types';
+import type { FlaggedTerm, ImageAlt, SelectiveTranslateOptions, TranslationResult } from '@/features/translation/types';
 
 export default function EditPostPage() {
   const { id } = useParams<{ id: string }>();
@@ -212,6 +214,9 @@ function EditPostForm({
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isSummarized, setIsSummarized] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [lastConfirmedTerms, setLastConfirmedTerms] = useState<
+    { original: string; confirmed: string | Record<string, string> }[]
+  >([]);
   const [translationResults, setTranslationResults] = useState<TranslationResult[]>(
     postData.translations,
   );
@@ -221,6 +226,13 @@ function EditPostForm({
   const [imageAlts, setImageAlts] = useState<ImageAlt[]>(postData.imageAlts ?? []);
   const [isAltSheetOpen, setIsAltSheetOpen] = useState(false);
   const [imageAltError, setImageAltError] = useState(false);
+  const [isTermReviewOpen, setIsTermReviewOpen] = useState(false);
+  const [termReviewTerms, setTermReviewTerms] = useState<FlaggedTerm[]>([]);
+  const [pendingRetranslation, setPendingRetranslation] = useState<{
+    confirmedTerms: { original: string; confirmed: string | Record<string, string> }[];
+    locales: TranslationLocale[];
+  } | null>(null);
+  const [pendingRetranslateLocales, setPendingRetranslateLocales] = useState<TranslationLocale[]>([]);
 
   const getTranslationData = useCallback(() => {
     if (translationResults.length === 0) return null;
@@ -417,11 +429,14 @@ function EditPostForm({
     locale: TranslationLocale,
     signal?: AbortSignal,
     selectiveOptions?: SelectiveTranslateOptions,
+    confirmedTerms?: { original: string; confirmed: string | Record<string, string> }[],
   ): Promise<TranslationResult> => {
     const values = getValues();
     const { title: t, content: c, description: d, placeName: pn, address: addr } = values;
     const existingTranslation = translationResults.find((r) => r.locale === locale);
     const validProds = values.products.filter((p) => p.name.trim());
+    const termsToUse = confirmedTerms ?? lastConfirmedTerms;
+    if (confirmedTerms) setLastConfirmedTerms(confirmedTerms);
     const result = await fetchRetrySingleLocale(locale, {
       title: t,
       content: c,
@@ -432,14 +447,33 @@ function EditPostForm({
       purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
       pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
       pricePrefix: values.pricePrefix || undefined,
-      confirmedTerms: [],
+      confirmedTerms: termsToUse,
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
       thumbnailAlt: getValues('thumbnailAlt') || undefined,
     }, signal, selectiveOptions);
     if (selectiveOptions && existingTranslation) {
       const fields = new Set(selectiveOptions.targetFields ?? []);
-      const hasSections = selectiveOptions.targetSectionIndices && selectiveOptions.targetSectionIndices.length > 0;
-      const merged: TranslationResult = {
+      const targetIndices = selectiveOptions.targetSectionIndices ?? [];
+      const hasSections = targetIndices.length > 0;
+      let mergedContent = existingTranslation.content;
+      if (hasSections) {
+        const existingSections = splitHtmlIntoSections(existingTranslation.content);
+        const newSections = splitHtmlIntoSections(result.content);
+        const targetSet = new Set(targetIndices);
+        const merged = existingSections.map((s) => {
+          if (targetSet.has(s.index)) {
+            const replacement = newSections[s.index];
+            if (replacement) return { ...s, html: replacement.html };
+          }
+          return s;
+        });
+        const appendStart = existingSections.length;
+        for (const ns of newSections) {
+          if (ns.index >= appendStart) merged.push(ns);
+        }
+        mergedContent = reassembleSections(merged);
+      }
+      const mergedResult: TranslationResult = {
         ...existingTranslation,
         title: fields.has('title') ? result.title : existingTranslation.title,
         description: fields.has('description') ? result.description : existingTranslation.description,
@@ -450,10 +484,10 @@ function EditPostForm({
         price_prefix: fields.has('price_prefix') ? result.price_prefix : existingTranslation.price_prefix,
         image_alts: fields.has('image_alts') ? result.image_alts : existingTranslation.image_alts,
         thumbnail_alt: fields.has('image_alts') ? result.thumbnail_alt : existingTranslation.thumbnail_alt,
-        content: hasSections ? result.content : existingTranslation.content,
+        content: hasSections ? mergedContent : existingTranslation.content,
       };
-      setTranslationResults((prev) => prev.map((r) => (r.locale === locale ? merged : r)));
-      return merged;
+      setTranslationResults((prev) => prev.map((r) => (r.locale === locale ? mergedResult : r)));
+      return mergedResult;
     }
     setTranslationResults((prev) => prev.map((r) => (r.locale === locale ? result : r)));
     return result;
@@ -513,6 +547,21 @@ function EditPostForm({
   const handleTranslationEditComplete = () => {
     setTranslationEditCompleted(true);
     setCompletedFormSnapshot(currentFormFingerprint);
+  };
+
+  const handleRequestTermReview = (terms: FlaggedTerm[], locales: TranslationLocale[]) => {
+    setTermReviewTerms(terms);
+    setPendingRetranslateLocales(locales);
+    setIsEditSheetOpen(false);
+    setTimeout(() => setIsTermReviewOpen(true), 800);
+  };
+
+  const handleTermsConfirmed = (confirmedTerms: { original: string; confirmed: Record<string, string> }[]) => {
+    setLastConfirmedTerms(confirmedTerms);
+    setTermReviewTerms([]);
+    setIsTermReviewOpen(false);
+    setPendingRetranslation({ confirmedTerms, locales: pendingRetranslateLocales });
+    setTimeout(() => setIsEditSheetOpen(true), 800);
   };
 
   const handleEditSheetOpen = () => {
@@ -750,7 +799,17 @@ function EditPostForm({
               <ImageIcon className="size-4" />
               이미지 alt 입력
             </button>
-            {needsTranslation && (
+            {needsTranslation && termReviewTerms.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsTermReviewOpen(true)}
+                className="inline-flex items-center justify-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+              >
+                <Languages className="size-4" />
+                번역 용어 검토
+              </button>
+            )}
+            {needsTranslation && termReviewTerms.length === 0 && (
               <button
                 type="button"
                 onClick={handleEditSheetOpen}
@@ -785,7 +844,9 @@ function EditPostForm({
           </div>
           {submitDisabled && isDirty && (
             <p className="mt-2 text-end text-[14px] text-red-500">
-              수정된 번역 영역의 번역 요청이 먼저 필요합니다.
+              {termReviewTerms.length > 0
+                ? '번역 용어 검토가 먼저 필요합니다.'
+                : '수정된 번역 영역의 번역 요청이 먼저 필요합니다.'}
             </p>
           )}
           {imageAltError && (
@@ -829,6 +890,18 @@ function EditPostForm({
           dirtyFields={dirtyTranslationFields}
           onRetryLocale={handleRetranslateLocale}
           onRetryAll={handleRetryAll}
+          onExtractTerms={async (dirty) => {
+            const values = getValues();
+            const content = dirty.has('content') ? values.content : undefined;
+            const pn = dirty.has('place_name') ? (values.placeName || undefined) : undefined;
+            const addr = dirty.has('address') ? (values.address || undefined) : undefined;
+            const altTexts = dirty.has('image_alts') && imageAlts.length > 0 ? imageAlts.map((a) => a.alt) : undefined;
+            if (!content && !pn && !addr && !altTexts) return [];
+            return fetchExtractTerms(content ?? '', pn, addr, altTexts);
+          }}
+          onRequestTermReview={handleRequestTermReview}
+          pendingRetranslation={pendingRetranslation}
+          onPendingRetranslationConsumed={() => setPendingRetranslation(null)}
           onEditComplete={handleTranslationEditComplete}
           onUpdateTranslationContent={(locale, content) =>
             setTranslationResults((prev) =>
@@ -840,6 +913,23 @@ function EditPostForm({
               prev.map((r) => (r.locale === locale ? { ...r, ...partial } : r)),
             )
           }
+        />
+      )}
+
+      {needsTranslation && (
+        <TranslationSheetContainer
+          open={isTermReviewOpen}
+          onOpenChange={setIsTermReviewOpen}
+          onTranslationComplete={() => {}}
+          initialTerms={termReviewTerms}
+          initialConfirmedValues={lastConfirmedTerms as { original: string; confirmed: Record<string, string> }[]}
+          title={title}
+          content={watchedContent}
+          description={description}
+          placeName={watchedPlaceName}
+          address={watchedAddress}
+          reviewOnly
+          onTermsConfirmed={handleTermsConfirmed}
         />
       )}
 

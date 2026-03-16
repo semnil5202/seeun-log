@@ -50,6 +50,7 @@ import { toast } from 'sonner';
 
 import type { PostFormType, TranslationLocale } from '@/shared/types/post';
 import type { FlaggedTerm, ImageAlt, SelectiveTranslateOptions, TranslationResult } from '@/features/translation/types';
+import { splitHtmlIntoSections, reassembleSections } from '@/features/translation/lib/html-sections';
 
 function mergeSelectiveResult(
   existing: TranslationResult,
@@ -57,7 +58,26 @@ function mergeSelectiveResult(
   options: SelectiveTranslateOptions,
 ): TranslationResult {
   const fields = new Set(options.targetFields ?? []);
-  const hasSections = options.targetSectionIndices && options.targetSectionIndices.length > 0;
+  const targetIndices = options.targetSectionIndices ?? [];
+  const hasSections = targetIndices.length > 0;
+  let mergedContent = existing.content;
+  if (hasSections) {
+    const existingSections = splitHtmlIntoSections(existing.content);
+    const newSections = splitHtmlIntoSections(partial.content);
+    const targetSet = new Set(targetIndices);
+    const merged = existingSections.map((s) => {
+      if (targetSet.has(s.index)) {
+        const replacement = newSections[s.index];
+        if (replacement) return { ...s, html: replacement.html };
+      }
+      return s;
+    });
+    const appendStart = existingSections.length;
+    for (const ns of newSections) {
+      if (ns.index >= appendStart) merged.push(ns);
+    }
+    mergedContent = reassembleSections(merged);
+  }
   return {
     ...existing,
     title: fields.has('title') ? partial.title : existing.title,
@@ -69,7 +89,7 @@ function mergeSelectiveResult(
     price_prefix: fields.has('price_prefix') ? partial.price_prefix : existing.price_prefix,
     image_alts: fields.has('image_alts') ? partial.image_alts : existing.image_alts,
     thumbnail_alt: fields.has('image_alts') ? partial.thumbnail_alt : existing.thumbnail_alt,
-    content: hasSections ? partial.content : existing.content,
+    content: hasSections ? mergedContent : existing.content,
   };
 }
 
@@ -124,11 +144,18 @@ function NewPostContent() {
   const [extractionFailed, setExtractionFailed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastConfirmedTerms, setLastConfirmedTerms] = useState<
-    { original: string; confirmed: string }[]
+    { original: string; confirmed: string | Record<string, string> }[]
   >([]);
   const [imageAlts, setImageAlts] = useState<ImageAlt[]>([]);
   const [isAltSheetOpen, setIsAltSheetOpen] = useState(false);
   const [imageAltError, setImageAltError] = useState(false);
+  const [isRetranslateTermReviewOpen, setIsRetranslateTermReviewOpen] = useState(false);
+  const [retranslateTermReviewTerms, setRetranslateTermReviewTerms] = useState<FlaggedTerm[]>([]);
+  const [pendingRetranslation, setPendingRetranslation] = useState<{
+    confirmedTerms: { original: string; confirmed: string | Record<string, string> }[];
+    locales: TranslationLocale[];
+  } | null>(null);
+  const [pendingRetranslateLocales, setPendingRetranslateLocales] = useState<TranslationLocale[]>([]);
   const [translationSnapshot, setTranslationSnapshot] = useState<{
     title: string;
     content: string;
@@ -384,6 +411,7 @@ function NewPostContent() {
   const handleTranslationStart = async () => {
     setIsExtracting(true);
     setExtractionFailed(false);
+    const extractToastId = toast.loading('번역 용어 검토중...');
 
     try {
       const values = getValues();
@@ -393,6 +421,7 @@ function NewPostContent() {
       const terms = await fetchExtractTerms(c, pn || undefined, addr || undefined, altTexts);
 
       if (terms.length === 0) {
+        toast.dismiss(extractToastId);
         const validProds = values.products.filter((p) => p.name.trim());
         const params = {
           title: t,
@@ -426,12 +455,13 @@ function NewPostContent() {
         captureSnapshot(imageAlts);
         setTimeout(() => setIsPreviewOpen(true), 800);
       } else {
+        toast.success('용어 검토가 필요합니다.', { id: extractToastId });
         setFlaggedTerms(terms);
         setIsSheetOpen(true);
       }
     } catch {
       setExtractionFailed(true);
-      toast.error('번역 용어 추출에 실패했습니다. 다시 시도해주세요.');
+      toast.error('번역 용어 추출에 실패했습니다. 다시 시도해주세요.', { id: extractToastId });
     } finally {
       setIsExtracting(false);
     }
@@ -515,7 +545,7 @@ function NewPostContent() {
 
   const handleTranslationComplete = (
     results: TranslationResult[],
-    confirmedTerms: { original: string; confirmed: string }[],
+    confirmedTerms: { original: string; confirmed: Record<string, string> }[],
   ) => {
     setTranslationResults(results);
     setLastConfirmedTerms(confirmedTerms);
@@ -526,15 +556,33 @@ function NewPostContent() {
     setTimeout(() => setIsPreviewOpen(true), 800);
   };
 
+  const handleRetranslateTermReview = (terms: FlaggedTerm[], locales: TranslationLocale[]) => {
+    setRetranslateTermReviewTerms(terms);
+    setPendingRetranslateLocales(locales);
+    setIsPreviewOpen(false);
+    setTimeout(() => setIsRetranslateTermReviewOpen(true), 800);
+  };
+
+  const handleRetranslateTermsConfirmed = (confirmedTerms: { original: string; confirmed: Record<string, string> }[]) => {
+    setLastConfirmedTerms(confirmedTerms);
+    setRetranslateTermReviewTerms([]);
+    setIsRetranslateTermReviewOpen(false);
+    setPendingRetranslation({ confirmedTerms, locales: pendingRetranslateLocales });
+    setTimeout(() => setIsPreviewOpen(true), 800);
+  };
+
   const handleRetryLocale = async (
     locale: TranslationLocale,
     signal?: AbortSignal,
     selectiveOptions?: SelectiveTranslateOptions,
+    confirmedTerms?: { original: string; confirmed: string | Record<string, string> }[],
   ) => {
     const values = getValues();
     const { title: t, content: c, description: d, placeName: pn, address: addr } = values;
     const existingTranslation = translationResults.find((r) => r.locale === locale);
     const validProds = values.products.filter((p) => p.name.trim());
+    const termsToUse = confirmedTerms ?? lastConfirmedTerms;
+    if (confirmedTerms) setLastConfirmedTerms(confirmedTerms);
     const result = await fetchRetrySingleLocale(locale, {
       title: t,
       content: c,
@@ -545,7 +593,7 @@ function NewPostContent() {
       purchaseSources: validProds.length > 0 ? validProds.map((p) => p.source) : undefined,
       pricePrefixes: validProds.length > 0 ? validProds.map((p) => p.pricePrefix).filter(Boolean) : undefined,
       pricePrefix: values.pricePrefix || undefined,
-      confirmedTerms: lastConfirmedTerms,
+      confirmedTerms: termsToUse,
       imageAlts: imageAlts.length > 0 ? imageAlts : undefined,
       thumbnailAlt: getValues('thumbnailAlt') || undefined,
     }, signal, selectiveOptions);
@@ -798,7 +846,17 @@ function NewPostContent() {
                 용어 검토 계속하기
               </button>
             )}
-            {isTranslated && (
+            {isTranslated && retranslateTermReviewTerms.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsRetranslateTermReviewOpen(true)}
+                className="inline-flex items-center justify-center gap-1.5 h-10 border border-input px-5 text-sm font-semibold shadow-xs transition-colors hover:bg-accent"
+              >
+                <Languages className="size-4" />
+                번역 용어 검토
+              </button>
+            )}
+            {isTranslated && retranslateTermReviewTerms.length === 0 && (
               <button
                 type="button"
                 onClick={handlePreviewClick}
@@ -842,7 +900,9 @@ function NewPostContent() {
           )}
           {translationError && isTranslated && previewDirtyFields.size > 0 && (
             <p className="mt-2 text-end text-[14px] text-red-500">
-              수정된 번역 영역의 번역 요청이 먼저 필요합니다.
+              {retranslateTermReviewTerms.length > 0
+                ? '번역 용어 검토가 먼저 필요합니다.'
+                : '수정된 번역 영역의 번역 요청이 먼저 필요합니다.'}
             </p>
           )}
           {translationError && !isTranslated && (
@@ -869,6 +929,7 @@ function NewPostContent() {
         onOpenChange={setIsSheetOpen}
         onTranslationComplete={handleTranslationComplete}
         initialTerms={flaggedTerms}
+        initialConfirmedValues={lastConfirmedTerms as { original: string; confirmed: Record<string, string> }[]}
         title={title}
         content={watch('content')}
         description={description}
@@ -901,6 +962,18 @@ function NewPostContent() {
         dirtyFields={previewDirtyFields}
         onRetryLocale={handleRetryLocale}
         onRetryAll={handleRetryAll}
+        onExtractTerms={async (dirty) => {
+          const values = getValues();
+          const content = dirty.has('content') ? values.content : undefined;
+          const pn = dirty.has('place_name') ? (values.placeName || undefined) : undefined;
+          const addr = dirty.has('address') ? (values.address || undefined) : undefined;
+          const altTexts = dirty.has('image_alts') && imageAlts.length > 0 ? imageAlts.map((a) => a.alt) : undefined;
+          if (!content && !pn && !addr && !altTexts) return [];
+          return fetchExtractTerms(content ?? '', pn, addr, altTexts);
+        }}
+        onRequestTermReview={handleRetranslateTermReview}
+        pendingRetranslation={pendingRetranslation}
+        onPendingRetranslationConsumed={() => setPendingRetranslation(null)}
         onEditComplete={() => {
           setTranslationEditCompleted(true);
           setCompletedFormSnapshot(currentFormFingerprint);
@@ -915,6 +988,21 @@ function NewPostContent() {
             prev.map((r) => (r.locale === locale ? { ...r, ...partial } : r)),
           )
         }
+      />
+
+      <TranslationSheetContainer
+        open={isRetranslateTermReviewOpen}
+        onOpenChange={setIsRetranslateTermReviewOpen}
+        onTranslationComplete={() => {}}
+        initialTerms={retranslateTermReviewTerms}
+        initialConfirmedValues={lastConfirmedTerms as { original: string; confirmed: Record<string, string> }[]}
+        title={title}
+        content={watchedContent}
+        description={description}
+        placeName={watchedPlaceName}
+        address={watchedAddress}
+        reviewOnly
+        onTermsConfirmed={handleRetranslateTermsConfirmed}
       />
     </>
   );
