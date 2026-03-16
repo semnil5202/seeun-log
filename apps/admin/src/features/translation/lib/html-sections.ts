@@ -21,6 +21,7 @@ function getLabel(node: Element): string {
   return TAG_LABELS[tag] ?? tag.toLowerCase();
 }
 
+/** Client-only: DOMParser 사용. Server Action/API Route에서 호출 시 빈 배열 반환. */
 export function splitHtmlIntoSections(html: string): ContentSection[] {
   if (typeof window === 'undefined') return [];
 

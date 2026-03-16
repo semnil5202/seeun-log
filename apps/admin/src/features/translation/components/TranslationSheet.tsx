@@ -763,7 +763,9 @@ export function TranslationSheet({
           renderFieldRow('image_alts', undefined, {
             hasUntranslatedChild:
               (originalThumbnailAlt ? !selectedTranslation.thumbnail_alt : false) ||
-              (originalImageAlts ?? []).some((orig) => !selectedTranslation.image_alts.find((t) => t.src === orig.src)),
+              (originalImageAlts ?? []).some((orig, i) =>
+                !selectedTranslation.image_alts.find((t) => t.src === orig.src) && !selectedTranslation.image_alts[i],
+              ),
             children: (
               <div className="mt-2 space-y-3">
                 {originalThumbnailAlt && (() => {
@@ -823,7 +825,8 @@ export function TranslationSheet({
                   );
                 })()}
                 {(originalImageAlts ?? []).map((origItem, i) => {
-                  const translated = selectedTranslation.image_alts.find((t) => t.src === origItem.src);
+                  const translated = selectedTranslation.image_alts.find((t) => t.src === origItem.src)
+                    ?? selectedTranslation.image_alts[i];
                   const imgKey = fieldEditKey(locale, `image_alt_${origItem.src}`);
                   const isEditingImg = directEditingFields.has(imgKey);
                   const currentAlt = translated?.alt || origItem.alt;
