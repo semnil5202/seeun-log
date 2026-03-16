@@ -365,6 +365,7 @@ export function TranslationSheet({
       directEditField?: keyof TranslationResult;
       directEditArrayField?: keyof TranslationResult;
       directEditArrayValues?: string[];
+      hasUntranslatedChild?: boolean;
     },
   ) => {
     if (value === undefined && !options?.children) return null;
@@ -399,8 +400,8 @@ export function TranslationSheet({
             <label className="text-sm font-semibold text-muted-foreground">
               {FIELD_LABELS[field]}
             </label>
-            {isDirty && !showTranslated && <DirtyBadge />}
-            {isDirty && showTranslated && <TranslatedBadge />}
+            {isDirty && (!showTranslated || options?.hasUntranslatedChild) && <DirtyBadge />}
+            {isDirty && showTranslated && !options?.hasUntranslatedChild && <TranslatedBadge />}
           </div>
           {showDirectEditSwitch && (
             <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -661,6 +662,10 @@ export function TranslationSheet({
         ? ('indeterminate' as const)
         : false;
 
+    const hasUntranslatedSection = originalSections.some(
+      (s, i) => isTranslatableSection(s) && !translatedSections[i],
+    );
+
     return (
       <>
         {/* 전체 선택 */}
@@ -738,8 +743,8 @@ export function TranslationSheet({
                 onCheckedChange={checkState.toggleAllContent}
               />
               <label className="text-sm font-semibold text-muted-foreground">본문</label>
-              {contentDirty && !showTranslated && <DirtyBadge />}
-              {contentDirty && showTranslated && (
+              {contentDirty && (!showTranslated || hasUntranslatedSection) && <DirtyBadge />}
+              {contentDirty && showTranslated && !hasUntranslatedSection && (
                 <TranslatedBadge label={isManuallyEdited && !isLocaleRetranslated ? '직접 수정됨' : '번역 완료'} />
               )}
             </div>
@@ -752,6 +757,9 @@ export function TranslationSheet({
         {/* 이미지 Alt */}
         {(originalThumbnailAlt || (originalImageAlts && originalImageAlts.length > 0)) &&
           renderFieldRow('image_alts', undefined, {
+            hasUntranslatedChild:
+              (originalThumbnailAlt ? !selectedTranslation.thumbnail_alt : false) ||
+              (originalImageAlts ?? []).some((orig) => !selectedTranslation.image_alts.find((t) => t.src === orig.src)),
             children: (
               <div className="mt-2 space-y-3">
                 {originalThumbnailAlt && (() => {
