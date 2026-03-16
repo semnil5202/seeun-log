@@ -107,7 +107,11 @@ jobs:
             echo "No changed files, skipping invalidation"
             exit 0
           fi
-          PATHS=$(cat /tmp/changed-paths.txt | sed 's|/index.html|/|' | sort -u | head -3000)
+          PATHS=$(cat /tmp/changed-paths.txt | sed 's|/index.html$|/|' | grep '^/' | sort -u | head -3000)
+          echo "Invalidation paths:"
+          echo "$PATHS"
+          COUNT=$(echo "$PATHS" | wc -l | tr -d ' ')
+          echo "Total paths: $COUNT"
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths $PATHS
