@@ -35,7 +35,7 @@
 - Global UI pattern: Layout.astro contains 1x Toast + 1x ImageLightbox + 1x CookieConsentBanner (shared/components/ui/ + features/consent/)
 - Logo text: `SITE_NAME_KO`("은민로그") for ko, `SITE_NAME_EN`("eunminlog") for others (packages/config/site.ts)
 
-## Admin Phase Status (as of 2026-03-09)
+## Admin Phase Status (as of 2026-03-16)
 
 - All phases (1~5) completed. DB migrations M-01~M-17 all applied.
 - Link bookmark: CustomLinkBookmark Tiptap node, LinkPastePopup, Client CSS hover/mobile, internal link i18n (shared/lib/bookmark.ts), translation skip
@@ -49,6 +49,7 @@
 - Client categories: dynamic from Supabase `categories` table (hardcoded CATEGORY_SLUGS/SUB_CATEGORY_MAP removed)
 - Client image alt injection: `image_alts` JSONB → PostLayout `<img>` alt attribute injection (translated alt preferred)
 - AdSense placeholders: all 5 spots commented out, restoration guide at `docs/ADSENSE-TODO.md`
+- Term review per-locale: FlaggedTerm.suggestions `string[]` → `Record<string, string>[]`, TermReviewItem locale별 카드 + 수정 입력, TranslationSheet 재번역 시 용어 검토 단계 추가, lastConfirmedTerms state (2026-03-16)
 
 ## Client PlaceInfoCard Changes (2026-03-05, updated 2026-03-06)
 

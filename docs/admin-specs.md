@@ -1,8 +1,8 @@
 # Admin App Specification
 
 > Date: 2026-03-04
-> Last Updated: 2026-03-09
-> Status: Phase 1~5 완료. 링크 북마크 (OG 태그 카드, 내부 링크 다국어 변환, 번역 skip). 제품 리뷰 필드 배열 변환 (`text`→`text[]`, `useFieldArray` 동적 폼, `PriceInputRow` 공용 컴포넌트). GPT-5 Mini 모델 통일 + 프롬프트 중앙 집중화. 섹션 기반 번역 컨트롤
+> Last Updated: 2026-03-16
+> Status: Phase 1~5 완료. 링크 북마크 (OG 태그 카드, 내부 링크 다국어 변환, 번역 skip). 제품 리뷰 필드 배열 변환 (`text`→`text[]`, `useFieldArray` 동적 폼, `PriceInputRow` 공용 컴포넌트). GPT-5 Mini 모델 통일 + 프롬프트 중앙 집중화. 섹션 기반 번역 컨트롤. 번역 용어 검토 per-locale 지원 (suggestions: `Record<string, string>[]`, 재번역 시 용어 검토 단계 추가)
 
 ## 1. Overview
 
@@ -859,7 +859,7 @@ features/translation/
 ├── components/
 │   ├── TranslationSheet.tsx         # ✅ 번역 확인 Sheet (섹션 기반 체크박스, dirty tracking, 선택적 재번역)
 │   ├── TermReviewList.tsx           # ✅ 고유명사 검토 리스트
-│   └── TermReviewItem.tsx           # ✅ 고유명사 검토 아이템
+│   └── TermReviewItem.tsx           # ✅ 고유명사 검토 아이템 (per-locale 번역 카드 선택 + locale별 직접 수정 입력 필드)
 ├── containers/
 │   └── TranslationSheetContainer.tsx # ✅ 고유명사 추출 → 번역 실행 통합 컨테이너
 ├── hooks/
@@ -870,7 +870,7 @@ features/translation/
 ├── lib/
 │   └── html-sections.ts            # ✅ HTML 섹션 분할(splitHtmlToSections), 재조립(reassembleSections), dirty 비교(compareSections)
 ├── types/
-│   └── index.ts                     # ✅ FlaggedTerm, TranslationResult, ContentSection, CheckableField, SelectiveTranslateOptions 타입
+│   └── index.ts                     # ✅ FlaggedTerm (suggestions: Record<string, string>[]), TranslateParams (confirmedTerms: string | Record<string, string>), TranslationResult, ContentSection, CheckableField, SelectiveTranslateOptions 타입
 └── constants/
     └── locale.ts                    # ✅ 번역 대상 locale 설정
 ```
@@ -886,6 +886,7 @@ features/translation/
 - Sheet 닫은 후 "용어 검토 계속하기" 버튼으로 Sheet 재오픈 가능
 - `error` 시 "다시 시도" 버튼 표시
 - Sheet가 닫힐 때 상태 초기화 (`reviewing`, confirmedTerms 리셋)
+- edit/new 페이지에 `lastConfirmedTerms` state 추가 — 재번역 시 이전 확정 용어 재사용 가능
 - Sheet 스와이프 닫기: side="right" Sheet는 좌→우 스와이프, 30% threshold 초과 시 닫기 (드래그 중 실시간 translateX + overlay opacity 연동)
 
 **TranslationSheet (번역 결과 확인 + 섹션 기반 선택적 재번역)**:
@@ -897,7 +898,7 @@ features/translation/
 - 번역 데이터 없는 locale: "번역 데이터가 없습니다." 표시
 - 실패 locale: "다시 시도" 버튼 표시 (`onRetryLocale` 콜백 → `retrySingleLocale`)
 - **체크박스 시스템**: 전체 선택 체크박스, 필드별 체크박스 (title, description, place_name, address), 본문 부모 체크박스 (indeterminate 상태 지원), 개별 섹션 체크박스. `useTranslationCheckState` 훅으로 상태 관리
-- **선택적 재번역**: 체크된 필드/섹션만 GPT에 요청 → `content_sections` 형식 응답 → 기존 번역에 머지 (`mergeSelectiveResult` 헬퍼)
+- **선택적 재번역**: "선택 항목 AI 번역" 클릭 → 용어 추출 → 용어가 있으면 Dialog로 검토 → 확인 후 재번역. 용어 없으면 Dialog 없이 바로 재번역. 체크된 필드/섹션만 GPT에 요청 → `content_sections` 형식 응답 → 기존 번역에 머지 (`mergeSelectiveResult` 헬퍼). `onExtractTerms` prop으로 용어 추출, `onRetryLocale`에 `confirmedTerms` 파라미터 전달
 - **섹션 분할**: `html-sections.ts`의 `splitHtmlToSections()`로 본문 HTML을 top-level 블록 노드(h2, p, img, ul 등) 단위로 분할. DOMParser 기반
 - UI 스타일: Sheet title `text-lg`, description `text-base`, 필터 탭 `text-sm`, 필드 label `text-sm font-semibold text-muted-foreground`, 제목 `text-lg font-bold`, 본문 `prose prose-sm`
 - Sheet 너비: `w-full sm:max-w-[688px]`

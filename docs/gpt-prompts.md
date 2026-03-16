@@ -85,9 +85,9 @@
 
 ## 3. 번역 용어 추출 (`fetchExtractTerms`)
 
-트리거: "번역본 생성하기" 버튼 클릭 (번역 전 첫 번째 단계)
+트리거: "번역본 생성하기" 버튼 클릭 (번역 전 첫 번째 단계). TranslationSheet 재번역 시에도 호출 (용어 검토 → 재번역 흐름).
 입력: `content` (HTML), `placeName?`, `address?`
-출력: `FlaggedTerm[]` -- `{ original: string, suggestions: string[] }`
+출력: `FlaggedTerm[]` -- `{ original: string, suggestions: Record<string, string>[] }`
 
 ### System Prompt
 
@@ -106,7 +106,10 @@
 - 특정 매장에서만 쓰는 고유 메뉴명: (예: 두쫀쿠, 쑥떡와플)
 - 번역 시 의미가 변질될 수 있는 관용구: (예: 입가심, 손맛, 아점)
 
-응답 형식: {"terms": [{"original": "용어", "suggestions": ["영어추천"]}]}
+각 용어당 최대 3개의 추천 번역을 제공하세요.
+각 추천은 7개 목표 언어(en, ja, zh-CN, zh-TW, id, vi, th)의 번역을 포함해야 합니다.
+
+응답 형식: {"terms": [{"original": "용어", "suggestions": [{"en": "...", "ja": "...", "zh-CN": "...", "zh-TW": "...", "id": "...", "vi": "...", "th": "..."}]}]}
 ```
 
 ### User Prompt
@@ -130,11 +133,16 @@
   "terms": [
     {
       "original": "존맛탱",
-      "suggestions": ["Super delicious", "Incredibly tasty"]
+      "suggestions": [
+        { "en": "Super delicious", "ja": "超おいしい", "zh-CN": "超好吃", "zh-TW": "超好吃", "id": "Sangat lezat", "vi": "Cực ngon", "th": "อร่อยมาก" },
+        { "en": "Incredibly tasty", "ja": "めちゃうま", "zh-CN": "特别好吃", "zh-TW": "特別好吃", "id": "Luar biasa enak", "vi": "Ngon tuyệt", "th": "อร่อยสุดๆ" }
+      ]
     },
     {
       "original": "가성비",
-      "suggestions": []
+      "suggestions": [
+        { "en": "Great value", "ja": "コスパ", "zh-CN": "性价比高", "zh-TW": "CP值高", "id": "Nilai terbaik", "vi": "Giá trị tốt", "th": "คุ้มค่า" }
+      ]
     }
   ]
 }
@@ -166,7 +174,7 @@ JSON 배열 파싱 -> `FlaggedTerm[]` 타입으로 변환.
 3. 이미지/썸네일 alt: 이미지의 설명(alt)도 해당 언어의 문맥에 맞게 SEO 최적화하여 번역하세요.
 4. 플레이스홀더: {{IMG_0}} 형태의 문자열은 절대 건드리지 마세요.
 5. 어조: 블로그 특유의 친근한 어조를 유지하되, 해당 언어권 사용자가 읽기에 자연스러운 문장 구조를 사용하세요.
-6. 확정 번역 용어가 제공됩니다. 영어(en) 번역 시에는 확정된 번역을 그대로 사용하세요. 다른 언어에서는 확정 용어를 참고하되, 해당 언어에 자연스러운 표현으로 번역해주세요.
+6. 확정 번역 용어가 제공됩니다. 각 언어별 확정 번역이 제공된 경우 해당 언어의 확정 번역을 그대로 사용하세요.
 7. 장소명(place_name)과 주소(address)가 제공되면 언어별 규칙에 따라 표기해주세요.
 8. 3줄 요약(description)은 plain text입니다. 줄바꿈(\n)을 유지하고 텍스트만 번역해주세요.
 

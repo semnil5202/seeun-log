@@ -1,6 +1,6 @@
 # Admin API Specs
 
-> Last updated: 2026-03-09 (선택적 번역 API 추가 — SelectiveTranslateOptions, content_sections 응답, 섹션 분할 유틸리티)
+> Last updated: 2026-03-16 (용어 추출 per-locale 지원 — suggestions: `Record<string, string>[]`, confirmedTerms per-locale 지원, 재번역 시 용어 검토 단계 추가)
 
 Admin 앱에서 필요한 API 엔드포인트 목록. Server Action 기반으로 구현하며, Supabase service role 키를 사용한다.
 
@@ -254,8 +254,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 {
   terms: {
     original: string; // 원문 용어
-    context: string; // 사용 맥락
-    suggestion: string; // 번역 가이드
+    suggestions: Record<string, string>[]; // 추천 번역 (최대 3개). 각 추천은 7개 locale별 번역을 포함. 예: [{ en: "...", ja: "...", ... }]
   }
   [];
 }
@@ -263,7 +262,7 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
 
 **External:** OpenAI GPT-5 Mini API
 
-**DB:** 없음 (TranslationSheetContainer에서 용어 검토 UI 표시)
+**DB:** 없음 (TranslationSheetContainer에서 용어 검토 UI 표시, TranslationSheet 재번역 시에도 용어 검토 Dialog 표시)
 
 ---
 
@@ -281,7 +280,8 @@ Supabase Auth 클라이언트 SDK 사용 (Server Action 아님).
   place_name?: string | null;
   address?: string | null;
   targetLocales: TranslationLocale[];        // ['en','ja','zh-CN','zh-TW','id','vi','th']
-  flaggedTerms?: FlaggedTerm[];              // 용어 가이드
+  flaggedTerms?: FlaggedTerm[];              // 용어 가이드. suggestions는 Record<string, string>[] (per-locale 번역)
+  confirmedTerms?: (string | Record<string, string>)[]; // 확정 용어. per-locale 확정 번역 지원 (각 locale 번역 시 해당 locale의 확정 번역 사용)
   selectiveOptions?: SelectiveTranslateOptions; // 선택적 번역 옵션 (아래 4.4.1 참조)
 }
 ```
