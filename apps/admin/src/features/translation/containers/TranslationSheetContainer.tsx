@@ -68,11 +68,12 @@ export function TranslationSheetContainer({
   const [confirmedTerms, setConfirmedTerms] = useState<Map<number, Record<string, string>>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState({ completed: 0, total: 7 });
-  const prevTermsRef = useRef<FlaggedTerm[]>([]);
+  const prevTermsKeyRef = useRef('');
 
   useEffect(() => {
-    if (initialTerms === prevTermsRef.current) return;
-    prevTermsRef.current = initialTerms;
+    const termsKey = initialTerms.map((t) => t.original).join('\0');
+    if (termsKey === prevTermsKeyRef.current) return;
+    prevTermsKeyRef.current = termsKey;
 
     if (initialTerms.length === 0) {
       setConfirmedTerms(new Map());
@@ -81,7 +82,12 @@ export function TranslationSheetContainer({
 
     const prefilled = new Map<number, Record<string, string>>();
     if (initialConfirmedValues && initialConfirmedValues.length > 0) {
-      const lookup = new Map(initialConfirmedValues.map((t) => [t.original, t.confirmed]));
+      const lookup = new Map<string, Record<string, string>>();
+      for (const t of initialConfirmedValues) {
+        if (typeof t.confirmed === 'object' && t.confirmed !== null) {
+          lookup.set(t.original, t.confirmed);
+        }
+      }
       initialTerms.forEach((term, i) => {
         const prev = lookup.get(term.original);
         if (prev && Object.keys(prev).length > 0) {
