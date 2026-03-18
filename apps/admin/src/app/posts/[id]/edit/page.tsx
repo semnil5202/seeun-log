@@ -48,7 +48,7 @@ import {
   type PostFormValues,
 } from '@/features/post-editor/types/form';
 import { fetchExtractTerms, fetchRetrySingleLocale, fetchTranslatePost } from '@/features/translation/api/client';
-import { splitHtmlIntoSections, reassembleSections } from '@/features/translation/lib/html-sections';
+import { mergeSelectiveResult } from '@/features/translation/lib/merge-selective';
 import { TranslationSheet } from '@/features/translation/components/TranslationSheet';
 import { TranslationSheetContainer } from '@/features/translation/containers/TranslationSheetContainer';
 import { useTranslationDirtyFields } from '@/features/translation/hooks/useTranslationDirtyFields';
@@ -452,40 +452,7 @@ function EditPostForm({
       thumbnailAlt: getValues('thumbnailAlt') || undefined,
     }, signal, selectiveOptions);
     if (selectiveOptions && existingTranslation) {
-      const fields = new Set(selectiveOptions.targetFields ?? []);
-      const targetIndices = selectiveOptions.targetSectionIndices ?? [];
-      const hasSections = targetIndices.length > 0;
-      let mergedContent = existingTranslation.content;
-      if (hasSections) {
-        const existingSections = splitHtmlIntoSections(existingTranslation.content);
-        const newSections = splitHtmlIntoSections(result.content);
-        const targetSet = new Set(targetIndices);
-        const merged = existingSections.map((s) => {
-          if (targetSet.has(s.index)) {
-            const replacement = newSections[s.index];
-            if (replacement) return { ...s, html: replacement.html };
-          }
-          return s;
-        });
-        const appendStart = existingSections.length;
-        for (const ns of newSections) {
-          if (ns.index >= appendStart) merged.push(ns);
-        }
-        mergedContent = reassembleSections(merged);
-      }
-      const mergedResult: TranslationResult = {
-        ...existingTranslation,
-        title: fields.has('title') ? result.title : existingTranslation.title,
-        description: fields.has('description') ? result.description : existingTranslation.description,
-        place_name: fields.has('place_name') ? result.place_name : existingTranslation.place_name,
-        address: fields.has('address') ? result.address : existingTranslation.address,
-        product_name: fields.has('product_name') ? result.product_name : existingTranslation.product_name,
-        purchase_source: fields.has('purchase_source') ? result.purchase_source : existingTranslation.purchase_source,
-        price_prefix: fields.has('price_prefix') ? result.price_prefix : existingTranslation.price_prefix,
-        image_alts: fields.has('image_alts') ? result.image_alts : existingTranslation.image_alts,
-        thumbnail_alt: fields.has('image_alts') ? result.thumbnail_alt : existingTranslation.thumbnail_alt,
-        content: hasSections ? mergedContent : existingTranslation.content,
-      };
+      const mergedResult = mergeSelectiveResult(existingTranslation, result, selectiveOptions);
       setTranslationResults((prev) => prev.map((r) => (r.locale === locale ? mergedResult : r)));
       return mergedResult;
     }
@@ -550,6 +517,7 @@ function EditPostForm({
   };
 
   const sheetTransitionRef = useRef(false);
+  useEffect(() => () => { sheetTransitionRef.current = false; }, []);
 
   const handleRequestTermReview = (terms: FlaggedTerm[], locales: TranslationLocale[]) => {
     if (sheetTransitionRef.current) return;

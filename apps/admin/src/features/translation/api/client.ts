@@ -6,6 +6,7 @@ import {
 import type { FlaggedTerm, ImageAlt, SelectiveTranslateOptions, TranslationResult } from '../types';
 import type { TranslationLocale } from '@/shared/types/post';
 import { splitHtmlIntoSections, reassembleSections } from '../lib/html-sections';
+import { toast } from 'sonner';
 
 const TARGET_LOCALES: TranslationLocale[] = ['en', 'ja', 'zh-CN', 'zh-TW', 'id', 'vi', 'th'];
 
@@ -208,6 +209,7 @@ async function fetchTranslateSingle(
     });
     resultContent = reassembleSections(mergedSections);
   } else if (isSelective && !parsed.content_sections && parsed.content) {
+    toast.warning('GPT 응답 형식이 예상과 다릅니다. 섹션 단위 병합으로 대체합니다.');
     const targetIndices = new Set(selectiveOptions?.targetSectionIndices ?? []);
     if (targetIndices.size > 0) {
       const existingSections = splitHtmlIntoSections(content);

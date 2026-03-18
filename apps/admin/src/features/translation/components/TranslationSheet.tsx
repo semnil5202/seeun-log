@@ -258,7 +258,7 @@ export function TranslationSheet({
     if (!open || !pendingRetranslation) return;
     onPendingRetranslationConsumed?.();
     handleSelectiveRetranslate(pendingRetranslation.locales, pendingRetranslation.confirmedTerms)
-      .catch(() => {});
+      .catch(() => { toast.error('재번역 자동 실행에 실패했습니다. 다시 시도해 주세요.'); });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- trigger once when sheet reopens with pending data
   }, [open, pendingRetranslation]);
 
