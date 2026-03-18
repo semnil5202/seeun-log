@@ -108,7 +108,10 @@ docs/
 ├── ga4-tracking.md     # GA4 이벤트 트래킹 전략, 이벤트 스키마, 구현 가이드
 ├── ci-cd.md            # GitHub Actions CI/CD 파이프라인 설계
 ├── redirect-specs.md   # 301 리다이렉트 전략 (slug 변경 시 이전 URL 리다이렉트)
-└── TODO.md             # 미구현 기능 목록
+├── todos/              # TODO 문서 모음
+│   ├── TODO.md         # 미구현 기능 목록
+│   └── ADSENSE-TODO.md # 애드센스 지면 복원 가이드
+└── reports/            # 리포트 문서 모음
 ```
 
 Sub-agent 작업 시 반드시 관련 docs 파일을 참조할 것. 코드 변경이 docs와 불일치하면 qa가 REJECT.

@@ -146,7 +146,7 @@
 - [x] **이미지 alt 태그 Client 주입** — `image_alts` JSONB를 DB에서 가져와 PostLayout에서 content HTML `<img>`에 alt 속성 주입. 다국어 번역된 alt 우선 사용
 - [x] **카테고리 DB 연동** — `CATEGORY_SLUGS`/`SUB_CATEGORY_MAP` 하드코딩 제거. Supabase `categories` 테이블에서 동적으로 가져오도록 변경 (`features/post-feed/api/categories.ts`)
 - [x] **검색 페이지 max-width** — `SearchUI.astro` 루트 div에 `w-full max-w-[688px]` 적용
-- [x] **애드센스 가짜 지면 주석 처리** — 5곳 주석 처리. 복원 가이드: [`docs/ADSENSE-TODO.md`](ADSENSE-TODO.md)
+- [x] **애드센스 가짜 지면 주석 처리** — 5곳 주석 처리. 복원 가이드: [`docs/todos/ADSENSE-TODO.md`](ADSENSE-TODO.md)
 
 ## Admin + Client — 최근 완료 (2026-03-11)
 
