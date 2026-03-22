@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const TITLE_MAX_LENGTH = 40;
+export const TITLE_MAX_LENGTH = 50;
 
 const productSchema = z.object({
   name: z.string(),
