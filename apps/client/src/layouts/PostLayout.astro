@@ -165,6 +165,8 @@ const gaPageParams = {
 
           {post.place_name && (
             <PlaceInfoCard
+              category={post.category}
+              subCategory={post.sub_category}
               categoryLabel={categoryLabel}
               subCategoryLabel={subCategoryLabel}
               placeName={post.place_name}
@@ -181,6 +183,8 @@ const gaPageParams = {
 
           {!post.place_name && post.product_name && post.product_name.length > 0 && (
             <ProductInfoCard
+              category={post.category}
+              subCategory={post.sub_category}
               categoryLabel={categoryLabel}
               subCategoryLabel={subCategoryLabel}
               productNames={post.product_name}

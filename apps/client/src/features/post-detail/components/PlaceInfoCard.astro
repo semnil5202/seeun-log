@@ -3,8 +3,11 @@
 
 import type { Locale } from "@/shared/types/common";
 import { t } from "@/shared/lib/i18n/translations";
+import { getLocalePath } from "@/shared/lib/i18n/locales";
 
 interface Props {
+  category: string;
+  subCategory: string;
   categoryLabel: string;
   subCategoryLabel: string;
   placeName: string;
@@ -20,6 +23,8 @@ interface Props {
 }
 
 const {
+  category,
+  subCategory,
   categoryLabel,
   subCategoryLabel,
   placeName,
@@ -64,7 +69,11 @@ const copyToast = locale !== 'ko' ? t("place.copyToast", locale) : undefined;
   <dl class="space-y-3 text-sm">
     <div class="flex items-baseline gap-3">
       <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.category", locale)}</dt>
-      <dd class="text-gray-900">{categoryLabel} <span class="text-base leading-none">›</span> {subCategoryLabel}</dd>
+      <dd class="text-gray-900">
+        <a href={getLocalePath(`/${category}/`, locale)} class="text-primary-600 underline underline-offset-4 hover:text-primary-700 transition-colors">{categoryLabel}</a>
+        <span class="text-base leading-none">›</span>
+        <a href={getLocalePath(`/${category}/${subCategory}/`, locale)} class="text-primary-600 underline underline-offset-4 hover:text-primary-700 transition-colors">{subCategoryLabel}</a>
+      </dd>
     </div>
     <div class="flex items-baseline gap-3">
       <dt class="shrink-0 w-20 text-gray-500 font-medium">{t("place.name", locale)}</dt>
