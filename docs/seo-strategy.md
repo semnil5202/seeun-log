@@ -16,8 +16,9 @@
 
 ## Schema.org (JSON-LD)
 
-### 전체 페이지
+### 전체 페이지 (Layout.astro)
 
+- `WebSite` — Google 검색 결과 사이트 이름 제어. `ko`: `name: "은민로그"`, `alternateName: "eunminlog"`. 그 외 locale: `name: "eunminlog"`
 - `BreadcrumbList`
 
 ### 상세 페이지
